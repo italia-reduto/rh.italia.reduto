@@ -103,6 +103,10 @@
   <div class="ic"><svg class="i"><use href="#i-mais"/></svg></div>
   <div class="meio"><div class="tit" style="margin-top:0">Cadastrar Novo Membro</div><div class="rot">Criar contas para a galera</div></div>
     </a>
+    <a class="adm" id="admTickets" href="/admin-tickets.html" hidden style="margin-top:10px">
+  <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
+  <div class="meio"><div class="tit" style="margin-top:0">Responder Tickets</div><div class="rot">Dúvidas e pedidos da tropa</div></div>
+    </a>
 
     <div class="acoes">
       <a href="/tickets.html" class="pil" style="text-decoration:none;"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
@@ -151,7 +155,8 @@
       $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
       if (d.nivel >= 50) {
         $("adm").hidden = false;
-         $("admCadastro").hidden = false; 
+         $("admCadastro").hidden = false;
+        $("admTickets").hidden = false;
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
           const x = await p.json();
