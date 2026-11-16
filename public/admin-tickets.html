@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Central de Tickets · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  body { align-items: flex-start; padding-top: 40px; padding-bottom: 40px; }
+  .voltar { color: var(--suave); text-decoration: none; font-size: 13px; display: block; margin-bottom: 16px; }
+  .ticket { margin-top: 16px; padding: 16px; border: 1px solid var(--linha); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .ticket.aberto { border-color: rgba(224,82,92,.4); background: rgba(224,82,92,.03); }
+  .ticket-topo { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
+  .ticket-info { display: flex; flex-direction: column; }
+  .ticket-nome { font-size: 15px; font-weight: 600; color: var(--marfim); }
+  .ticket-assunto { font-size: 13px; color: var(--ouro); margin-top: 2px; }
+  .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
+  .badge.aberto { background: rgba(224,82,92,.15); color: var(--vermelho); }
+  .badge.respondido { background: rgba(0,161,82,.15); color: var(--verde); }
+  .ticket-msg { font-size: 14px; color: var(--marfim); line-height: 1.5; margin-bottom: 12px; word-break: break-word; background: rgba(0,0,0,.2); padding: 10px; border-radius: 8px; }
+  .ticket-data { font-size: 11px; color: #55605A; margin-bottom: 12px; }
+  .resposta-box { margin-top: 12px; border-top: 1px solid var(--linha); padding-top: 12px; }
+  textarea { width: 100%; padding: 12px; font-size: 14px; color: var(--marfim); background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 8px; outline: none; font-family: inherit; resize: vertical; min-height: 80px; transition: 0.2s; }
+  textarea:focus { border-color: var(--verde); }
+  .btn-mini { width: 100%; margin-top: 8px; padding: 12px; font-size: 13px; font-weight: 600; color: #fff; background: var(--verde); border: none; border-radius: 8px; cursor: pointer; }
+  .btn-mini:active { opacity: 0.8; }
+  .ja-respondido { font-size: 13px; color: var(--suave); background: rgba(0,161,82,.05); padding: 12px; border-radius: 8px; border-left: 2px solid var(--verde); line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <a href="/painel.html" class="voltar">&larr; Voltar ao painel</a>
+      <h2>Central de Tickets</h2>
+      <p class="sub">Responda as dúvidas e pedidos da tropa.</p>
+      
+      <div id="lista" style="margin-top: 20px;">
+        <p class="sub">Carregando...</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  
+  fetch("/api/me").then(async (r) => {
+    if (!r.ok) { location.href = "/"; return; }
+    const d = await r.json();
+    if (d.nivel < 50) { location.href = "/painel.html"; return; }
+  }).catch(() => { location.href = "/"; });
+
+  async function carregarTickets() {
+    const lista = $("lista");
+    try {
+      const r = await fetch("/api/admin/tickets");
+      const d = await r.json();
+      
+      if (!d.ok) throw new Error();
+      
+      lista.innerHTML = "";
+      if (d.tickets.length === 0) {
+        lista.innerHTML = '<p class="sub">Nenhum ticket no momento.</p>';
+        return;
+      }
+
+      d.tickets.forEach(t => {
+        const el = document.createElement("div");
+        el.className = "ticket " + t.status;
+        const data = new Date(t.criado_em * 1000).toLocaleString("pt-BR");
+        
+        let html = `
+          <div class="ticket-topo">
+            <div class="ticket-info">
+              <span class="ticket-nome">${t.nome} <span style="font-size:11px;font-weight:400;color:var(--suave)">(Mat: ${t.matricula})</span></span>
+              <span class="ticket-assunto">Assunto: ${t.assunto}</span>
+            </div>
+            <span class="badge ${t.status}">${t.status}</span>
+          </div>
+          <div class="ticket-msg">${t.mensagem}</div>
+          <div class="ticket-data">Aberto em: ${data}</div>
+        `;
+        
+        if (t.status === 'respondido') {
+          html += `
+            <div class="resposta-box">
+              <div class="ja-respondido"><strong>Sua resposta:</strong><br>${t.resposta}</div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="resposta-box">
+              <textarea id="resp-${t.id}" placeholder="Escreva a resposta para ${t.nome}..."></textarea>
+              <button class="btn-mini" onclick="responder(${t.id})">RESPONDER TICKET</button>
+            </div>
+          `;
+        }
+        
+        el.innerHTML = html;
+        lista.appendChild(el);
+      });
+    } catch (e) {
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Erro ao carregar tickets.</p>';
+    }
+  }
+
+  async function responder(id) {
+    const texto = document.getElementById(`resp-${id}`).value;
+    if (!texto.trim()) { alert("Escreva uma resposta antes de enviar."); return; }
+
+    try {
+      const r = await fetch("/api/admin/tickets/responder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id, resposta: texto })
+      });
+      
+      const d = await r.json();
+      
+      if (r.ok) {
+        carregarTickets(); // Recarrega a lista para atualizar o status
+      } else {
+        alert(d.erro || "Erro ao responder");
+      }
+    } catch (err) {
+      alert("Falha de conexão");
+    }
+  }
+
+  carregarTickets();
+</script>
+</body>
+</html>
