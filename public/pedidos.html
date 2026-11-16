@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pedidos de recuperação · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  body { align-items: flex-start; padding-top: 40px; }
+  .item { padding: 16px; margin-top: 12px; border: 1px solid var(--linha); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .nome { font-size: 16px; font-weight: 600; }
+  .peq { margin-top: 4px; font-size: 12px; color: var(--suave); line-height: 1.5; }
+  .bts { display: flex; gap: 8px; margin-top: 14px; }
+  .mini { flex: 1; padding: 12px; font-size: 14px; color: var(--marfim); background: none; border: 1px solid var(--linha); border-radius: 10px; cursor: pointer; }
+  .mini.ok { background: var(--verde); border-color: var(--verde); color: #fff; font-weight: 600; }
+  .temp { margin-top: 16px; padding: 16px; text-align: center; border: 1px dashed var(--ouro); border-radius: 14px; }
+  .temp b { display: block; margin: 8px 0; font-size: 24px; letter-spacing: 3px; color: var(--ouro); word-break: break-all; }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <h2>Pedidos de recuperação</h2>
+      <p class="sub">Antes de aprovar, confirme com a pessoa (no jogo ou no Discord) que o pedido é dela mesma.</p>
+      <div class="temp" id="temp" hidden>
+        <div class="peq" id="tinfo"></div>
+        <b id="tsenha"></b>
+        <div class="peq">Passe essa senha só para a pessoa. Ela aparece uma vez e será trocada no primeiro acesso.</div>
+      </div>
+      <div id="lista"></div>
+      <a class="link" href="/painel.html">Voltar ao painel</a>
+    </div>
+  </div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const hora = (t) => new Date(t * 1000).toLocaleString("pt-BR");
+
+  function linha(classe, txt) {
+    const el = document.createElement("div");
+    el.className = classe;
+    el.textContent = txt;
+    return el;
+  }
+  function botao(classe, txt, fn) {
+    const b = document.createElement("button");
+    b.className = classe;
+    b.textContent = txt;
+    b.onclick = fn;
+    return b;
+  }
+  function item(p) {
+    const box = document.createElement("div");
+    box.className = "item";
+    box.appendChild(linha("nome", p.nome + " · " + p.matricula));
+    box.appendChild(linha("peq", hora(p.criado_em) + (p.aparelho_conhecido ? " · aparelho já usado por essa conta" : " · aparelho desconhecido")));
+    const bts = document.createElement("div");
+    bts.className = "bts";
+    bts.appendChild(botao("mini ok", "Aprovar", () => resolver(p, "aprovar")));
+    bts.appendChild(botao("mini", "Negar", () => resolver(p, "negar")));
+    box.appendChild(bts);
+    return box;
+  }
+  async function carregar() {
+    const r = await fetch("/api/admin/pedidos");
+    if (r.status === 401 || r.status === 403) { location.href = "/painel.html"; return; }
+    const d = await r.json();
+    const lista = $("lista");
+    lista.textContent = "";
+    if (!d.pedidos.length) { lista.appendChild(linha("peq", "Nenhum pedido pendente.")); return; }
+    for (const p of d.pedidos) lista.appendChild(item(p));
+  }
+  async function resolver(p, acao) {
+    if (acao === "aprovar" && !confirm("Você confirmou que " + p.nome + " é quem fez o pedido? Aprovar?")) return;
+    const r = await fetch("/api/admin/pedidos/resolver", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: p.id, acao })
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.erro || "Erro"); return; }
+    if (acao === "aprovar") {
+      $("tinfo").textContent = "Senha temporária de " + d.matricula + ":";
+      $("tsenha").textContent = d.senha_temporaria;
+      $("temp").hidden = false;
+    }
+    carregar();
+  }
+  fetch("/api/me").then(async (r) => {
+    if (!r.ok) { location.href = "/"; return; }
+    const d = await r.json();
+    if (d.nivel < 50) { location.href = "/painel.html"; return; }
+    carregar();
+  }).catch(() => { location.href = "/"; });
+</script>
+</body>
+</html>
