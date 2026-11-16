@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Gerenciar Ausências · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  body { align-items: flex-start; padding-top: 40px; padding-bottom: 40px; }
+  .voltar { color: var(--suave); text-decoration: none; font-size: 13px; display: block; margin-bottom: 16px; }
+  .ausencia { margin-top: 16px; padding: 16px; border: 1px solid var(--linha); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .ausencia.pendente { border-color: rgba(184,155,94,.4); background: rgba(184,155,94,.03); }
+  .ausencia-topo { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
+  .ausencia-info { display: flex; flex-direction: column; }
+  .ausencia-nome { font-size: 15px; font-weight: 600; color: var(--marfim); }
+  .ausencia-datas { font-size: 13px; color: var(--ouro); margin-top: 2px; }
+  .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
+  .badge.pendente { background: rgba(184,155,94,.15); color: var(--ouro); }
+  .badge.aprovada { background: rgba(0,161,82,.15); color: var(--verde); }
+  .badge.negada { background: rgba(224,82,92,.15); color: var(--vermelho); }
+  .ausencia-motivo { font-size: 14px; color: var(--marfim); line-height: 1.5; margin-bottom: 12px; word-break: break-word; background: rgba(0,0,0,.2); padding: 10px; border-radius: 8px; }
+  .ausencia-data { font-size: 11px; color: #55605A; margin-bottom: 12px; }
+  .botoes { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-acao { flex: 1; padding: 12px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; border: none; color: #fff; transition: 0.2s; }
+  .btn-aprovar { background: var(--verde); }
+  .btn-negar { background: var(--vermelho); }
+  .btn-acao:active { opacity: 0.8; }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <a href="/painel.html" class="voltar">&larr; Voltar ao painel</a>
+      <h2>Gerenciar Ausências</h2>
+      <p class="sub">Aprove ou negue os pedidos de afastamento da tropa.</p>
+      
+      <div id="lista" style="margin-top: 20px;">
+        <p class="sub">Carregando...</p>
+      </div>
+    </div>
+        </div>
+        <script>
+  const $ = (id) => document.getElementById(id);
+  
+  fetch("/api/me").then(async (r) => {
+    if (!r.ok) { location.href = "/"; return; }
+    const d = await r.json();
+    if (d.nivel < 50) { location.href = "/painel.html"; return; }
+  }).catch(() => { location.href = "/"; });
+
+  function formatarData(dataString) {
+    if (!dataString) return "";
+    const [ano, mes, dia] = dataString.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  async function carregarAusencias() {
+    const lista = $("lista");
+    try {
+      const r = await fetch("/api/admin/ausencias");
+      const d = await r.json();
+      
+      if (!r.ok) {
+        lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">Erro ${r.status}: ${d.erro || 'Desconhecido'}</p>`;
+        return;
+      }
+
+      lista.innerHTML = "";
+      if (d.ausencias.length === 0) {
+        lista.innerHTML = '<p class="sub">Nenhum pedido de ausência no momento.</p>';
+        return;
+      }
+
+      d.ausencias.forEach(a => {
+        const el = document.createElement("div");
+        el.className = "ausencia " + a.status;
+        const dataPedido = new Date(a.criado_em * 1000).toLocaleString("pt-BR");
+        
+        let html = `
+          <div class="ausencia-topo">
+            <div class="ausencia-info">
+              <span class="ausencia-nome">${a.nome} <span style="font-size:11px;font-weight:400;color:var(--suave)">(Mat: ${a.matricula})</span></span>
+              <span class="ausencia-datas">De ${formatarData(a.data_inicio)} até ${formatarData(a.data_fim)}</span>
+            </div>
+            <span class="badge ${a.status}">${a.status}</span>
+          </div>
+          <div class="ausencia-motivo">${a.motivo}</div>
+          <div class="ausencia-data">Pedido feito em: ${dataPedido}</div>
+        `;
+        
+        if (a.status === 'pendente') {
+          html += `
+            <div class="botoes">
+              <button class="btn-acao btn-aprovar" onclick="resolver(${a.id}, 'aprovar')">APROVAR</button>
+              <button class="btn-acao btn-negar" onclick="resolver(${a.id}, 'negar')">NEGAR</button>
+            </div>
+          `;
+        }
+        
+        el.innerHTML = html;
+        lista.appendChild(el);
+      });
+    } catch (e) {
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Erro ao carregar ausências.</p>';
+    }
+  }
+
+  async function resolver(id, acao) {
+    if (!confirm(`Tem certeza que deseja ${acao} esta ausência?`)) return;
+
+    try {
+      const r = await fetch("/api/admin/ausencias/resolver", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id, acao: acao })
+      });
+      
+      const d = await r.json();
+      
+      if (r.ok) {
+        carregarAusencias();
+      } else {
+        alert(d.erro || "Erro ao processar");
+      }
+    } catch (err) {
+      alert("Falha de conexão");
+    }
+  }
+
+  carregarAusencias();
+</script>
+</body>
+</html>
