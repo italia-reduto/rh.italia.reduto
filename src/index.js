@@ -109,7 +109,7 @@ async function quemSou(request, env) {
   const token = pegarCookie(request, "sessao");
   if (!token) return null;
   return await env.DB.prepare(
-    "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
+    "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha, m.matricula FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
   ).bind(await sha256(token), agora()).first();
 }
 
