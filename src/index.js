@@ -318,6 +318,42 @@ async function trocarSenha(request, env) {
   return json({ ok: true });
 }
 
+// --- NOVA FUNÇÃO DE CADASTRO DE MEMBROS ---
+async function cadastrarMembro(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP");
+  const adm = await exigirAdmin(request, env);
+  if (!adm) return json({ erro: "Sem permissão" }, 403);
+
+  const d = await lerCorpo(request);
+  if (!d) return json({ erro: "Pedido inválido" }, 400);
+
+  const matricula = texto(d.matricula, 40);
+  const nome = texto(d.nome, 100);
+  const cargo = texto(d.cargo, 50);
+  const nivel = parseInt(d.nivel, 10) || 10;
+  const senhaTemp = String(d.senha || gerarSenhaTemp()).slice(0, 200);
+
+  if (!matricula || !nome || !cargo) return json({ erro: "Preencha todos os campos obrigatórios" }, 400);
+
+  const codigoRec = gerarCodigo();
+  const codigoHash = await sha256(codigoRec.replace(/-/g, ""));
+
+  try {
+    const info = await env.DB.prepare(
+      "INSERT INTO membros (matricula, nome, cargo, nivel, ativo, trocar_senha, codigo_rec_hash) VALUES (?, ?, ?, ?, 1, 1, ?) RETURNING id"
+    ).bind(matricula, nome, cargo, nivel, codigoHash).first();
+
+    if (!info) throw new Error("Falha ao inserir");
+    
+    await definirSenha(env, info.id, senhaTemp, 1);
+    await auditar(env, adm.id, "membro_criado", "Matrícula: " + matricula, ip);
+
+    return json({ ok: true, matricula: matricula, senha: senhaTemp, codigo_rec: codigoRec });
+  } catch (e) {
+    return json({ erro: "Matrícula já existe ou erro no banco." }, 400);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -337,6 +373,10 @@ export default {
         if (p === "/api/recuperar/codigo") return await recuperarCodigo(request, env);
         if (p === "/api/recuperar/pedido") return await pedirRecuperacao(request, env);
         if (p === "/api/admin/pedidos/resolver") return await resolverPedido(request, env);
+        
+        // --- NOVA ROTA DE CADASTRO ---
+        if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
+        
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
