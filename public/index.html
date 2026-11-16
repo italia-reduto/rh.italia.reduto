@@ -5,69 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090B0A">
 <title>Itália · Recursos Humanos</title>
-<style>
-  :root {
-    --fundo: #090B0A; --cartao: #101412; --linha: rgba(255,255,255,.08);
-    --verde: #00A152; --verde-escuro: #007A3D; --marfim: #ECE8DF;
-    --suave: #8E9A93; --ouro: #B89B5E; --vermelho: #E0525C;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 24px; color: var(--marfim);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background:
-      radial-gradient(600px 320px at 50% -60px, rgba(0,161,82,.22), transparent 70%),
-      var(--fundo);
-  }
-  .caixa { width: 100%; max-width: 400px; }
-  .marca { text-align: center; margin-bottom: 28px; }
-  .emblema {
-    width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%;
-    border: 1px solid var(--ouro); display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 0 5px rgba(184,155,94,.08), 0 0 30px rgba(0,161,82,.25);
-  }
-  .emblema svg { width: 28px; height: 28px; fill: var(--ouro); }
-  .marca small { display: block; color: var(--suave); letter-spacing: 5px; font-size: 11px; font-weight: 600; }
-  .marca h1 {
-    margin: 8px 0 0; font-family: Georgia, "Times New Roman", serif;
-    font-size: 40px; font-weight: 400; letter-spacing: 8px; padding-left: 8px;
-  }
-  .fio { display: flex; width: 60px; height: 2px; margin: 14px auto 0; border-radius: 2px; overflow: hidden; }
-  .fio i { flex: 1; }
-  .fio i:nth-child(1) { background: var(--verde); }
-  .fio i:nth-child(2) { background: var(--marfim); }
-  .fio i:nth-child(3) { background: #CE2B37; }
-  .cartao {
-    background: var(--cartao); border: 1px solid var(--linha); border-radius: 20px;
-    padding: 30px 24px 26px; box-shadow: 0 20px 50px rgba(0,0,0,.45);
-  }
-  h2 { margin: 0 0 6px; font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 400; }
-  p.sub { margin: 0 0 24px; color: var(--suave); font-size: 14px; line-height: 1.5; }
-  label { display: block; margin: 16px 0 8px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--suave); }
-  .campo { position: relative; }
-  input {
-    width: 100%; padding: 15px 14px; font-size: 16px; color: var(--marfim);
-    background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 12px; outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  input::placeholder { color: #55605A; }
-  input:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,161,82,.18); }
-  .olho {
-    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    background: none; border: 0; color: var(--suave); font-size: 12px; padding: 10px; cursor: pointer;
-  }
-  button.entrar {
-    width: 100%; margin-top: 26px; padding: 16px; font-size: 15px; font-weight: 600; letter-spacing: 1px;
-    color: #fff; border: 0; border-radius: 12px; cursor: pointer;
-    background: linear-gradient(180deg, var(--verde), var(--verde-escuro));
-    box-shadow: 0 8px 24px rgba(0,161,82,.28), inset 0 1px 0 rgba(255,255,255,.18);
-  }
-  button.entrar:active { transform: translateY(1px); opacity: .92; }
-  button.entrar:disabled { opacity: .6; }
-  #msg { min-height: 20px; margin-top: 16px; font-size: 13px; text-align: center; color: var(--vermelho); }
-  .rodape { margin-top: 22px; text-align: center; font-size: 11px; letter-spacing: 1px; color: #5E6A63; }
-</style>
+<link rel="stylesheet" href="/estilo.css">
 </head>
 <body>
   <div class="caixa">
@@ -79,49 +17,92 @@
       <h1>ITÁLIA</h1>
       <div class="fio"><i></i><i></i><i></i></div>
     </div>
-    <form class="cartao" id="form" autocomplete="off">
-      <h2>Acesso ao sistema</h2>
-      <p class="sub">Entre com sua matrícula e senha.</p>
-      <label for="mat">Matrícula</label>
-      <div class="campo"><input id="mat" placeholder="Sua matrícula"></div>
-      <label for="sen">Senha</label>
-      <div class="campo">
-        <input id="sen" type="password" placeholder="Sua senha">
-        <button type="button" class="olho" id="olho">Mostrar</button>
-      </div>
-      <button class="entrar" type="submit">ENTRAR</button>
-      <div id="msg"></div>
-    </form>
+    <div class="cartao">
+      <form id="form" autocomplete="off">
+        <h2>Acesso ao sistema</h2>
+        <p class="sub">Entre com sua matrícula e senha.</p>
+        <label for="mat">Matrícula</label>
+        <div class="campo"><input id="mat" type="text" placeholder="Sua matrícula"></div>
+        <label for="sen">Senha</label>
+        <div class="campo">
+          <input id="sen" type="password" placeholder="Sua senha">
+          <button type="button" class="olho" id="olho">Mostrar</button>
+        </div>
+        <label class="check" style="text-transform:none;letter-spacing:0;font-size:13px;margin:18px 0 0">
+          <input type="checkbox" id="aut">
+          <span>Autorizar recuperação neste aparelho pessoal</span>
+        </label>
+        <button class="btn" id="entrar" type="submit">ENTRAR</button>
+        <div class="msg" id="msg"></div>
+        <a class="link" href="/recuperar.html">Esqueci minha senha</a>
+      </form>
+      <form id="pinform" autocomplete="off" hidden>
+        <h2>Crie seu PIN</h2>
+        <p class="sub">Escolha 6 números. Com ele você recupera sua senha neste aparelho. Não use data de nascimento.</p>
+        <label for="pin">PIN de recuperação</label>
+        <div class="campo"><input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="6 números"></div>
+        <button class="btn" type="submit">SALVAR PIN</button>
+        <button class="btn-sec" type="button" id="pular">Agora não</button>
+        <div class="msg" id="msgpin"></div>
+      </form>
+    </div>
     <div class="rodape">ACESSO RESTRITO AO EFETIVO · USO MONITORADO</div>
   </div>
 <script>
-  const sen = document.getElementById("sen");
-  const olho = document.getElementById("olho");
-  olho.onclick = () => {
+  const $ = (id) => document.getElementById(id);
+  const sen = $("sen");
+  $("olho").onclick = () => {
     const ver = sen.type === "password";
     sen.type = ver ? "text" : "password";
-    olho.textContent = ver ? "Ocultar" : "Mostrar";
+    $("olho").textContent = ver ? "Ocultar" : "Mostrar";
   };
-  document.getElementById("form").onsubmit = async (e) => {
+  async function enviar(url, corpo) {
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpo)
+    });
+    let d = {};
+    try { d = await r.json(); } catch (e) {}
+    return { ok: r.ok, d };
+  }
+  $("form").onsubmit = async (e) => {
     e.preventDefault();
-    const msg = document.getElementById("msg");
-    const btn = document.querySelector("button.entrar");
+    const msg = $("msg"), btn = $("entrar");
     msg.textContent = "";
     btn.disabled = true;
     try {
-      const r = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matricula: document.getElementById("mat").value, senha: sen.value })
-      });
-      const d = await r.json();
-      if (r.ok) { location.href = "/painel.html"; return; }
+      const { ok, d } = await enviar("/api/login", { matricula: $("mat").value, senha: sen.value });
+      if (ok) {
+        if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+        if ($("aut").checked) {
+          $("form").hidden = true;
+          $("pinform").hidden = false;
+          $("pin").focus();
+          return;
+        }
+        location.href = "/painel.html";
+        return;
+      }
       msg.textContent = d.erro || "Não foi possível entrar";
     } catch (err) {
       msg.textContent = "Falha de conexão";
     }
     btn.disabled = false;
   };
+  $("pinform").onsubmit = async (e) => {
+    e.preventDefault();
+    const msg = $("msgpin");
+    msg.textContent = "";
+    try {
+      const { ok, d } = await enviar("/api/aparelho/autorizar", { pin: $("pin").value });
+      if (ok) { location.href = "/painel.html"; return; }
+      msg.textContent = d.erro || "Não foi possível salvar o PIN";
+    } catch (err) {
+      msg.textContent = "Falha de conexão";
+    }
+  };
+  $("pular").onclick = () => { location.href = "/painel.html"; };
 </script>
 </body>
 </html>
