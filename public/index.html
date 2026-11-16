@@ -64,6 +64,7 @@
     box-shadow: 0 8px 24px rgba(0,161,82,.28), inset 0 1px 0 rgba(255,255,255,.18);
   }
   button.entrar:active { transform: translateY(1px); opacity: .92; }
+  button.entrar:disabled { opacity: .6; }
   #msg { min-height: 20px; margin-top: 16px; font-size: 13px; text-align: center; color: var(--vermelho); }
   .rodape { margin-top: 22px; text-align: center; font-size: 11px; letter-spacing: 1px; color: #5E6A63; }
 </style>
@@ -82,7 +83,7 @@
       <h2>Acesso ao sistema</h2>
       <p class="sub">Entre com sua matrícula e senha.</p>
       <label for="mat">Matrícula</label>
-      <div class="campo"><input id="mat" inputmode="numeric" placeholder="Sua matrícula"></div>
+      <div class="campo"><input id="mat" placeholder="Sua matrícula"></div>
       <label for="sen">Senha</label>
       <div class="campo">
         <input id="sen" type="password" placeholder="Sua senha">
@@ -101,9 +102,25 @@
     sen.type = ver ? "text" : "password";
     olho.textContent = ver ? "Ocultar" : "Mostrar";
   };
-  document.getElementById("form").onsubmit = (e) => {
+  document.getElementById("form").onsubmit = async (e) => {
     e.preventDefault();
-    document.getElementById("msg").textContent = "Login será ativado no próximo passo.";
+    const msg = document.getElementById("msg");
+    const btn = document.querySelector("button.entrar");
+    msg.textContent = "";
+    btn.disabled = true;
+    try {
+      const r = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matricula: document.getElementById("mat").value, senha: sen.value })
+      });
+      const d = await r.json();
+      if (r.ok) { location.href = "/painel.html"; return; }
+      msg.textContent = d.erro || "Não foi possível entrar";
+    } catch (err) {
+      msg.textContent = "Falha de conexão";
+    }
+    btn.disabled = false;
   };
 </script>
 </body>
