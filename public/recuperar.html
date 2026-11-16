@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Recuperar acesso · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  .abas { display: flex; gap: 8px; margin-bottom: 8px; }
+  .abas button {
+    flex: 1; padding: 11px 6px; font-size: 12px; color: var(--suave); background: none;
+    border: 1px solid var(--linha); border-radius: 10px; cursor: pointer;
+  }
+  .abas button.ativa { color: var(--marfim); border-color: var(--verde); background: rgba(0,161,82,.12); }
+  .novo { margin-top: 14px; text-align: center; font-size: 22px; letter-spacing: 2px; color: var(--ouro); font-weight: 700; word-break: break-all; }
+  body { align-items: flex-start; padding-top: 40px; }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <h2>Recuperar acesso</h2>
+      <p class="sub">Escolha como você quer recuperar sua senha.</p>
+      <div class="abas">
+        <button type="button" id="b1" class="ativa">Meu PIN</button>
+        <button type="button" id="b2">Meu código</button>
+        <button type="button" id="b3">Pedir ao comando</button>
+      </div>
+
+      <form id="p1" autocomplete="off">
+        <p class="sub" style="margin:12px 0 0">Funciona só no aparelho em que você autorizou a recuperação.</p>
+        <label for="m1">Matrícula</label>
+        <div class="campo"><input id="m1" type="text"></div>
+        <label for="pin">PIN de 6 números</label>
+        <div class="campo"><input id="pin" type="password" inputmode="numeric" maxlength="6"></div>
+        <label for="n1">Senha nova (8 ou mais caracteres)</label>
+        <div class="campo"><input id="n1" type="password"></div>
+        <label for="c1">Repita a senha nova</label>
+        <div class="campo"><input id="c1" type="password"></div>
+        <button class="btn" type="submit">RECUPERAR</button>
+      </form>
+
+      <form id="p2" autocomplete="off" hidden>
+        <p class="sub" style="margin:12px 0 0">Use o código que apareceu quando sua conta foi criada.</p>
+        <label for="m2">Matrícula</label>
+        <div class="campo"><input id="m2" type="text"></div>
+        <label for="cod">Código de recuperação</label>
+        <div class="campo"><input id="cod" type="text" placeholder="XXXX-XXXX-XXXX"></div>
+        <label for="n2">Senha nova (8 ou mais caracteres)</label>
+        <div class="campo"><input id="n2" type="password"></div>
+        <label for="c2">Repita a senha nova</label>
+        <div class="campo"><input id="c2" type="password"></div>
+        <button class="btn" type="submit">RECUPERAR</button>
+      </form>
+
+      <form id="p3" autocomplete="off" hidden>
+        <p class="sub" style="margin:12px 0 0">Se perdeu o PIN e o código, o comando recebe seu pedido e libera uma senha temporária depois de confirmar que é você.</p>
+        <label for="m3">Matrícula</label>
+        <div class="campo"><input id="m3" type="text"></div>
+        <button class="btn" type="submit">ENVIAR PEDIDO</button>
+      </form>
+
+      <div class="msg" id="msg"></div>
+      <div class="novo" id="res" hidden></div>
+      <a class="link" href="/">Voltar ao login</a>
+    </div>
+  </div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const msg = $("msg"), res = $("res");
+  function aba(n) {
+    for (const i of [1, 2, 3]) {
+      $("p" + i).hidden = i !== n;
+      $("b" + i).classList.toggle("ativa", i === n);
+    }
+    msg.textContent = ""; msg.className = "msg"; res.hidden = true;
+  }
+  $("b1").onclick = () => aba(1);
+  $("b2").onclick = () => aba(2);
+  $("b3").onclick = () => aba(3);
+
+  async function enviar(url, corpo) {
+    msg.className = "msg"; msg.textContent = ""; res.hidden = true;
+    try {
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corpo)
+      });
+      let d = {};
+      try { d = await r.json(); } catch (e) {}
+      return { ok: r.ok, d };
+    } catch (e) {
+      return { ok: false, d: { erro: "Falha de conexão" } };
+    }
+  }
+  function igual(a, b) {
+    if ($(a).value !== $(b).value) { msg.textContent = "As senhas novas não são iguais"; return false; }
+    return true;
+  }
+
+  $("p1").onsubmit = async (e) => {
+    e.preventDefault();
+    if (!igual("n1", "c1")) return;
+    const { ok, d } = await enviar("/api/recuperar/aparelho", {
+      matricula: $("m1").value, pin: $("pin").value, nova_senha: $("n1").value
+    });
+    if (ok) {
+      msg.className = "msg ok";
+      msg.textContent = "Senha alterada! Voltando ao login...";
+      setTimeout(() => { location.href = "/"; }, 2000);
+    } else msg.textContent = d.erro || "Não foi possível recuperar";
+  };
+
+  $("p2").onsubmit = async (e) => {
+    e.preventDefault();
+    if (!igual("n2", "c2")) return;
+    const { ok, d } = await enviar("/api/recuperar/codigo", {
+      matricula: $("m2").value, codigo: $("cod").value, nova_senha: $("n2").value
+    });
+    if (ok) {
+      msg.className = "msg ok";
+      msg.textContent = "Senha alterada! Guarde este NOVO código de recuperação (o antigo não vale mais). Ele aparece só uma vez:";
+      res.textContent = d.novo_codigo;
+      res.hidden = false;
+    } else msg.textContent = d.erro || "Não foi possível recuperar";
+  };
+
+  $("p3").onsubmit = async (e) => {
+    e.preventDefault();
+    const { ok, d } = await enviar("/api/recuperar/pedido", { matricula: $("m3").value });
+    if (ok) { msg.className = "msg ok"; msg.textContent = d.mensagem; }
+    else msg.textContent = d.erro || "Não foi possível enviar";
+  };
+</script>
+</body>
+</html>
