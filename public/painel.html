@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Painel · Itália RH</title>
+<style>
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    color:#ECE8DF; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(600px 320px at 50% -60px, rgba(0,161,82,.22), transparent 70%), #090B0A; }
+  .cartao { width:100%; max-width:400px; text-align:center; background:#101412;
+    border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:32px 24px; }
+  small { color:#8E9A93; letter-spacing:4px; font-size:11px; }
+  h1 { font-family:Georgia,serif; font-weight:400; font-size:26px; margin:10px 0 4px; }
+  .cargo { color:#B89B5E; font-size:14px; margin-bottom:24px; }
+  button { padding:14px 28px; font-size:14px; font-weight:600; color:#ECE8DF; background:none;
+    border:1px solid rgba(255,255,255,.18); border-radius:12px; }
+</style>
+</head>
+<body>
+  <div class="cartao">
+    <small>PAINEL DO EFETIVO</small>
+    <h1 id="nome">Carregando...</h1>
+    <div class="cargo" id="cargo"></div>
+    <button id="sair">Sair</button>
+  </div>
+<script>
+  (async () => {
+    try {
+      const r = await fetch("/api/me");
+      if (!r.ok) { location.href = "/"; return; }
+      const d = await r.json();
+      document.getElementById("nome").textContent = "Bem-vindo, " + d.nome;
+      document.getElementById("cargo").textContent = d.cargo;
+    } catch (e) { location.href = "/"; }
+  })();
+  document.getElementById("sair").onclick = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    location.href = "/";
+  };
+</script>
+</body>
+</html>
