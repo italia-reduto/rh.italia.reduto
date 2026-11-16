@@ -384,6 +384,7 @@ async function meusTickets(request, env) {
   ).bind(eu.id).all();
 
   return json({ ok: true, tickets: r.results });
+}
 
   
   async function adminListarTickets(request, env) {
