@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Minhas Ausências · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  body { align-items: flex-start; padding-top: 40px; padding-bottom: 40px; }
+  .voltar { color: var(--suave); text-decoration: none; font-size: 13px; display: block; margin-bottom: 16px; }
+  .abas { display: flex; gap: 8px; margin-bottom: 20px; }
+  .abas button { flex: 1; padding: 12px; font-size: 14px; color: var(--suave); background: none; border: 1px solid var(--linha); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+  .abas button.ativa { color: var(--marfim); border-color: var(--verde); background: rgba(0,161,82,.12); }
+  .ausencia { margin-top: 12px; padding: 16px; border: 1px solid var(--linha); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .ausencia-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 10px; }
+  .ausencia-datas { font-size: 15px; font-weight: 600; color: var(--marfim); }
+  .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
+  .badge.pendente { background: rgba(184,155,94,.15); color: var(--ouro); }
+  .badge.aprovada { background: rgba(0,161,82,.15); color: var(--verde); }
+  .badge.negada { background: rgba(224,82,92,.15); color: var(--vermelho); }
+  .ausencia-motivo { font-size: 13px; color: var(--suave); line-height: 1.5; margin-bottom: 8px; word-break: break-word; }
+  .ausencia-data { font-size: 11px; color: #55605A; margin-top: 10px; }
+  input[type="date"] { width: 100%; padding: 15px 14px; font-size: 16px; color: var(--marfim); background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 12px; outline: none; font-family: inherit; }
+  input[type="date"]:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,161,82,.18); }
+  textarea { width: 100%; padding: 15px 14px; font-size: 16px; color: var(--marfim); background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 12px; outline: none; font-family: inherit; resize: vertical; min-height: 100px; }
+  textarea:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,161,82,.18); }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <a href="/painel.html" class="voltar">&larr; Voltar ao painel</a>
+      
+      <div class="abas">
+        <button type="button" id="btnLista" class="ativa" onclick="mudarAba(1)">Meus Pedidos</button>
+        <button type="button" id="btnNovo" onclick="mudarAba(2)">Pedir Ausência</button>
+      </div>
+
+      <div id="abaLista">
+        <h2>Suas ausências</h2>
+        <p class="sub">Acompanhe o status dos seus pedidos aqui.</p>
+        <div id="lista" style="margin-top: 20px;">
+          <p class="sub">Carregando...</p>
+        </div>
+      </div>
+
+      <form id="abaNovo" hidden autocomplete="off">
+        <h2>Pedir Ausência</h2>
+        <p class="sub">Informe o período e o motivo. O comando irá avaliar seu pedido.</p>
+        
+        <label for="inicio">Data de Início</label>
+        <div class="campo"><input id="inicio" type="date" required></div>
+        
+        <label for="fim">Data de Fim</label>
+        <div class="campo"><input id="fim" type="date" required></div>
+        
+        <label for="motivo">Motivo</label>
+        <div class="campo"><textarea id="motivo" required placeholder="Ex: Viagem em família, problemas de saúde..." maxlength="500"></textarea></div>
+        
+        <button class="btn" id="btnEnviar" type="submit">ENVIAR PEDIDO</button>
+        <div class="msg" id="msg"></div>
+      </form>
+
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  
+  fetch("/api/me").then(r => { if (!r.ok) location.href = "/"; }).catch(() => location.href = "/");
+
+  function formatarData(dataString) {
+    if (!dataString) return "";
+    const [ano, mes, dia] = dataString.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  function mudarAba(n) {
+    $("abaLista").hidden = n !== 1;
+    $("abaNovo").hidden = n !== 2;
+    $("btnLista").classList.toggle("ativa", n === 1);
+    $("btnNovo").classList.toggle("ativa", n === 2);
+    $("msg").textContent = "";
+    if (n === 1) carregarAusencias();
+  }
+
+  async function carregarAusencias() {
+    const lista = $("lista");
+    try {
+      const r = await fetch("/api/ausencias/minhas");
+      const d = await r.json();
+      if (!d.ok) throw new Error();
+      
+      lista.innerHTML = "";
+      if (d.ausencias.length === 0) {
+        lista.innerHTML = '<p class="sub">Você não tem nenhum pedido de ausência.</p>';
+        return;
+      }
+
+      d.ausencias.forEach(a => {
+        const el = document.createElement("div");
+        el.className = "ausencia";
+        const dataPedido = new Date(a.criado_em * 1000).toLocaleString("pt-BR");
+        
+        let html = `
+          <div class="ausencia-topo">
+            <span class="ausencia-datas">${formatarData(a.data_inicio)} até ${formatarData(a.data_fim)}</span>
+            <span class="badge ${a.status}">${a.status}</span>
+          </div>
+          <div class="ausencia-motivo">${a.motivo}</div>
+          <div class="ausencia-data">Pedido feito em: ${dataPedido}</div>
+        `;
+        el.innerHTML = html;
+        lista.appendChild(el);
+      });
+    } catch (e) {
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Erro ao carregar ausências.</p>';
+    }
+  }
+
+  $("abaNovo").onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = $("btnEnviar"), msg = $("msg");
+    
+    if ($("inicio").value > $("fim").value) {
+      msg.className = "msg";
+      msg.textContent = "A data de fim não pode ser antes da data de início.";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "ENVIANDO...";
+    msg.textContent = "";
+
+    try {
+      const r = await fetch("/api/ausencias/pedir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          data_inicio: $("inicio").value, 
+          data_fim: $("fim").value, 
+          motivo: $("motivo").value 
+        })
+      });
+      const d = await r.json();
+      
+      if (r.ok) {
+        msg.className = "msg ok";
+        msg.textContent = "Pedido enviado com sucesso!";
+        $("inicio").value = "";
+        $("fim").value = "";
+        $("motivo").value = "";
+        setTimeout(() => mudarAba(1), 1500);
+      } else {
+        msg.className = "msg";
+        msg.textContent = d.erro || "Erro ao enviar";
+      }
+    } catch (err) {
+      msg.className = "msg";
+      msg.textContent = "Falha de conexão";
+    }
+    
+    btn.disabled = false;
+    btn.textContent = "ENVIAR PEDIDO";
+  };
+
+  carregarAusencias();
+</script>
+</body>
+          </html>
