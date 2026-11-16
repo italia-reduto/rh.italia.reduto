@@ -393,7 +393,13 @@ async function meusTickets(request, env) {
   ).all();
   return json({ ok: true, tickets: r.results });
 }
-
+async function adminListarTickets(request, env) {
+  if (!(await exigirAdmin(request, env))) return json({ erro: "Sem permissão" }, 403);
+  const r = await env.DB.prepare(
+    "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, m.nome, m.matricula FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE WHEN t.status = 'aberto' THEN 0 ELSE 1 END, t.id DESC"
+  ).all();
+  return json({ ok: true, tickets: r.results });
+}
 async function adminResponderTicket(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const adm = await exigirAdmin(request, env);
