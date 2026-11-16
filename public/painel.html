@@ -162,6 +162,7 @@
         $("adm").hidden = false;
         $("admCadastro").hidden = false;
         $("admTickets").hidden = false;
+        $("admAusencias").hidden = false;
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
           const x = await p.json();
