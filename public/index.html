@@ -3,77 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A">
 <title>Itália · Recursos Humanos</title>
 <style>
   :root {
-    --fundo: #0B1A14; --cartao: #12261D; --borda: #1F3B2D;
-    --verde: #009246; --creme: #F4EFE3; --ouro: #C8A24A; --vermelho: #CE2B37;
+    --fundo: #090B0A; --cartao: #101412; --linha: rgba(255,255,255,.08);
+    --verde: #00A152; --verde-escuro: #007A3D; --marfim: #ECE8DF;
+    --suave: #8E9A93; --ouro: #B89B5E; --vermelho: #E0525C;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: var(--fundo); color: var(--creme);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 20px;
+    padding: 24px; color: var(--marfim);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(600px 320px at 50% -60px, rgba(0,161,82,.22), transparent 70%),
+      var(--fundo);
   }
-  .caixa { width: 100%; max-width: 420px; }
-  .marca { text-align: center; margin-bottom: 22px; }
-  .marca small { color: var(--ouro); letter-spacing: 4px; font-size: 12px; font-weight: 700; }
-  .marca h1 { margin: 6px 0 0; font-size: 34px; letter-spacing: 3px; }
+  .caixa { width: 100%; max-width: 400px; }
+  .marca { text-align: center; margin-bottom: 28px; }
+  .emblema {
+    width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%;
+    border: 1px solid var(--ouro); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 5px rgba(184,155,94,.08), 0 0 30px rgba(0,161,82,.25);
+  }
+  .emblema svg { width: 28px; height: 28px; fill: var(--ouro); }
+  .marca small { display: block; color: var(--suave); letter-spacing: 5px; font-size: 11px; font-weight: 600; }
+  .marca h1 {
+    margin: 8px 0 0; font-family: Georgia, "Times New Roman", serif;
+    font-size: 40px; font-weight: 400; letter-spacing: 8px; padding-left: 8px;
+  }
+  .fio { display: flex; width: 60px; height: 2px; margin: 14px auto 0; border-radius: 2px; overflow: hidden; }
+  .fio i { flex: 1; }
+  .fio i:nth-child(1) { background: var(--verde); }
+  .fio i:nth-child(2) { background: var(--marfim); }
+  .fio i:nth-child(3) { background: #CE2B37; }
   .cartao {
-    background: var(--cartao); border: 1px solid var(--borda);
-    border-radius: 18px; overflow: hidden;
+    background: var(--cartao); border: 1px solid var(--linha); border-radius: 20px;
+    padding: 30px 24px 26px; box-shadow: 0 20px 50px rgba(0,0,0,.45);
   }
-  .faixa { display: flex; height: 6px; }
-  .faixa i { flex: 1; }
-  .faixa i:nth-child(1) { background: var(--verde); }
-  .faixa i:nth-child(2) { background: var(--creme); }
-  .faixa i:nth-child(3) { background: var(--vermelho); }
-  form { padding: 26px 22px 24px; }
-  h2 { margin: 0 0 4px; font-size: 24px; }
-  p.sub { margin: 0 0 22px; color: #A9B8AE; font-size: 14px; }
-  label { display: block; margin: 14px 0 6px; font-size: 13px; color: var(--ouro); font-weight: 600; }
+  h2 { margin: 0 0 6px; font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 400; }
+  p.sub { margin: 0 0 24px; color: var(--suave); font-size: 14px; line-height: 1.5; }
+  label { display: block; margin: 16px 0 8px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--suave); }
   .campo { position: relative; }
   input {
-    width: 100%; padding: 14px; font-size: 16px; color: var(--creme);
-    background: #0B1A14; border: 1px solid var(--borda); border-radius: 12px; outline: none;
+    width: 100%; padding: 15px 14px; font-size: 16px; color: var(--marfim);
+    background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 12px; outline: none;
+    transition: border-color .2s, box-shadow .2s;
   }
-  input:focus { border-color: var(--verde); }
+  input::placeholder { color: #55605A; }
+  input:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,161,82,.18); }
   .olho {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: none; border: 0; color: #A9B8AE; font-size: 13px; padding: 8px; cursor: pointer;
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: none; border: 0; color: var(--suave); font-size: 12px; padding: 10px; cursor: pointer;
   }
   button.entrar {
-    width: 100%; margin-top: 22px; padding: 15px; font-size: 16px; font-weight: 700;
-    color: #fff; background: var(--verde); border: 0; border-radius: 12px; cursor: pointer;
+    width: 100%; margin-top: 26px; padding: 16px; font-size: 15px; font-weight: 600; letter-spacing: 1px;
+    color: #fff; border: 0; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(180deg, var(--verde), var(--verde-escuro));
+    box-shadow: 0 8px 24px rgba(0,161,82,.28), inset 0 1px 0 rgba(255,255,255,.18);
   }
-  button.entrar:active { opacity: .85; }
-  #msg { min-height: 20px; margin-top: 14px; font-size: 13px; text-align: center; color: var(--vermelho); }
-  .rodape { margin-top: 18px; text-align: center; font-size: 12px; color: #7F9185; }
+  button.entrar:active { transform: translateY(1px); opacity: .92; }
+  #msg { min-height: 20px; margin-top: 16px; font-size: 13px; text-align: center; color: var(--vermelho); }
+  .rodape { margin-top: 22px; text-align: center; font-size: 11px; letter-spacing: 1px; color: #5E6A63; }
 </style>
 </head>
 <body>
   <div class="caixa">
     <div class="marca">
+      <div class="emblema">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7.3L12 17.8 5.7 21.5l1.7-7.3L2 9.5l7.1-.6z"/></svg>
+      </div>
       <small>RECURSOS HUMANOS</small>
       <h1>ITÁLIA</h1>
+      <div class="fio"><i></i><i></i><i></i></div>
     </div>
-    <div class="cartao">
-      <div class="faixa"><i></i><i></i><i></i></div>
-      <form id="form" autocomplete="off">
-        <h2>Acesso ao sistema</h2>
-        <p class="sub">Entre com sua matrícula e senha.</p>
-        <label for="mat">Matrícula</label>
-        <div class="campo"><input id="mat" inputmode="numeric" placeholder="Sua matrícula"></div>
-        <label for="sen">Senha</label>
-        <div class="campo">
-          <input id="sen" type="password" placeholder="Sua senha">
-          <button type="button" class="olho" id="olho">Mostrar</button>
-        </div>
-        <button class="entrar" type="submit">Entrar</button>
-        <div id="msg"></div>
-      </form>
-    </div>
-    <div class="rodape">Acesso restrito ao efetivo · uso monitorado</div>
+    <form class="cartao" id="form" autocomplete="off">
+      <h2>Acesso ao sistema</h2>
+      <p class="sub">Entre com sua matrícula e senha.</p>
+      <label for="mat">Matrícula</label>
+      <div class="campo"><input id="mat" inputmode="numeric" placeholder="Sua matrícula"></div>
+      <label for="sen">Senha</label>
+      <div class="campo">
+        <input id="sen" type="password" placeholder="Sua senha">
+        <button type="button" class="olho" id="olho">Mostrar</button>
+      </div>
+      <button class="entrar" type="submit">ENTRAR</button>
+      <div id="msg"></div>
+    </form>
+    <div class="rodape">ACESSO RESTRITO AO EFETIVO · USO MONITORADO</div>
   </div>
 <script>
   const sen = document.getElementById("sen");
