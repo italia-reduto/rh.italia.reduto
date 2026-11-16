@@ -384,6 +384,30 @@ async function meusTickets(request, env) {
   ).bind(eu.id).all();
 
   return json({ ok: true, tickets: r.results });
+
+  
+  async function adminListarTickets(request, env) {
+  if (!(await exigirAdmin(request, env))) return json({ erro: "Sem permissão" }, 403);
+  const r = await env.DB.prepare(
+    "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, m.nome, m.matricula FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE WHEN t.status = 'aberto' THEN 0 ELSE 1 END, t.id DESC"
+  ).all();
+  return json({ ok: true, tickets: r.results });
+}
+
+async function adminResponderTicket(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP");
+  const adm = await exigirAdmin(request, env);
+  if (!adm) return json({ erro: "Sem permissão" }, 403);
+  const d = await lerCorpo(request);
+  const id = Number(d && d.id);
+  const resposta = texto(d && d.resposta, 1000);
+  if (!Number.isInteger(id) || !resposta) return json({ erro: "Preencha a resposta" }, 400);
+  await env.DB.prepare("UPDATE tickets SET status = 'respondido', resposta = ?, atualizado_em = unixepoch() WHERE id = ?")
+    .bind(resposta, id).run();
+  await auditar(env, adm.id, "ticket_respondido", "ID: " + id, ip);
+  return json({ ok: true, mensagem: "Ticket respondido!" });
+  if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
+                        }
     }
 export default {
   async fetch(request, env) {
@@ -396,6 +420,7 @@ export default {
         const origem = request.headers.get("Origin");
         if (origem && new URL(origem).host !== url.host)
           return json({ erro: "Origem inválida" }, 403);
+        if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
       }
       if (metodo === "POST") {
         if (p === "/api/login") return await login(request, env);
