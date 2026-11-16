@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Meus Tickets · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  body { align-items: flex-start; padding-top: 40px; padding-bottom: 40px; }
+  .abas { display: flex; gap: 8px; margin-bottom: 20px; }
+  .abas button { flex: 1; padding: 12px; font-size: 14px; color: var(--suave); background: none; border: 1px solid var(--linha); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+  .abas button.ativa { color: var(--marfim); border-color: var(--verde); background: rgba(0,161,82,.12); }
+  .ticket { margin-top: 12px; padding: 16px; border: 1px solid var(--linha); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .ticket-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 10px; }
+  .ticket-assunto { font-size: 15px; font-weight: 600; color: var(--marfim); word-break: break-word; }
+  .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
+  .badge.aberto { background: rgba(224,82,92,.15); color: var(--vermelho); }
+  .badge.respondido { background: rgba(0,161,82,.15); color: var(--verde); }
+  .ticket-msg { font-size: 13px; color: var(--suave); line-height: 1.5; margin-bottom: 8px; word-break: break-word; }
+  .ticket-resp { margin-top: 12px; padding: 12px; background: rgba(0,161,82,.05); border-left: 2px solid var(--verde); border-radius: 0 8px 8px 0; font-size: 13px; color: var(--marfim); line-height: 1.5; }
+  .ticket-data { font-size: 11px; color: #55605A; margin-top: 10px; }
+  textarea { width: 100%; padding: 15px 14px; font-size: 16px; color: var(--marfim); background: rgba(255,255,255,.03); border: 1px solid var(--linha); border-radius: 12px; outline: none; font-family: inherit; resize: vertical; min-height: 100px; transition: 0.2s; }
+  textarea:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,161,82,.18); }
+  .voltar { color: var(--suave); text-decoration: none; font-size: 13px; display: block; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <div class="cartao">
+      <a href="/painel.html" class="voltar">&larr; Voltar ao painel</a>
+      
+      <div class="abas">
+        <button type="button" id="btnLista" class="ativa" onclick="mudarAba(1)">Meus Tickets</button>
+        <button type="button" id="btnNovo" onclick="mudarAba(2)">Abrir Novo</button>
+      </div>
+
+      <div id="abaLista">
+        <h2>Seus tickets</h2>
+        <p class="sub">Acompanhe as respostas do comando aqui.</p>
+        <div id="lista" style="margin-top: 20px;">
+          <p class="sub">Carregando...</p>
+        </div>
+      </div>
+
+      <form id="abaNovo" hidden autocomplete="off">
+        <h2>Abrir ticket</h2>
+        <p class="sub">Descreva seu problema ou pedido de forma clara para o comando.</p>
+        
+        <label for="assunto">Assunto</label>
+        <div class="campo"><input id="assunto" type="text" required placeholder="Ex: Dúvida sobre treinamento" maxlength="100"></div>
+        
+        <label for="mensagem">Mensagem</label>
+        <div class="campo"><textarea id="mensagem" required placeholder="Detalhe o que você precisa..." maxlength="1000"></textarea></div>
+        
+        <button class="btn" id="btnEnviar" type="submit">ENVIAR TICKET</button>
+        <div class="msg" id="msg"></div>
+      </form>
+
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  
+  fetch("/api/me").then(r => { if (!r.ok) location.href = "/"; }).catch(() => location.href = "/");
+
+  function mudarAba(n) {
+    $("abaLista").hidden = n !== 1;
+    $("abaNovo").hidden = n !== 2;
+    $("btnLista").classList.toggle("ativa", n === 1);
+    $("btnNovo").classList.toggle("ativa", n === 2);
+    $("msg").textContent = "";
+    if (n === 1) carregarTickets();
+  }
+
+  async function carregarTickets() {
+    const lista = $("lista");
+    try {
+      const r = await fetch("/api/tickets/meus");
+      const d = await r.json();
+      if (!d.ok) throw new Error();
+      
+      lista.innerHTML = "";
+      if (d.tickets.length === 0) {
+        lista.innerHTML = '<p class="sub">Você ainda não abriu nenhum ticket.</p>';
+        return;
+      }
+
+      d.tickets.forEach(t => {
+        const el = document.createElement("div");
+        el.className = "ticket";
+        const data = new Date(t.criado_em * 1000).toLocaleString("pt-BR");
+        
+        let html = `
+          <div class="ticket-topo">
+            <span class="ticket-assunto">${t.assunto}</span>
+            <span class="badge ${t.status}">${t.status}</span>
+          </div>
+          <div class="ticket-msg">${t.mensagem}</div>
+        `;
+        
+        if (t.resposta) {
+          html += `<div class="ticket-resp"><strong>Comando:</strong><br>${t.resposta}</div>`;
+        }
+        
+        html += `<div class="ticket-data">Aberto em: ${data}</div>`;
+        el.innerHTML = html;
+        lista.appendChild(el);
+      });
+    } catch (e) {
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Erro ao carregar tickets.</p>';
+    }
+  }
+
+  $("abaNovo").onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = $("btnEnviar"), msg = $("msg");
+    btn.disabled = true;
+    btn.textContent = "ENVIANDO...";
+    msg.textContent = "";
+
+    try {
+      const r = await fetch("/api/tickets/abrir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assunto: $("assunto").value, mensagem: $("mensagem").value })
+      });
+      const d = await r.json();
+      
+      if (r.ok) {
+        msg.className = "msg ok";
+        msg.textContent = "Ticket enviado com sucesso!";
+        $("assunto").value = "";
+        $("mensagem").value = "";
+        setTimeout(() => mudarAba(1), 1500);
+      } else {
+        msg.textContent = d.erro || "Erro ao enviar";
+      }
+    } catch (err) {
+      msg.textContent = "Falha de conexão";
+    }
+    
+    btn.disabled = false;
+    btn.textContent = "ENVIAR TICKET";
+  };
+
+  carregarTickets();
+</script>
+</body>
+  </html>
