@@ -389,33 +389,31 @@ async function meusTickets(request, env) {
   async function adminListarTickets(request, env) {
   if (!(await exigirAdmin(request, env))) return json({ erro: "Sem permissão" }, 403);
   const r = await env.DB.prepare(
-    "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, m.nome, m.matricula FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE WHEN t.status = 'aberto' THEN 0 ELSE 1 END, t.id DESC"
+    "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, t.atualizado_em, m.matricula, m.nome FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE t.status WHEN 'aberto' THEN 0 ELSE 1 END, t.id DESC LIMIT 100"
   ).all();
   return json({ ok: true, tickets: r.results });
 }
-async function adminListarTickets(request, env) {
-  if (!(await exigirAdmin(request, env))) return json({ erro: "Sem permissão" }, 403);
-  const r = await env.DB.prepare(
-    "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, m.nome, m.matricula FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE WHEN t.status = 'aberto' THEN 0 ELSE 1 END, t.id DESC"
-  ).all();
-  return json({ ok: true, tickets: r.results });
-}
+
 async function adminResponderTicket(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const adm = await exigirAdmin(request, env);
   if (!adm) return json({ erro: "Sem permissão" }, 403);
   const d = await lerCorpo(request);
   const id = Number(d && d.id);
-  const resposta = texto(d && d.resposta, 1000);
-  if (!Number.isInteger(id) || !resposta) return json({ erro: "Preencha a resposta" }, 400);
-  await env.DB.prepare("UPDATE tickets SET status = 'respondido', resposta = ?, atualizado_em = unixepoch() WHERE id = ?")
-    .bind(resposta, id).run();
-  await auditar(env, adm.id, "ticket_respondido", "ID: " + id, ip);
-  return json({ ok: true, mensagem: "Ticket respondido!" });
-  if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
-                        }
-    }
-export default {
+  const resposta = texto(d && d.resposta, 1500);
+  const status = d && d.status === "aberto" ? "aberto" : "fechado";
+  if (!Number.isInteger(id) || !resposta) return json({ erro: "Escreva a resposta" }, 400);
+  const r = await env.DB.prepare(
+    "UPDATE tickets SET resposta = ?, status = ?, atualizado_em = ? WHERE id = ?"
+  ).bind(resposta, status, agora(), id).run();
+  if (!r.meta.changes) return json({ erro: "Ticket não encontrado" }, 404);
+  await auditar(env, adm.id, "ticket_respondido", "Ticket " + id, ip);
+  return json({ ok: true });
+}
+
+
+
+  export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const p = url.pathname;
