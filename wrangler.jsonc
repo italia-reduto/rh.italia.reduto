@@ -1,0 +1,13 @@
+{
+  "name": "rh-italia",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "./public" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rh.reduto.db",
+      "database_id": "49d64438-852f-431b-9f8c-a685e43eb767"
+    }
+  ]
+}
