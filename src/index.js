@@ -449,7 +449,7 @@ export default {
       }
       return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
-      return json({ erro: "Erro interno" }, 500);
+      return json({ erro: e.message || "Erro interno" }, 500);
     }
   },
 };
