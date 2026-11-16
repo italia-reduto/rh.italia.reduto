@@ -157,7 +157,6 @@ async function login(request, env) {
     { "Set-Cookie": cookie("sessao", token, duracao) }
   );
 }
-
 async function autorizarAparelho(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const eu = await quemSou(request, env);
@@ -318,7 +317,6 @@ async function trocarSenha(request, env) {
   return json({ ok: true });
 }
 
-// --- FUNÇÃO DE CADASTRO CORRIGIDA ---
 async function cadastrarMembro(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const adm = await exigirAdmin(request, env);
@@ -338,12 +336,10 @@ async function cadastrarMembro(request, env) {
   const codigoRec = gerarCodigo();
   const codigoHash = await sha256(codigoRec.replace(/-/g, ""));
   
-  // Gera o hash da senha e o salt ANTES de inserir no banco
   const salt = aleatorio(16);
   const senhaHash = await hashSenha(senhaTemp, salt);
 
   try {
-    // Insere tudo de uma vez, respeitando as colunas NOT NULL
     const info = await env.DB.prepare(
       "INSERT INTO membros (matricula, nome, cargo, nivel, ativo, trocar_senha, codigo_rec_hash, senha_hash, senha_salt) VALUES (?, ?, ?, ?, 1, 1, ?, ?, ?) RETURNING id"
     ).bind(matricula, nome, cargo, nivel, codigoHash, senhaHash, salt).first();
@@ -358,6 +354,37 @@ async function cadastrarMembro(request, env) {
   }
 }
 
+async function abrirTicket(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP");
+  const eu = await quemSou(request, env);
+  if (!eu || eu.trocar_senha) return json({ erro: "Não autenticado" }, 401);
+
+  const d = await lerCorpo(request);
+  if (!d) return json({ erro: "Pedido inválido" }, 400);
+
+  const assunto = texto(d.assunto, 100);
+  const mensagem = texto(d.mensagem, 1000);
+
+  if (!assunto || !mensagem) return json({ erro: "Preencha o assunto e a mensagem." }, 400);
+
+  await env.DB.prepare(
+    "INSERT INTO tickets (membro_id, assunto, mensagem) VALUES (?, ?, ?)"
+  ).bind(eu.id, assunto, mensagem).run();
+
+  await auditar(env, eu.id, "ticket_aberto", assunto, ip);
+  return json({ ok: true, mensagem: "Ticket enviado ao comando!" });
+}
+
+async function meusTickets(request, env) {
+  const eu = await quemSou(request, env);
+  if (!eu) return json({ erro: "Não autenticado" }, 401);
+
+  const r = await env.DB.prepare(
+    "SELECT id, assunto, mensagem, status, resposta, criado_em FROM tickets WHERE membro_id = ? ORDER BY id DESC"
+  ).bind(eu.id).all();
+
+  return json({ ok: true, tickets: r.results });
+    }
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -377,9 +404,8 @@ export default {
         if (p === "/api/recuperar/codigo") return await recuperarCodigo(request, env);
         if (p === "/api/recuperar/pedido") return await pedirRecuperacao(request, env);
         if (p === "/api/admin/pedidos/resolver") return await resolverPedido(request, env);
-        
         if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
-        
+        if (p === "/api/tickets/abrir") return await abrirTicket(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
@@ -393,6 +419,7 @@ export default {
           return eu ? json({ ok: true, ...eu }) : json({ erro: "Não autenticado" }, 401);
         }
         if (p === "/api/admin/pedidos") return await listarPedidos(request, env);
+        if (p === "/api/tickets/meus") return await meusTickets(request, env);
       }
       return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
