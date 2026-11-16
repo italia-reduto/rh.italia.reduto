@@ -66,7 +66,7 @@
   <div class="tela">
     <div class="topo">
       <div class="avatar" id="ini">?</div>
-      <div class="quem"><b id="nome">E aí</b><span id="cargo"></span></div>
+      <div class="quem"><b id="nome">Bem-vindo</b><span id="cargo"></span></div>
       <button class="sino" data-breve="Os avisos chegam em breve" aria-label="Avisos"><svg class="i"><use href="#i-sino"/></svg></button>
     </div>
 
@@ -145,8 +145,8 @@
       if (!r.ok) { location.href = "/"; return; }
       const d = await r.json();
       if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
-      $("nome").textContent = "E aí, " + d.nome;
-      $("cargo").textContent = d.cargo;
+      $("nome").textContent = "Bem-vindo, " + d.nome;
+      $("cargo").textContent = d.cargo + " · Mat: " + d.matricula;
       $("ficha").textContent = d.cargo;
       $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
       if (d.nivel >= 50) {
