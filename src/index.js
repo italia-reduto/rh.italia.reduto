@@ -401,7 +401,7 @@ async function adminResponderTicket(request, env) {
   const d = await lerCorpo(request);
   const id = Number(d && d.id);
   const resposta = texto(d && d.resposta, 1500);
-  const status = d && d.status === "aberto" ? "aberto" : "fechado";
+  const status = "respondido";
   if (!Number.isInteger(id) || !resposta) return json({ erro: "Escreva a resposta" }, 400);
   const r = await env.DB.prepare(
     "UPDATE tickets SET resposta = ?, status = ?, atualizado_em = ? WHERE id = ?"
