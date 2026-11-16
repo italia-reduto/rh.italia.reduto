@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Nova senha · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <div class="caixa">
+    <form class="cartao" id="form" autocomplete="off">
+      <h2>Defina sua nova senha</h2>
+      <p class="sub">Crie uma senha nova com 8 ou mais caracteres. Não use a do jogo.</p>
+      <label for="atual">Senha atual (ou temporária)</label>
+      <div class="campo"><input id="atual" type="password"></div>
+      <label for="nova">Senha nova</label>
+      <div class="campo"><input id="nova" type="password"></div>
+      <label for="conf">Repita a senha nova</label>
+      <div class="campo"><input id="conf" type="password"></div>
+      <button class="btn" id="salvar" type="submit">SALVAR SENHA</button>
+      <div class="msg" id="msg"></div>
+    </form>
+  </div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  fetch("/api/me").then((r) => { if (!r.ok) location.href = "/"; }).catch(() => { location.href = "/"; });
+  $("form").onsubmit = async (e) => {
+    e.preventDefault();
+    const msg = $("msg");
+    msg.className = "msg";
+    msg.textContent = "";
+    if ($("nova").value !== $("conf").value) { msg.textContent = "As senhas novas não são iguais"; return; }
+    $("salvar").disabled = true;
+    try {
+      const r = await fetch("/api/senha/trocar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senha_atual: $("atual").value, nova_senha: $("nova").value })
+      });
+      const d = await r.json();
+      if (r.ok) { location.href = "/painel.html"; return; }
+      msg.textContent = d.erro || "Não foi possível trocar a senha";
+    } catch (err) {
+      msg.textContent = "Falha de conexão";
+    }
+    $("salvar").disabled = false;
+  };
+</script>
+</body>
+</html>
