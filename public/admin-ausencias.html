@@ -42,6 +42,9 @@
     </div>
         </div>
         <script>
+
+          <script src="/ui.js"></script>
+<script>
   const $ = (id) => document.getElementById(id);
   
   fetch("/api/me").then(async (r) => {
@@ -108,27 +111,31 @@
   }
 
   async function resolver(id, acao) {
-    if (!confirm(`Tem certeza que deseja ${acao} esta ausência?`)) return;
+  const titulo = acao === 'aprovar' ? 'Aprovar Ausência' : 'Negar Ausência';
+  const msg = acao === 'aprovar' ? 'Tem certeza que deseja APROVAR esta ausência?' : 'Tem certeza que deseja NEGAR esta ausência?';
+  const ehPerigo = acao === 'negar';
 
-    try {
-      const r = await fetch("/api/admin/ausencias/resolver", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: id, acao: acao })
-      });
-      
-      const d = await r.json();
-      
-      if (r.ok) {
-        carregarAusencias();
-      } else {
-        alert(d.erro || "Erro ao processar");
-      }
-    } catch (err) {
-      alert("Falha de conexão");
+  const confirmou = await customConfirm(msg, titulo, ehPerigo);
+  if (!confirmou) return;
+
+  try {
+    const r = await fetch("/api/admin/ausencias/resolver", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id, acao: acao })
+    });
+    
+    const d = await r.json();
+    
+    if (r.ok) {
+      carregarAusencias();
+    } else {
+      customAlert(d.erro || "Erro ao processar", "Erro");
     }
+  } catch (err) {
+    customAlert("Falha de conexão", "Erro");
   }
-
+  }
   carregarAusencias();
 </script>
 </body>
