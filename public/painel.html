@@ -2,44 +2,162 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
 <title>Painel · Itália RH</title>
 <style>
-  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
-    color:#ECE8DF; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    background:radial-gradient(600px 320px at 50% -60px, rgba(0,161,82,.22), transparent 70%), #090B0A; }
-  .cartao { width:100%; max-width:400px; text-align:center; background:#101412;
-    border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:32px 24px; }
-  small { color:#8E9A93; letter-spacing:4px; font-size:11px; }
-  h1 { font-family:Georgia,serif; font-weight:400; font-size:26px; margin:10px 0 4px; }
-  .cargo { color:#B89B5E; font-size:14px; margin-bottom:24px; }
-  button { padding:14px 28px; font-size:14px; font-weight:600; color:#ECE8DF; background:none;
-    border:1px solid rgba(255,255,255,.18); border-radius:12px; }
+  :root { --fundo:#0E1110; --card:#171C19; --verde:#35E08A; --verde-esc:#06281A; --suave:#8C9690; --texto:#F2F2EE; --coral:#FF7A6B; --ic:#1F2A24; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:120px; }
+  .tela { max-width:440px; margin:0 auto; padding:20px 16px; }
+  svg.i { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; padding:0; }
+  .topo { display:flex; align-items:center; gap:12px; }
+  .avatar { width:44px; height:44px; border-radius:50%; background:var(--verde); color:var(--verde-esc); display:flex; align-items:center; justify-content:center; font-weight:500; font-size:16px; flex:none; }
+  .quem { flex:1; min-width:0; }
+  .quem b { display:block; font-size:18px; font-weight:500; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .quem span { font-size:13px; color:var(--suave); }
+  .sino { width:42px; height:42px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; }
+  .destaque { background:var(--verde); color:var(--verde-esc); border-radius:22px; padding:18px; margin-top:18px; }
+  .destaque .l { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:500; }
+  .destaque h2 { margin:10px 0 4px; font-size:19px; font-weight:500; line-height:1.3; }
+  .destaque p { margin:0; font-size:13px; }
+  .grade { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
+  .cx { background:var(--card); border-radius:22px; padding:14px; text-align:left; width:100%; display:block; }
+  .cx:active { transform:scale(.98); }
+  .ic { width:36px; height:36px; border-radius:50%; background:var(--ic); color:var(--verde); display:flex; align-items:center; justify-content:center; position:relative; }
+  .num { font-size:26px; font-weight:500; margin-top:10px; color:var(--suave); }
+  .tit { font-size:17px; font-weight:500; margin-top:14px; line-height:1.3; }
+  .rot { font-size:12px; color:var(--suave); margin-top:2px; line-height:1.4; }
+  .ponto { position:absolute; top:-2px; right:-2px; width:10px; height:10px; border-radius:50%; background:var(--coral); }
+  .adm { display:flex; align-items:center; gap:12px; margin-top:10px; background:var(--card); border-radius:22px; padding:14px; width:100%; text-decoration:none; color:inherit; }
+  .adm .meio { flex:1; }
+  .acoes { display:flex; gap:8px; margin-top:12px; }
+  .pil { flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:var(--card); border-radius:30px; padding:12px 0; font-size:13px; }
+  .pil svg { width:16px; height:16px; color:var(--verde); }
+  .sair { display:block; margin:22px auto 0; font-size:13px; color:var(--suave); text-decoration:underline; }
+  .navwrap { position:fixed; left:0; right:0; bottom:0; background:var(--fundo); padding:10px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .nav { max-width:440px; margin:0 auto; display:flex; background:var(--card); border-radius:26px; padding:8px; }
+  .it { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 0; color:var(--suave); }
+  .it.ativa { flex:1.5; gap:6px; background:var(--verde); color:var(--verde-esc); border-radius:20px; font-size:12px; font-weight:500; }
+  .toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%); background:var(--texto); color:var(--fundo); padding:10px 16px; border-radius:20px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; white-space:nowrap; }
+  .toast.on { opacity:1; }
 </style>
 </head>
 <body>
-  <div class="cartao">
-    <small>PAINEL DO EFETIVO</small>
-    <h1 id="nome">Carregando...</h1>
-    <div class="cargo" id="cargo"></div>
-    <button id="sair">Sair</button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sino" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-voz" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 11v2M13 17v2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4M6 17c.5-1.5 1.5-2 3-2s2.5.5 3 2"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></symbol>
+  <symbol id="i-rel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-eq" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4.5 1.8 4.5 4.5"/></symbol>
+  <symbol id="i-grade" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+</svg>
+
+<div id="app" hidden>
+  <div class="tela">
+    <div class="topo">
+      <div class="avatar" id="ini">?</div>
+      <div class="quem"><b id="nome">E aí</b><span id="cargo"></span></div>
+      <button class="sino" data-breve="Os avisos chegam em breve" aria-label="Avisos"><svg class="i"><use href="#i-sino"/></svg></button>
+    </div>
+
+    <div class="destaque">
+      <div class="l"><svg class="i" style="width:16px;height:16px"><use href="#i-voz"/></svg>Comunicado em destaque</div>
+      <h2>Nenhum comunicado por enquanto</h2>
+      <p>Os avisos do comando vão aparecer aqui.</p>
+    </div>
+
+    <div class="grade">
+      <button class="cx" data-breve="Tickets chegam em breve">
+        <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
+        <div class="num">–</div><div class="rot">Tickets abertos</div>
+      </button>
+      <button class="cx" data-breve="Ausências chegam em breve">
+        <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+        <div class="num">–</div><div class="rot">Ausência pendente</div>
+      </button>
+      <button class="cx" data-breve="Treinamentos chegam em breve">
+        <div class="ic"><svg class="i"><use href="#i-cap"/></svg></div>
+        <div class="num">–</div><div class="rot">Treinamentos novos</div>
+      </button>
+      <button class="cx" data-breve="A ficha chega em breve">
+        <div class="ic"><svg class="i"><use href="#i-id"/></svg></div>
+        <div class="tit">Minha ficha</div><div class="rot" id="ficha">Cargo, histórico, dados</div>
+      </button>
+    </div>
+
+    <a class="adm" id="adm" href="/pedidos.html" hidden>
+      <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
+      <div class="meio"><div class="tit" style="margin-top:0">Pedidos de recuperação</div><div class="rot" id="admn">Carregando...</div></div>
+    </a>
+
+    <div class="acoes">
+      <button class="pil" data-breve="Tickets chegam em breve"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</button>
+      <button class="pil" data-breve="Ausências chegam em breve"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</button>
+    </div>
+    <a class="sair" href="#" id="sair">Sair da conta</a>
   </div>
+
+  <div class="navwrap">
+    <div class="nav">
+      <button class="it ativa"><svg class="i"><use href="#i-casa"/></svg>Painel</button>
+      <button class="it" data-breve="Tickets chegam em breve" aria-label="Tickets"><svg class="i"><use href="#i-ticket"/></svg></button>
+      <button class="it" data-breve="O ponto chega em breve" aria-label="Ponto"><svg class="i"><use href="#i-rel"/></svg></button>
+      <button class="it" data-breve="A equipe chega em breve" aria-label="Equipe"><svg class="i"><use href="#i-eq"/></svg></button>
+      <button class="it" data-breve="O menu Mais chega em breve" aria-label="Mais"><svg class="i"><use href="#i-grade"/></svg></button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
+  const $ = (id) => document.getElementById(id);
+  let timer;
+  function breve(msg) {
+    const el = $("toast");
+    el.textContent = msg || "Essa área chega em breve";
+    el.classList.add("on");
+    clearTimeout(timer);
+    timer = setTimeout(() => el.classList.remove("on"), 1800);
+  }
+  document.querySelectorAll("[data-breve]").forEach((b) => { b.onclick = () => breve(b.dataset.breve); });
+  $("sair").onclick = async (e) => {
+    e.preventDefault();
+    try { await fetch("/api/logout", { method: "POST" }); } catch (err) {}
+    location.href = "/";
+  };
   (async () => {
     try {
       const r = await fetch("/api/me");
       if (!r.ok) { location.href = "/"; return; }
       const d = await r.json();
-      document.getElementById("nome").textContent = "Bem-vindo, " + d.nome;
-      document.getElementById("cargo").textContent = d.cargo;
+      if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      $("nome").textContent = "E aí, " + d.nome;
+      $("cargo").textContent = d.cargo;
+      $("ficha").textContent = d.cargo;
+      $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
+      if (d.nivel >= 50) {
+        $("adm").hidden = false;
+        const p = await fetch("/api/admin/pedidos");
+        if (p.ok) {
+          const x = await p.json();
+          const n = x.pedidos.length;
+          $("admn").textContent = n ? n + (n === 1 ? " pedido pendente" : " pedidos pendentes") : "Nenhum pedido pendente";
+          if (n) $("admdot").hidden = false;
+        } else $("admn").textContent = "Toque para ver";
+      }
+      $("app").hidden = false;
     } catch (e) { location.href = "/"; }
   })();
-  document.getElementById("sair").onclick = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    location.href = "/";
-  };
 </script>
 </body>
-</html>
+        </html>
