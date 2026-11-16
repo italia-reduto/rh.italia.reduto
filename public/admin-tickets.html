@@ -52,57 +52,68 @@
   }).catch(() => { location.href = "/"; });
 
   async function carregarTickets() {
-    const lista = $("lista");
+  const lista = $("lista");
+  try {
+    const r = await fetch("/api/admin/tickets");
+    const texto = await r.text();
+    let d;
+    
     try {
-      const r = await fetch("/api/admin/tickets");
-      const d = await r.json();
-      
-      if (!d.ok) throw new Error();
-      
-      lista.innerHTML = "";
-      if (d.tickets.length === 0) {
-        lista.innerHTML = '<p class="sub">Nenhum ticket no momento.</p>';
-        return;
-      }
-
-      d.tickets.forEach(t => {
-        const el = document.createElement("div");
-        el.className = "ticket " + t.status;
-        const data = new Date(t.criado_em * 1000).toLocaleString("pt-BR");
-        
-        let html = `
-          <div class="ticket-topo">
-            <div class="ticket-info">
-              <span class="ticket-nome">${t.nome} <span style="font-size:11px;font-weight:400;color:var(--suave)">(Mat: ${t.matricula})</span></span>
-              <span class="ticket-assunto">Assunto: ${t.assunto}</span>
-            </div>
-            <span class="badge ${t.status}">${t.status}</span>
-          </div>
-          <div class="ticket-msg">${t.mensagem}</div>
-          <div class="ticket-data">Aberto em: ${data}</div>
-        `;
-        
-        if (t.status === 'respondido') {
-          html += `
-            <div class="resposta-box">
-              <div class="ja-respondido"><strong>Sua resposta:</strong><br>${t.resposta}</div>
-            </div>
-          `;
-        } else {
-          html += `
-            <div class="resposta-box">
-              <textarea id="resp-${t.id}" placeholder="Escreva a resposta para ${t.nome}..."></textarea>
-              <button class="btn-mini" onclick="responder(${t.id})">RESPONDER TICKET</button>
-            </div>
-          `;
-        }
-        
-        el.innerHTML = html;
-        lista.appendChild(el);
-      });
-    } catch (e) {
-      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Erro ao carregar tickets.</p>';
+      d = JSON.parse(texto);
+    } catch (err) {
+      lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">Erro no servidor (não retornou JSON). Status: ${r.status}</p>`;
+      return;
     }
+    
+    if (!r.ok) {
+      lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">Erro ${r.status}: ${d.erro || 'Desconhecido'}</p>`;
+      return;
+    }
+
+    lista.innerHTML = "";
+    if (d.tickets.length === 0) {
+      lista.innerHTML = '<p class="sub">Nenhum ticket no momento.</p>';
+      return;
+    }
+
+    d.tickets.forEach(t => {
+      const el = document.createElement("div");
+      el.className = "ticket " + t.status;
+      const data = new Date(t.criado_em * 1000).toLocaleString("pt-BR");
+      
+      let html = `
+        <div class="ticket-topo">
+          <div class="ticket-info">
+            <span class="ticket-nome">${t.nome} <span style="font-size:11px;font-weight:400;color:var(--suave)">(Mat: ${t.matricula})</span></span>
+            <span class="ticket-assunto">Assunto: ${t.assunto}</span>
+          </div>
+          <span class="badge ${t.status}">${t.status}</span>
+        </div>
+        <div class="ticket-msg">${t.mensagem}</div>
+        <div class="ticket-data">Aberto em: ${data}</div>
+      `;
+      
+      if (t.status === 'respondido') {
+        html += `
+          <div class="resposta-box">
+            <div class="ja-respondido"><strong>Sua resposta:</strong><br>${t.resposta}</div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="resposta-box">
+            <textarea id="resp-${t.id}" placeholder="Escreva a resposta para ${t.nome}..."></textarea>
+            <button class="btn-mini" onclick="responder(${t.id})">RESPONDER TICKET</button>
+          </div>
+        `;
+      }
+      
+      el.innerHTML = html;
+      lista.appendChild(el);
+    });
+  } catch (e) {
+    lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">Erro de conexão: ${e.message}</p>`;
+  }
   }
 
   async function responder(id) {
