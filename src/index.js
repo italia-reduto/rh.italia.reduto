@@ -318,7 +318,7 @@ async function trocarSenha(request, env) {
   return json({ ok: true });
 }
 
-// --- NOVA FUNÇÃO DE CADASTRO DE MEMBROS ---
+// --- FUNÇÃO DE CADASTRO CORRIGIDA ---
 async function cadastrarMembro(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const adm = await exigirAdmin(request, env);
@@ -337,15 +337,19 @@ async function cadastrarMembro(request, env) {
 
   const codigoRec = gerarCodigo();
   const codigoHash = await sha256(codigoRec.replace(/-/g, ""));
+  
+  // Gera o hash da senha e o salt ANTES de inserir no banco
+  const salt = aleatorio(16);
+  const senhaHash = await hashSenha(senhaTemp, salt);
 
   try {
+    // Insere tudo de uma vez, respeitando as colunas NOT NULL
     const info = await env.DB.prepare(
-      "INSERT INTO membros (matricula, nome, cargo, nivel, ativo, trocar_senha, codigo_rec_hash) VALUES (?, ?, ?, ?, 1, 1, ?) RETURNING id"
-    ).bind(matricula, nome, cargo, nivel, codigoHash).first();
+      "INSERT INTO membros (matricula, nome, cargo, nivel, ativo, trocar_senha, codigo_rec_hash, senha_hash, senha_salt) VALUES (?, ?, ?, ?, 1, 1, ?, ?, ?) RETURNING id"
+    ).bind(matricula, nome, cargo, nivel, codigoHash, senhaHash, salt).first();
 
     if (!info) throw new Error("Falha ao inserir");
     
-    await definirSenha(env, info.id, senhaTemp, 1);
     await auditar(env, adm.id, "membro_criado", "Matrícula: " + matricula, ip);
 
     return json({ ok: true, matricula: matricula, senha: senhaTemp, codigo_rec: codigoRec });
@@ -374,7 +378,6 @@ export default {
         if (p === "/api/recuperar/pedido") return await pedirRecuperacao(request, env);
         if (p === "/api/admin/pedidos/resolver") return await resolverPedido(request, env);
         
-        // --- NOVA ROTA DE CADASTRO ---
         if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
         
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
