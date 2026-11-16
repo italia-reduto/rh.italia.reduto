@@ -99,6 +99,10 @@
       <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
       <div class="meio"><div class="tit" style="margin-top:0">Pedidos de recuperação</div><div class="rot" id="admn">Carregando...</div></div>
     </a>
+    <a class="adm" id="admCadastro" href="/admin.html" hidden style="margin-top:10px">
+  <div class="ic"><svg class="i"><use href="#i-mais"/></svg></div>
+  <div class="meio"><div class="tit" style="margin-top:0">Cadastrar Novo Membro</div><div class="rot">Criar contas para a galera</div></div>
+    </a>
 
     <div class="acoes">
       <button class="pil" data-breve="Tickets chegam em breve"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</button>
@@ -147,6 +151,7 @@
       $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
       if (d.nivel >= 50) {
         $("adm").hidden = false;
+         $("admCadastro").hidden = false; 
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
           const x = await p.json();
