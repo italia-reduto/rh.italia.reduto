@@ -35,9 +35,9 @@
   .adm { display:flex; align-items:center; gap:12px; margin-top:10px; background:var(--card); border-radius:22px; padding:14px; width:100%; text-decoration:none; color:inherit; }
   .adm .meio { flex:1; }
   .acoes { display:flex; gap:8px; margin-top:12px; }
-  .pil { flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:var(--card); border-radius:30px; padding:12px 0; font-size:13px; }
+  .pil { flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:var(--card); border-radius:30px; padding:12px 0; font-size:13px; text-decoration:none; color:inherit; }
   .pil svg { width:16px; height:16px; color:var(--verde); }
-  .sair { display:block; margin:22px auto 0; font-size:13px; color:var(--suave); text-decoration:underline; }
+  .sair { display:block; margin:22px auto 0; font-size:13px; color:var(--suave); text-decoration:underline; text-align:center; }
   .navwrap { position:fixed; left:0; right:0; bottom:0; background:var(--fundo); padding:10px 16px calc(12px + env(safe-area-inset-bottom)); }
   .nav { max-width:440px; margin:0 auto; display:flex; background:var(--card); border-radius:26px; padding:8px; }
   .it { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 0; color:var(--suave); }
@@ -81,7 +81,7 @@
         <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
         <div class="num">–</div><div class="rot">Tickets abertos</div>
       </button>
-      <a href="/ausencias.html" class="pil" style="text-decoration:none;"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
+      <button class="cx" data-breve="Ausências chegam em breve">
         <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
         <div class="num">–</div><div class="rot">Ausência pendente</div>
       </button>
@@ -99,18 +99,20 @@
       <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
       <div class="meio"><div class="tit" style="margin-top:0">Pedidos de recuperação</div><div class="rot" id="admn">Carregando...</div></div>
     </a>
+
     <a class="adm" id="admCadastro" href="/admin.html" hidden style="margin-top:10px">
-  <div class="ic"><svg class="i"><use href="#i-mais"/></svg></div>
-  <div class="meio"><div class="tit" style="margin-top:0">Cadastrar Novo Membro</div><div class="rot">Criar contas para a galera</div></div>
+      <div class="ic"><svg class="i"><use href="#i-mais"/></svg></div>
+      <div class="meio"><div class="tit" style="margin-top:0">Cadastrar Novo Membro</div><div class="rot">Criar contas para a galera</div></div>
     </a>
+
     <a class="adm" id="admTickets" href="/admin-tickets.html" hidden style="margin-top:10px">
-  <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
-  <div class="meio"><div class="tit" style="margin-top:0">Responder Tickets</div><div class="rot">Dúvidas e pedidos da tropa</div></div>
+      <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
+      <div class="meio"><div class="tit" style="margin-top:0">Responder Tickets</div><div class="rot">Dúvidas e pedidos da tropa</div></div>
     </a>
 
     <div class="acoes">
-      <a href="/tickets.html" class="pil" style="text-decoration:none;"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
-      <button class="pil" data-breve="Ausências chegam em breve"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</button>
+      <a href="/tickets.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
+      <a href="/ausencias.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
     </div>
     <a class="sair" href="#" id="sair">Sair da conta</a>
   </div>
@@ -126,7 +128,6 @@
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
   const $ = (id) => document.getElementById(id);
   let timer;
@@ -155,7 +156,7 @@
       $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
       if (d.nivel >= 50) {
         $("adm").hidden = false;
-         $("admCadastro").hidden = false;
+        $("admCadastro").hidden = false;
         $("admTickets").hidden = false;
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
@@ -170,4 +171,4 @@
   })();
 </script>
 </body>
-        </html>
+</html>
