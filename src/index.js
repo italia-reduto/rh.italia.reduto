@@ -420,7 +420,6 @@ export default {
         const origem = request.headers.get("Origin");
         if (origem && new URL(origem).host !== url.host)
           return json({ erro: "Origem inválida" }, 403);
-        if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
       }
       if (metodo === "POST") {
         if (p === "/api/login") return await login(request, env);
@@ -431,6 +430,7 @@ export default {
         if (p === "/api/admin/pedidos/resolver") return await resolverPedido(request, env);
         if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
         if (p === "/api/tickets/abrir") return await abrirTicket(request, env);
+        if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
@@ -445,6 +445,7 @@ export default {
         }
         if (p === "/api/admin/pedidos") return await listarPedidos(request, env);
         if (p === "/api/tickets/meus") return await meusTickets(request, env);
+        if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
       }
       return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
