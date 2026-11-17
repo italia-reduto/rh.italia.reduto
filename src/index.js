@@ -1,3 +1,4 @@
+import { rotasComunicados } from "./comunicados.js";
 const ITER = 10000;
 const enc = new TextEncoder();
 const CAB = {
@@ -332,6 +333,8 @@ async function cadastrarMembro(request, env) {
   const senhaTemp = String(d.senha || gerarSenhaTemp()).slice(0, 200);
 
   if (!matricula || !nome || !cargo) return json({ erro: "Preencha todos os campos obrigatórios" }, 400);
+  if (nivel < 1 || nivel > adm.nivel) return json({ erro: "Você não pode criar uma conta com nível maior que o seu" }, 403);
+  if (senhaTemp.length < 8) return json({ erro: "A senha temporária precisa ter 8 ou mais caracteres" }, 400);
 
   const codigoRec = gerarCodigo();
   const codigoHash = await sha256(codigoRec.replace(/-/g, ""));
@@ -377,7 +380,7 @@ async function abrirTicket(request, env) {
 
 async function meusTickets(request, env) {
   const eu = await quemSou(request, env);
-  if (!eu) return json({ erro: "Não autenticado" }, 401);
+  if (!eu || eu.trocar_senha) return json({ erro: "Não autenticado" }, 401);
 
   const r = await env.DB.prepare(
     "SELECT id, assunto, mensagem, status, resposta, criado_em FROM tickets WHERE membro_id = ? ORDER BY id DESC"
@@ -386,8 +389,7 @@ async function meusTickets(request, env) {
   return json({ ok: true, tickets: r.results });
 }
 
-  
-  async function adminListarTickets(request, env) {
+async function adminListarTickets(request, env) {
   if (!(await exigirAdmin(request, env))) return json({ erro: "Sem permissão" }, 403);
   const r = await env.DB.prepare(
     "SELECT t.id, t.assunto, t.mensagem, t.status, t.resposta, t.criado_em, t.atualizado_em, m.matricula, m.nome FROM tickets t JOIN membros m ON m.id = t.membro_id ORDER BY CASE t.status WHEN 'aberto' THEN 0 ELSE 1 END, t.id DESC LIMIT 100"
@@ -437,7 +439,7 @@ async function pedirAusencia(request, env) {
 
 async function minhasAusencias(request, env) {
   const eu = await quemSou(request, env);
-  if (!eu) return json({ erro: "Não autenticado" }, 401);
+  if (!eu || eu.trocar_senha) return json({ erro: "Não autenticado" }, 401);
 
   const r = await env.DB.prepare(
     "SELECT id, data_inicio, data_fim, motivo, status, criado_em FROM ausencias WHERE membro_id = ? ORDER BY id DESC"
@@ -463,19 +465,20 @@ async function adminResolverAusencia(request, env) {
   const id = Number(d && d.id);
   const acao = d && d.acao; // 'aprovar' ou 'negar'
 
-  if (!Number.isInteger(id) || (acao !== "aprovar" && acao !== "negar"))
+if (!Number.isInteger(id) || (acao !== "aprovar" && acao !== "negar"))
     return json({ erro: "Pedido inválido" }, 400);
 
   const novoStatus = acao === "aprovar" ? "aprovada" : "negada";
   
-  await env.DB.prepare(
+  const resultado = await env.DB.prepare(
     "UPDATE ausencias SET status = ? WHERE id = ? AND status = 'pendente'"
   ).bind(novoStatus, id).run();
+  if (!resultado.meta.changes) return json({ erro: "Pedido já resolvido ou não encontrado" }, 404);
 
   await auditar(env, adm.id, "ausencia_" + acao, "ID: " + id, ip);
   return json({ ok: true });
 }
-  export default {
+export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const p = url.pathname;
@@ -498,7 +501,7 @@ async function adminResolverAusencia(request, env) {
         if (p === "/api/tickets/abrir") return await abrirTicket(request, env);
         if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
         if (p === "/api/ausencias/pedir") return await pedirAusencia(request, env);
-if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
+        if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
@@ -515,11 +518,14 @@ if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(re
         if (p === "/api/tickets/meus") return await meusTickets(request, env);
         if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
         if (p === "/api/ausencias/minhas") return await minhasAusencias(request, env);
-if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
+        if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
       }
+      const extra = await rotasComunicados(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+      if (extra) return extra;
       return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
-      return json({ erro: e.message || "Erro interno" }, 500);
+      console.error("Erro interno:", e && e.message);
+      return json({ erro: "Erro interno" }, 500);
     }
   },
 };
