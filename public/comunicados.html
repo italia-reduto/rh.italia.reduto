@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Comunicados · Itália RH</title>
+<style>
+  :root { --fundo:#0E1110; --card:#171C19; --verde:#35E08A; --verde-esc:#06281A; --suave:#8C9690; --texto:#F2F2EE; --coral:#FF7A6B; --linha:rgba(255,255,255,.08); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:60px; }
+  .tela { max-width:440px; margin:0 auto; padding:20px 16px; }
+  button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; padding:0; }
+  .topo { display:flex; align-items:center; gap:12px; }
+  .voltar { width:42px; height:42px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; color:var(--texto); text-decoration:none; font-size:20px; flex:none; }
+  h1 { flex:1; margin:0; font-size:22px; font-weight:500; }
+  .novobtn { background:var(--verde); color:var(--verde-esc); border-radius:30px; padding:10px 16px; font-size:13px; font-weight:500; }
+  .form { background:var(--card); border-radius:22px; padding:16px; margin-top:16px; }
+  label { display:block; font-size:12px; color:var(--suave); margin:12px 0 6px; }
+  label:first-child { margin-top:0; }
+  input[type=text], textarea { width:100%; background:rgba(255,255,255,.04); border:1px solid var(--linha); border-radius:14px; padding:13px; font:inherit; font-size:16px; color:var(--texto); outline:none; }
+  textarea { min-height:120px; resize:vertical; }
+  input[type=text]:focus, textarea:focus { border-color:var(--verde); }
+  .chk { display:flex; align-items:center; gap:10px; margin-top:14px; font-size:13px; color:var(--suave); }
+  .chk input { width:20px; height:20px; accent-color:var(--verde); flex:none; }
+  .pub { width:100%; margin-top:16px; background:var(--verde); color:var(--verde-esc); border-radius:30px; padding:14px; font-size:15px; font-weight:500; }
+  .pub:disabled { opacity:.6; }
+  .item { background:var(--card); border-radius:22px; padding:16px; margin-top:12px; }
+  .item.fix { border:1px solid var(--verde); }
+  .tl { display:flex; align-items:flex-start; gap:8px; }
+  .tl b { flex:1; font-size:17px; font-weight:500; line-height:1.3; }
+  .chip { flex:none; font-size:11px; padding:3px 9px; border-radius:20px; background:var(--verde); color:var(--verde-esc); }
+  .chip.fixo { background:#1F2A24; color:var(--verde); }
+  .meta { font-size:12px; color:var(--suave); margin-top:4px; }
+  .corpo { font-size:14px; line-height:1.55; margin-top:10px; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .apagar { margin-top:12px; font-size:12px; color:var(--coral); text-decoration:underline; }
+  .vazio { margin-top:28px; text-align:center; font-size:14px; color:var(--suave); }
+  .toast { position:fixed; left:50%; bottom:28px; transform:translateX(-50%); background:var(--texto); color:var(--fundo); padding:10px 16px; border-radius:20px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; white-space:nowrap; }
+  .toast.on { opacity:1; }
+</style>
+</head>
+<body>
+<div class="tela">
+  <div class="topo">
+    <a class="voltar" href="/painel.html" aria-label="Voltar">&larr;</a>
+    <h1>Comunicados</h1>
+    <button class="novobtn" id="novo" hidden>Novo</button>
+  </div>
+
+  <form class="form" id="form" hidden autocomplete="off">
+    <label for="tit">Título</label>
+    <input type="text" id="tit" maxlength="80">
+    <label for="txt">Texto do comunicado</label>
+    <textarea id="txt" maxlength="1000"></textarea>
+    <label class="chk" style="margin:14px 0 0"><input type="checkbox" id="fix"><span>Fixar no banner do painel</span></label>
+    <button class="pub" id="pub" type="submit">Publicar</button>
+  </form>
+
+  <div id="lista"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let timer;
+  function aviso(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(timer);
+    timer = setTimeout(() => t.classList.remove("on"), 2200);
+  }
+  async function api(url, corpo) {
+    const opc = corpo === undefined ? {} : {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpo)
+    };
+    const r = await fetch(url, opc);
+    let d = {};
+    try { d = await r.json(); } catch (e) {}
+    return { ok: r.ok, d };
+  }
+  function quando(t) {
+    return new Date(t * 1000).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+  function el(tag, classe, txt) {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function cartao(c, admin) {
+    const box = el("div", "item" + (c.destaque ? " fix" : ""));
+    const tl = el("div", "tl");
+    tl.appendChild(el("b", null, c.titulo));
+    if (!c.lido) tl.appendChild(el("span", "chip", "Novo"));
+    else if (c.destaque) tl.appendChild(el("span", "chip fixo", "Fixado"));
+    box.appendChild(tl);
+    box.appendChild(el("div", "meta", quando(c.criado_em) + (c.autor ? " · " + c.autor : "")));
+    box.appendChild(el("div", "corpo", c.corpo));
+    if (admin) {
+      const b = el("button", "apagar", "Apagar");
+      let armado = false;
+      b.onclick = async () => {
+        if (!armado) {
+          armado = true;
+          b.textContent = "Toque de novo para apagar";
+          setTimeout(() => { armado = false; b.textContent = "Apagar"; }, 3000);
+          return;
+        }
+        const { ok, d } = await api("/api/admin/comunicados/apagar", { id: c.id });
+        if (ok) { aviso("Comunicado apagado"); carregar(false); }
+        else aviso(d.erro || "Não foi possível apagar");
+      };
+      box.appendChild(b);
+    }
+    return box;
+  }
+  async function carregar(marcar) {
+    const { ok, d } = await api("/api/comunicados");
+    if (!ok) { location.href = "/"; return; }
+    const admin = !!d.admin;
+    $("novo").hidden = !admin;
+    const lista = $("lista");
+    lista.textContent = "";
+    if (!d.comunicados.length) lista.appendChild(el("div", "vazio", "Nenhum comunicado por enquanto."));
+    else d.comunicados.forEach((c) => lista.appendChild(cartao(c, admin)));
+    if (marcar) api("/api/comunicados/ler", { todos: true });
+  }
+  $("novo").onclick = () => { $("form").hidden = !$("form").hidden; };
+  $("form").onsubmit = async (e) => {
+    e.preventDefault();
+    $("pub").disabled = true;
+    const { ok, d } = await api("/api/admin/comunicados", {
+      titulo: $("tit").value, corpo: $("txt").value, destaque: $("fix").checked
+    });
+    $("pub").disabled = false;
+    if (ok) {
+      $("tit").value = ""; $("txt").value = ""; $("fix").checked = false;
+      $("form").hidden = true;
+      aviso("Comunicado publicado");
+      carregar(false);
+    } else aviso(d.erro || "Não foi possível publicar");
+  };
+  (async () => {
+    try {
+      const r = await fetch("/api/me");
+      if (!r.ok) { location.href = "/"; return; }
+      const d = await r.json();
+      if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      await carregar(true);
+    } catch (e) { location.href = "/"; }
+  })();
+</script>
+</body>
+      </html>
