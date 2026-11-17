@@ -50,7 +50,7 @@ function pegarCookie(request, nome) {
   return null;
 }
 const cookie = (nome, valor, seg) =>
-  `${nome}=${valor}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${seg}`;
+  `${nome}=${valor}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${seg}`;
 
 async function auditar(env, membroId, acao, detalhe, ip) {
   await env.DB.prepare(
