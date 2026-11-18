@@ -7,49 +7,47 @@
 <meta name="robots" content="noindex">
 <title>Painel · Itália RH</title>
 <style>
-  :root { --fundo:#0E1110; --card:#171C19; --verde:#35E08A; --verde-esc:#06281A; --suave:#8C9690; --texto:#F2F2EE; --coral:#FF7A6B; --ic:#1F2A24; }
+  :root { --fundo:#0E1110; --card:#171C19; --verde:#35E08A; --verde-esc:#06281A; --suave:#8C9690; --texto:#F2F2EE; --coral:#FF7A6B; --ic:#1F2A24; --linha: rgba(255,255,255,.08); --cartao: #101412; --marfim: #ECE8DF; --ouro: #B89B5E; --vermelho: #E0525C;}
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   [hidden] { display: none !important; }
   body { margin:0; background:var(--fundo); color:var(--texto); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:120px; }
-  .tela { max-width:440px; margin:0 auto; padding:20px 16px; }
+  .tela { max-width:440px; margin:0 auto; padding:16px; }
   svg.i { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; }
   button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; padding:0; }
-  .topo { display:flex; align-items:center; gap:12px; }
-  .avatar { width:44px; height:44px; border-radius:50%; background:var(--verde); color:var(--verde-esc); display:flex; align-items:center; justify-content:center; font-weight:500; font-size:16px; flex:none; }
-  .quem { flex:1; min-width:0; }
-  .quem b { display:block; font-size:18px; font-weight:500; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .quem span { font-size:13px; color:var(--suave); }
-  .sino { width:42px; height:42px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; }
+  
   .destaque { background:var(--verde); color:var(--verde-esc); border-radius:22px; padding:18px; margin-top:18px; }
   .destaque .l { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:500; }
   .destaque h2 { margin:10px 0 4px; font-size:19px; font-weight:500; line-height:1.3; }
   .destaque p { margin:0; font-size:13px; }
+  
   .grade { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
-  .cx { background:var(--card); border-radius:22px; padding:14px; text-align:left; width:100%; display:block; }
+  .cx { background:var(--card); border-radius:22px; padding:14px; text-align:left; width:100%; display:block; text-decoration:none; color:inherit; }
   .cx:active { transform:scale(.98); }
   .ic { width:36px; height:36px; border-radius:50%; background:var(--ic); color:var(--verde); display:flex; align-items:center; justify-content:center; position:relative; }
   .num { font-size:26px; font-weight:500; margin-top:10px; color:var(--suave); }
   .tit { font-size:17px; font-weight:500; margin-top:14px; line-height:1.3; }
   .rot { font-size:12px; color:var(--suave); margin-top:2px; line-height:1.4; }
   .ponto { position:absolute; top:-2px; right:-2px; width:10px; height:10px; border-radius:50%; background:var(--coral); }
+  
   .adm { display:flex; align-items:center; gap:12px; margin-top:10px; background:var(--card); border-radius:22px; padding:14px; width:100%; text-decoration:none; color:inherit; }
   .adm .meio { flex:1; }
+  
   .acoes { display:flex; gap:8px; margin-top:12px; }
   .pil { flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:var(--card); border-radius:30px; padding:12px 0; font-size:13px; text-decoration:none; color:inherit; }
   .pil svg { width:16px; height:16px; color:var(--verde); }
   .sair { display:block; margin:22px auto 0; font-size:13px; color:var(--suave); text-decoration:underline; text-align:center; }
-  .navwrap { position:fixed; left:0; right:0; bottom:0; background:var(--fundo); padding:10px 16px calc(12px + env(safe-area-inset-bottom)); }
+  
+  .navwrap { position:fixed; left:0; right:0; bottom:0; background:var(--fundo); padding:10px 16px calc(12px + env(safe-area-inset-bottom)); z-index:100; }
   .nav { max-width:440px; margin:0 auto; display:flex; background:var(--card); border-radius:26px; padding:8px; }
   .it { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 0; color:var(--suave); }
   .it.ativa { flex:1.5; gap:6px; background:var(--verde); color:var(--verde-esc); border-radius:20px; font-size:12px; font-weight:500; }
-  .toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%); background:var(--texto); color:var(--fundo); padding:10px 16px; border-radius:20px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; white-space:nowrap; }
+  
+  .toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%); background:var(--texto); color:var(--fundo); padding:10px 16px; border-radius:20px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; white-space:nowrap; z-index:9999;}
   .toast.on { opacity:1; }
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-sino" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
-  <symbol id="i-voz" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
   <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 11v2M13 17v2"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
   <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
@@ -62,14 +60,11 @@
   <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
 </svg>
 
+<!-- TOPBAR GLOBAL -->
+<script src="/topbar.js" data-home="true"></script>
+
 <div id="app" hidden>
   <div class="tela">
-    <div class="topo">
-      <div class="avatar" id="ini">?</div>
-      <div class="quem"><b id="nome">Bem-vindo</b><span id="cargo"></span></div>
-      <button class="sino" data-breve="Os avisos chegam em breve" aria-label="Avisos"><svg class="i"><use href="#i-sino"/></svg></button>
-    </div>
-
     <div class="destaque">
       <div class="l"><svg class="i" style="width:16px;height:16px"><use href="#i-voz"/></svg>Comunicado em destaque</div>
       <h2>Nenhum comunicado por enquanto</h2>
@@ -77,22 +72,23 @@
     </div>
 
     <div class="grade">
-      <button class="cx" data-breve="Tickets chegam em breve">
+      <a href="/tickets.html" class="cx">
         <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
-        <div class="num">–</div><div class="rot">Tickets abertos</div>
-      </button>
-      <button class="cx" data-breve="Ausências chegam em breve">
+        <div class="num" id="num-tickets">–</div><div class="rot">Tickets abertos</div>
+      </a>
+      <a href="/ausencias.html" class="cx">
         <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
-        <div class="num">–</div><div class="rot">Ausência pendente</div>
-      </button>
+        <div class="num" id="num-ausencias">–</div><div class="rot">Ausência pendente</div>
+      </a>
       <button class="cx" data-breve="Treinamentos chegam em breve">
         <div class="ic"><svg class="i"><use href="#i-cap"/></svg></div>
         <div class="num">–</div><div class="rot">Treinamentos novos</div>
       </button>
-      <a href="/ficha.html" class="cx" style="text-decoration:none; color:inherit;">
-  <div class="ic"><svg class="i"><use href="#i-id"/></svg></div>
-  <div class="tit">Minha ficha</div><div class="rot" id="ficha">Cargo, histórico, dados</div>
+      <a href="/perfil.html" class="cx">
+        <div class="ic"><svg class="i"><use href="#i-id"/></svg></div>
+        <div class="tit" style="margin-top:10px">Meu Perfil</div><div class="rot">Foto e senha</div>
       </a>
+    </div>
 
     <a class="adm" id="adm" href="/pedidos.html" hidden>
       <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
@@ -108,29 +104,31 @@
       <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
       <div class="meio"><div class="tit" style="margin-top:0">Responder Tickets</div><div class="rot">Dúvidas e pedidos da tropa</div></div>
     </a>
+
     <a class="adm" id="admAusencias" href="/admin-ausencias.html" hidden style="margin-top:10px">
-  <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
-  <div class="meio"><div class="tit" style="margin-top:0">Gerenciar Ausências</div><div class="rot">Aprovar ou negar afastamentos</div></div>
+      <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+      <div class="meio"><div class="tit" style="margin-top:0">Gerenciar Ausências</div><div class="rot">Aprovar ou negar afastamentos</div></div>
     </a>
 
-    <div class="acoes" style="display: flex; gap: 8px; margin-top: 12px;">
-  <a href="/tickets.html" class="pil" style="flex: 1;"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
-  <a href="/ausencias.html" class="pil" style="flex: 1;"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
-</div>
-<div style="text-align: center; margin-top: 22px;">
-  <a class="sair" href="#" id="sair" style="display: inline-block; font-size: 13px; color: var(--suave); text-decoration: underline;">Sair da conta</a>
-</div>
+    <div class="acoes">
+      <a href="/tickets.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
+      <a href="/ausencias.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
+    </div>
+    <a class="sair" href="#" id="sair">Sair da conta</a>
+  </div>
+
   <div class="navwrap">
     <div class="nav">
       <button class="it ativa"><svg class="i"><use href="#i-casa"/></svg>Painel</button>
-      <button class="it" data-breve="Tickets chegam em breve" aria-label="Tickets"><svg class="i"><use href="#i-ticket"/></svg></button>
-      <button class="it" data-breve="O ponto chega em breve" aria-label="Ponto"><svg class="i"><use href="#i-rel"/></svg></button>
-      <button class="it" data-breve="A equipe chega em breve" aria-label="Equipe"><svg class="i"><use href="#i-eq"/></svg></button>
-      <button class="it" data-breve="O menu Mais chega em breve" aria-label="Mais"><svg class="i"><use href="#i-grade"/></svg></button>
+      <a href="/tickets.html" class="it"><svg class="i"><use href="#i-ticket"/></svg></a>
+      <button class="it" data-breve="O ponto chega em breve"><svg class="i"><use href="#i-rel"/></svg></button>
+      <a href="/ficha.html" class="it"><svg class="i"><use href="#i-id"/></svg></a>
+      <button class="it" data-breve="O menu Mais chega em breve"><svg class="i"><use href="#i-grade"/></svg></button>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
 <script>
   const $ = (id) => document.getElementById(id);
   let timer;
@@ -142,26 +140,26 @@
     timer = setTimeout(() => el.classList.remove("on"), 1800);
   }
   document.querySelectorAll("[data-breve]").forEach((b) => { b.onclick = () => breve(b.dataset.breve); });
+  
   $("sair").onclick = async (e) => {
     e.preventDefault();
     try { await fetch("/api/logout", { method: "POST" }); } catch (err) {}
     location.href = "/";
   };
+
   (async () => {
     try {
       const r = await fetch("/api/me");
       if (!r.ok) { location.href = "/"; return; }
       const d = await r.json();
       if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
-      $("nome").textContent = "Bem-vindo, " + d.nome;
-      $("cargo").textContent = d.cargo + " · Mat: " + d.matricula;
-      $("ficha").textContent = d.cargo;
-      $("ini").textContent = String(d.nome || "?").trim().charAt(0).toUpperCase();
+      
       if (d.nivel >= 50) {
         $("adm").hidden = false;
         $("admCadastro").hidden = false;
         $("admTickets").hidden = false;
         $("admAusencias").hidden = false;
+        
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
           const x = await p.json();
@@ -170,10 +168,22 @@
           if (n) $("admdot").hidden = false;
         } else $("admn").textContent = "Toque para ver";
       }
+      
+      // Carrega os contadores reais se a rota existir
+      const resumo = await fetch("/api/resumo");
+      if(resumo.ok) {
+          const rj = await resumo.json();
+          if(rj.tickets_abertos !== undefined) $("num-tickets").textContent = rj.tickets_abertos;
+          if(rj.ausencias_pendentes !== undefined) $("num-ausencias").textContent = rj.ausencias_pendentes;
+      } else {
+          // Fallback se a rota não existir ainda
+          $("num-tickets").textContent = "0";
+          $("num-ausencias").textContent = "0";
+      }
+
       $("app").hidden = false;
     } catch (e) { location.href = "/"; }
   })();
 </script>
-  <script src="/painel-extra.js"></script>
 </body>
-</html>
+  </html>
