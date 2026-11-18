@@ -112,8 +112,8 @@ async function quemSou(request, env) {
   const token = pegarCookie(request, "sessao");
   if (!token) return null;
   return await env.DB.prepare(
-    "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha, m.matricula FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
-  ).bind(await sha256(token), agora()).first();
+  "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha, m.matricula, m.avatar_base64 FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
+).bind(await sha256(token), agora()).first();
 }
 
 async function exigirAdmin(request, env) {
@@ -480,6 +480,25 @@ if (!Number.isInteger(id) || (acao !== "aprovar" && acao !== "negar"))
   await auditar(env, adm.id, "ausencia_" + acao, "ID: " + id, ip);
   return json({ ok: true });
 }
+async function salvarFotoPerfil(request, env) {
+  const eu = await quemSou(request, env);
+  if (!eu) return json({ erro: "Não autenticado" }, 401);
+
+  const d = await lerCorpo(request);
+  // O limite aqui é maior para aceitar a string Base64
+  if (!d || !d.imagem) return json({ erro: "Imagem inválida" }, 400);
+
+  // Verifica se é uma string base64 de imagem válida (data:image/...)
+  if (!d.imagem.startsWith("data:image/")) return json({ erro: "Formato inválido" }, 400);
+
+  // Limite de segurança: aprox 500KB para não estourar o D1
+  if (d.imagem.length > 500000) return json({ erro: "Imagem muito grande" }, 400);
+
+  await env.DB.prepare("UPDATE membros SET avatar_base64 = ? WHERE id = ?")
+    .bind(d.imagem, eu.id).run();
+
+  return json({ ok: true, mensagem: "Foto atualizada!" });
+}
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -505,6 +524,7 @@ export default {
         if (p === "/api/ausencias/pedir") return await pedirAusencia(request, env);
         if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
+        if (p === "/api/perfil/foto") return await salvarFotoPerfil(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
           if (token) await env.DB.prepare("DELETE FROM sessoes WHERE token_hash = ?").bind(await sha256(token)).run();
