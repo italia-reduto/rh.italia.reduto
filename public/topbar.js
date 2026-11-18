@@ -1,37 +1,53 @@
-(async function() {
+(async function () {
   const script = document.currentScript;
-  const isHome = script && script.getAttribute('data-home') === 'true';
+  const isHome = script && script.getAttribute("data-home") === "true";
 
   try {
     const r = await fetch("/api/me");
-    if (!r.ok) return; 
-
+    if (!r.ok) return;
     const d = await r.json();
-    const nomeExibicao = isHome ? "Bem-vindo, " + d.nome : d.nome;
-    
-    // Aqui preparamos o avatar para aceitar uma imagem (se existir no banco) ou a inicial.
-    // Vamos assumir que no futuro a rota /api/me vai retornar d.avatar_base64
-    let avatarHtml = d.nome ? d.nome.charAt(0).toUpperCase() : "?";
-    if (d.avatar_base64) {
-       avatarHtml = `<img src="${d.avatar_base64}" alt="Perfil">`;
+
+    const barra = document.createElement("div");
+    barra.className = "global-topbar";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.style.cursor = "pointer";
+    avatar.onclick = () => { window.location.href = "/perfil.html"; };
+    const foto =
+      typeof d.avatar_base64 === "string" &&
+      /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+\/=]+$/.test(d.avatar_base64)
+        ? d.avatar_base64
+        : null;
+    if (foto) {
+      const img = document.createElement("img");
+      img.src = foto;
+      img.alt = "Perfil";
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = d.nome ? String(d.nome).charAt(0).toUpperCase() : "?";
     }
 
-    const html = `
-      <div class="global-topbar">
-        <div class="avatar" onclick="window.location.href='/perfil.html'" style="cursor:pointer">${avatarHtml}</div>
-        <div class="quem">
-          <b>${nomeExibicao}</b>
-          <span>Mat. ${d.matricula} · ${d.cargo}</span>
-        </div>
-        <button class="sino" onclick="window.location.href='/comunicados.html'">
-          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        </button>
-      </div>
-    `;
+    const quem = document.createElement("div");
+    quem.className = "quem";
+    const nome = document.createElement("b");
+    nome.textContent = isHome ? "Bem-vindo, " + d.nome : d.nome;
+    const info = document.createElement("span");
+    info.textContent = "Mat. " + d.matricula + " · " + d.cargo;
+    quem.appendChild(nome);
+    quem.appendChild(info);
 
-    // Injeta direto no body, fora da .caixa
-    document.body.insertAdjacentHTML('afterbegin', html);
+    const sino = document.createElement("button");
+    sino.className = "sino";
+    sino.setAttribute("aria-label", "Avisos");
+    sino.onclick = () => { window.location.href = "/comunicados.html"; };
+    sino.innerHTML =
+      '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
 
+    barra.appendChild(avatar);
+    barra.appendChild(quem);
+    barra.appendChild(sino);
+    document.body.insertAdjacentElement("afterbegin", barra);
   } catch (e) {
     console.error("Erro ao carregar topbar", e);
   }
