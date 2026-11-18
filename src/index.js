@@ -484,15 +484,17 @@ async function salvarFotoPerfil(request, env) {
   const eu = await quemSou(request, env);
   if (!eu) return json({ erro: "Não autenticado" }, 401);
 
-  const d = await lerCorpo(request);
-  // O limite aqui é maior para aceitar a string Base64
+  // Lê o corpo ignorando o limite de 2000 caracteres do lerCorpo padrão
+  let d;
+  try {
+    d = await request.json();
+  } catch(e) {
+    return json({ erro: "Formato inválido" }, 400);
+  }
+
   if (!d || !d.imagem) return json({ erro: "Imagem inválida" }, 400);
-
-  // Verifica se é uma string base64 de imagem válida (data:image/...)
   if (!d.imagem.startsWith("data:image/")) return json({ erro: "Formato inválido" }, 400);
-
-  // Limite de segurança: aprox 500KB para não estourar o D1
-  if (d.imagem.length > 500000) return json({ erro: "Imagem muito grande" }, 400);
+  if (d.imagem.length > 800000) return json({ erro: "Imagem muito grande (máx 800kb)" }, 400);
 
   await env.DB.prepare("UPDATE membros SET avatar_base64 = ? WHERE id = ?")
     .bind(d.imagem, eu.id).run();
