@@ -7,26 +7,30 @@
     if (!r.ok) return; 
 
     const d = await r.json();
-    // Se for Home, mostra "Bem-vindo, Nome". Se não, só o Nome.
     const nomeExibicao = isHome ? "Bem-vindo, " + d.nome : d.nome;
-    const inicial = d.nome ? d.nome.charAt(0).toUpperCase() : "?";
+    
+    // Aqui preparamos o avatar para aceitar uma imagem (se existir no banco) ou a inicial.
+    // Vamos assumir que no futuro a rota /api/me vai retornar d.avatar_base64
+    let avatarHtml = d.nome ? d.nome.charAt(0).toUpperCase() : "?";
+    if (d.avatar_base64) {
+       avatarHtml = `<img src="${d.avatar_base64}" alt="Perfil">`;
+    }
 
-    // HTML ajustado para o padrão Discord da sua imagem
     const html = `
       <div class="global-topbar">
-        <div class="avatar">${inicial}</div>
+        <div class="avatar">${avatarHtml}</div>
         <div class="quem">
           <b>${nomeExibicao}</b>
           <span>Mat. ${d.matricula} · ${d.cargo}</span>
         </div>
-        <button class="sino" onclick="alert('Avisos em breve')">
+        <button class="sino" onclick="window.location.href='/comunicados.html'">
           <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
         </button>
       </div>
     `;
 
-    const container = document.querySelector('.caixa') || document.body;
-    container.insertAdjacentHTML('afterbegin', html);
+    // Injeta direto no body, fora da .caixa
+    document.body.insertAdjacentHTML('afterbegin', html);
 
   } catch (e) {
     console.error("Erro ao carregar topbar", e);
