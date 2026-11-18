@@ -93,60 +93,84 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
 .modal-btn-ok.btn-perigo { background: var(--vermelho); }
 
 
-/* Topbar Global (Presente em todas as telas) */
+/* Topbar Global Fixa (Estilo Discord) */
 .global-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0 20px;
+  padding: 16px 0;
+  background: rgba(14, 17, 16, 0.85); /* Cor do fundo com transparência */
+  backdrop-filter: blur(12px); /* Efeito de vidro embaçado */
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--linha);
   margin-bottom: 24px;
 }
+
 .global-topbar .avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--verde);
-  color: var(--verde-esc);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px; /* Quadrado arredondado igual da foto */
+  background: var(--cartao);
+  color: var(--verde);
+  border: 1px solid var(--verde);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 20px;
   flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(0, 161, 82, 0.1);
 }
+
 .global-topbar .quem {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
 .global-topbar .quem b {
-  display: block;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--marfim);
-  line-height: 1.3;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .global-topbar .quem span {
   font-size: 13px;
   color: var(--suave);
+  margin-top: 2px;
 }
+
 .global-topbar .sino {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px; /* Botão quadrado arredondado */
   background: var(--cartao);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--linha);
   flex-shrink: 0;
+  cursor: pointer;
+  transition: 0.2s;
 }
+
+.global-topbar .sino:active {
+  transform: scale(0.95);
+  background: #222;
+}
+
 .global-topbar .sino svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: var(--marfim);
   stroke-width: 1.8;
