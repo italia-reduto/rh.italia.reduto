@@ -92,27 +92,27 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
 .modal-btn-ok { background: var(--verde); color: #fff; }
 .modal-btn-ok.btn-perigo { background: var(--vermelho); }
 
-
-/* Topbar Global Fixa (Estilo Discord) */
+/* Topbar Global Fixa (Estilo App Nativo) */
 .global-topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 999;
+  left: 0;
+  width: 100%;
+  height: 76px;
+  z-index: 9999;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0;
-  background: rgba(14, 17, 16, 0.85); /* Cor do fundo com transparência */
-  backdrop-filter: blur(12px); /* Efeito de vidro embaçado */
-  -webkit-backdrop-filter: blur(12px);
+  padding: 0 16px;
+  background: var(--fundo); /* Cor sólida para o conteúdo passar por baixo sem transparecer */
   border-bottom: 1px solid var(--linha);
-  margin-bottom: 24px;
+  box-sizing: border-box;
 }
 
 .global-topbar .avatar {
   width: 48px;
   height: 48px;
-  border-radius: 14px; /* Quadrado arredondado igual da foto */
+  border-radius: 14px;
   background: var(--cartao);
   color: var(--verde);
   border: 1px solid var(--verde);
@@ -122,7 +122,14 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
   font-weight: 600;
   font-size: 20px;
   flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(0, 161, 82, 0.1);
+  overflow: hidden; /* Para a foto não vazar */
+}
+
+/* Se for imagem, cobre o quadrado todo */
+.global-topbar .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .global-topbar .quem {
@@ -152,7 +159,7 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
 .global-topbar .sino {
   width: 48px;
   height: 48px;
-  border-radius: 14px; /* Botão quadrado arredondado */
+  border-radius: 14px;
   background: var(--cartao);
   display: flex;
   align-items: center;
@@ -165,7 +172,6 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
 
 .global-topbar .sino:active {
   transform: scale(0.95);
-  background: #222;
 }
 
 .global-topbar .sino svg {
@@ -176,4 +182,9 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Ajuste no body para o conteúdo não ficar escondido atrás da topbar */
+body {
+  padding-top: 76px !important; 
 }
