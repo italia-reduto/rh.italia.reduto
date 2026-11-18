@@ -18,7 +18,7 @@
 
     const html = `
       <div class="global-topbar">
-        <div class="avatar">${avatarHtml}</div>
+        <div class="avatar" onclick="window.location.href='/perfil.html'" style="cursor:pointer">${avatarHtml}</div>
         <div class="quem">
           <b>${nomeExibicao}</b>
           <span>Mat. ${d.matricula} · ${d.cargo}</span>
