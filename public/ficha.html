@@ -12,48 +12,48 @@
   .voltar { color: var(--suave); text-decoration: none; font-size: 13px; display: block; margin-bottom: 16px; }
   
   /* Crachá */
-  .cracha { background: var(--cartao); border: 1px solid var(--linha); border-radius: 20px; padding: 24px; text-align: center; position: relative; overflow: hidden; }
+  .cracha { background: var(--cartao); border: 1px solid var(--linha); border-radius: 20px; padding: 24px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   .cracha::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--verde), var(--ouro), #CE2B37); }
   .avatar-grande { width: 80px; height: 80px; border-radius: 50%; background: var(--verde); color: #000; font-size: 32px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 0 20px rgba(0,161,82,0.3); }
   .cracha h2 { margin: 0; font-size: 24px; color: var(--marfim); font-family: Georgia, serif; }
   .cracha .cargo-txt { color: var(--verde); font-size: 14px; margin: 4px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
   .cracha .mat-txt { color: var(--ouro); font-size: 13px; font-weight: bold; }
-  .cracha .alistamento { color: var(--suave); font-size: 11px; margin-top: 8px; }
+  
+  /* Dados do Jogo (Discord / Game ID) */
+  .dados-jogo { display: flex; gap: 10px; margin-top: 16px; }
+  .dado-box { flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--linha); border-radius: 12px; padding: 12px; text-align: center; }
+  .dado-box small { display: block; font-size: 10px; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .dado-box span { font-size: 14px; color: var(--marfim); font-weight: 600; word-break: break-all; }
 
   /* Estatísticas */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
   .stat-box { background: rgba(255,255,255,0.02); border: 1px solid var(--linha); border-radius: 14px; padding: 16px; text-align: center; }
   .stat-box span { display: block; font-size: 24px; font-weight: bold; color: var(--marfim); }
   .stat-box small { font-size: 11px; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; }
-  
-  /* Cores específicas */
   .stat-box.tickets span { color: #5E9BFF; }
   .stat-box.ausencias span { color: var(--ouro); }
   .stat-box.elogios span { color: var(--verde); }
   .stat-box.advertencias span { color: var(--vermelho); }
 
-  /* Status de Treinamento */
-  .status-treinamento { margin-top: 16px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+  /* Status de Treinamento e Geral */
+  .status-treinamento { margin-top: 10px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
   .status-treinamento b { color: var(--marfim); font-size: 14px; }
-  .badge-treinamento { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-  .badge-treinamento.Pendente { background: rgba(224,82,92,.15); color: var(--vermelho); }
-  .badge-treinamento.Concluído { background: rgba(0,161,82,.15); color: var(--verde); }
+  .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+  .badge.Pendente, .badge.Inativo { background: rgba(224,82,92,.15); color: var(--vermelho); }
+  .badge.Concluído, .badge.Ativo { background: rgba(0,161,82,.15); color: var(--verde); }
 
   /* Painel do Admin */
   .admin-panel { margin-top: 20px; background: rgba(184,155,94,.05); border: 1px dashed var(--ouro); border-radius: 14px; padding: 20px; display: none; }
-  .admin-panel h3 { margin: 0 0 12px; color: var(--ouro); font-size: 16px; }
-  .admin-panel label { color: var(--ouro); font-size: 11px; }
-  .admin-panel input, .admin-panel select, .admin-panel textarea { 
-  border-color: rgba(184,155,94,.3); 
-  width: 100%; 
-  box-sizing: border-box; 
-  margin-top: 4px;
-  }
-  .admin-panel input:focus, .admin-panel select:focus, .admin-panel textarea:focus { border-color: var(--ouro); box-shadow: 0 0 0 3px rgba(184,155,94,.15); }
+  .admin-panel h3 { margin: 0 0 16px; color: var(--ouro); font-size: 16px; border-bottom: 1px solid rgba(184,155,94,.2); padding-bottom: 8px; }
+  .admin-panel label { color: var(--ouro); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-top: 12px; margin-bottom: 4px; }
+  .admin-panel input, .admin-panel select, .admin-panel textarea { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid rgba(184,155,94,.3); background: #000; color: #fff; font-family: inherit; outline: none; }
+  .admin-panel input:focus, .admin-panel select:focus, .admin-panel textarea:focus { border-color: var(--ouro); box-shadow: 0 0 0 2px rgba(184,155,94,.2); }
+  .admin-row { display: flex; gap: 10px; }
+  .admin-row > div { flex: 1; }
   
   /* Busca de Admin */
   .busca-box { display: none; margin-bottom: 16px; background: var(--cartao); padding: 16px; border-radius: 14px; border: 1px solid var(--linha); }
-  .busca-box input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--linha); background: #000; color: #fff; margin-bottom: 8px; }
+  .busca-box input { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid var(--linha); background: #000; color: #fff; margin-bottom: 8px; }
   .busca-box button { width: 100%; padding: 12px; background: var(--ouro); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
 </style>
 </head>
@@ -61,23 +61,24 @@
   <div class="caixa">
     <a href="/painel.html" class="voltar">&larr; Voltar ao painel</a>
 
-    <!-- Barra de busca (só aparece para Admin) -->
     <div class="busca-box" id="buscaAdmin">
       <label style="color:var(--ouro); font-size:12px; font-weight:bold; margin-bottom:4px; display:block;">BUSCAR MEMBRO (ADMIN)</label>
       <input type="text" id="buscaMatricula" placeholder="Digite a matrícula...">
       <button onclick="buscarMembro()">BUSCAR FICHA</button>
     </div>
 
-    <!-- O Crachá -->
     <div class="cracha" id="cracha" hidden>
       <div class="avatar-grande" id="avatar">?</div>
       <h2 id="f-nome">Carregando...</h2>
       <div class="cargo-txt" id="f-cargo">-</div>
       <div class="mat-txt" id="f-matricula">-</div>
-      <div class="alistamento" id="f-alistamento">Membro desde: -</div>
+      
+      <div class="dados-jogo">
+        <div class="dado-box"><small>Discord</small><span id="f-discord">-</span></div>
+        <div class="dado-box"><small>Game ID</small><span id="f-gameid">-</span></div>
+      </div>
     </div>
 
-    <!-- Estatísticas -->
     <div class="stats-grid" id="stats" hidden>
       <div class="stat-box tickets"><span id="s-tickets">0</span><small>Tickets</small></div>
       <div class="stat-box ausencias"><span id="s-ausencias">0</span><small>Ausências</small></div>
@@ -85,59 +86,72 @@
       <div class="stat-box advertencias"><span id="s-advertencias">0</span><small>Advertências</small></div>
     </div>
 
-    <!-- Status de Treinamento -->
-    <div class="status-treinamento" id="statusTreinamento" hidden>
-      <b>Treinamento</b>
-      <span class="badge-treinamento" id="f-treinamento">-</span>
-    </div>
-    <!-- Observações (Leitura para o Soldado) -->
-    <div class="status-treinamento" id="boxObservacoes" hidden style="display:block;">
-      <b>Notas do Comando</b>
-      <p id="f-observacoes" style="margin-top:8px; font-size:13px; color:var(--suave); line-height:1.5;">Nenhuma observação registrada.</p>
+    <div class="status-treinamento" id="statusGeral" hidden>
+      <b>Status na Org</b>
+      <span class="badge" id="f-status">-</span>
     </div>
 
-    <!-- Painel do Admin (Só aparece se for admin) -->
+    <div class="status-treinamento" id="statusTreinamento" hidden>
+      <b>Treinamento</b>
+      <span class="badge" id="f-treinamento">-</span>
+    </div>
+
+    <div class="status-treinamento" id="boxObservacoes" hidden style="display:block;">
+      <b style="display:block; margin-bottom:8px;">Notas do Comando</b>
+      <p id="f-observacoes" style="margin:0; font-size:13px; color:var(--suave); line-height:1.5; white-space: pre-wrap;">Nenhuma observação registrada.</p>
+    </div>
+
     <div class="admin-panel" id="adminEditar">
-      <h3>Comando: Editar Ficha</h3>
+      <h3>Gestão de Efetivo</h3>
       
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;">
+      <div class="admin-row">
+        <div>
           <label>Advertências</label>
           <input type="number" id="edit-adv" value="0" min="0">
         </div>
-        <div style="flex:1;">
+        <div>
           <label>Elogios</label>
           <input type="number" id="edit-elo" value="0" min="0">
         </div>
       </div>
 
-      <label>Status do Treinamento</label>
-      <select id="edit-tre">
-        <option value="Pendente">Pendente</option>
-        <option value="Concluído">Concluído</option>
-      </select>
+      <div class="admin-row">
+        <div>
+          <label>Status</label>
+          <select id="edit-status">
+            <option value="Ativo">Ativo</option>
+            <option value="Inativo">Inativo</option>
+            <option value="Licença">Licença</option>
+          </select>
+        </div>
+        <div>
+          <label>Treinamento</label>
+          <select id="edit-tre">
+            <option value="Pendente">Pendente</option>
+            <option value="Concluído">Concluído</option>
+          </select>
+        </div>
+      </div>
 
-      <label>Observações do Comando (Anotações)</label>
-      <textarea id="edit-obs" placeholder="Ex: Excelente atirador, mas precisa melhorar a presença..." rows="3"></textarea>
+      <label>ID do Discord</label>
+      <input type="text" id="edit-discord" placeholder="Ex: falcao#1234">
 
-      <button class="btn" onclick="salvarEdicao()" style="background:var(--ouro); color:#000; margin-top:16px;">SALVAR ALTERAÇÕES</button>
+      <label>ID no Jogo</label>
+      <input type="text" id="edit-gameid" placeholder="Ex: 12345">
+
+      <label>Anotações do Comando</label>
+      <textarea id="edit-obs" placeholder="Histórico, punições anteriores..." rows="4"></textarea>
+
+      <button class="btn" onclick="salvarEdicao()" style="background:var(--ouro); color:#000; margin-top:20px;">SALVAR ALTERAÇÕES</button>
     </div>
-
   </div>
-
-<script src="/ui.js"></script>
+  <script src="/ui.js"></script>
 <script>
   const $ = (id) => document.getElementById(id);
   let isAdmin = false;
   let matriculaAtual = "";
 
-  function formatarData(timestamp) {
-    if (!timestamp) return "-";
-    const d = new Date(timestamp * 1000);
-    return d.toLocaleDateString("pt-BR");
-  }
-
-  // 1. Inicia a tela checando quem é o usuário
+  // 1. Verifica quem é o usuário
   fetch("/api/me").then(async (r) => {
     if (!r.ok) { location.href = "/"; return; }
     const d = await r.json();
@@ -151,20 +165,20 @@
       $("buscaAdmin").style.display = "block";
     }
     
-    // Carrega a própria ficha por padrão
     carregarFicha(d.matricula);
   }).catch(() => { location.href = "/"; });
 
-  // 2. Carrega a ficha (do próprio usuário ou de alguém buscado pelo admin)
+  // 2. Carrega os dados da ficha
   async function carregarFicha(matricula) {
+    // Esconde tudo antes de carregar
     $("cracha").hidden = true;
     $("stats").hidden = true;
+    $("statusGeral").hidden = true;
     $("statusTreinamento").hidden = true;
     $("boxObservacoes").hidden = true;
     $("adminEditar").style.display = "none";
 
     try {
-      // Se o admin buscou alguém, usa a rota de admin. Se não, usa a rota normal.
       const url = (isAdmin && matricula !== matriculaAtual) ? `/api/admin/ficha?matricula=${matricula}` : "/api/ficha";
       const r = await fetch(url);
       const d = await r.json();
@@ -176,43 +190,53 @@
 
       const f = d.ficha;
       
-      // Preenche o Crachá
+      // Preenche o Crachá e Dados
       $("avatar").textContent = f.nome.charAt(0).toUpperCase();
       $("f-nome").textContent = f.nome;
       $("f-cargo").textContent = f.cargo;
       $("f-matricula").textContent = "Matrícula: " + f.matricula;
-      $("f-alistamento").textContent = "No efetivo desde: " + formatarData(f.criado_em);
+      $("f-discord").textContent = f.discord_id || "-";
+      $("f-gameid").textContent = f.game_id || "-";
       
-      // Preenche as estatísticas
+      // Preenche Estatísticas
       $("s-tickets").textContent = d.stats.tickets;
       $("s-ausencias").textContent = d.stats.ausencias;
       $("s-elogios").textContent = f.elogios || 0;
       $("s-advertencias").textContent = f.advertencias || 0;
       
-      // Status de Treinamento
+      // Preenche Status
+      const status = f.status || 'Ativo';
+      $("f-status").textContent = status;
+      $("f-status").className = "badge " + status;
+
       const tre = f.treinamento_status || 'Pendente';
       $("f-treinamento").textContent = tre;
-      $("f-treinamento").className = "badge-treinamento " + tre;
+      $("f-treinamento").className = "badge " + tre;
 
-      // Observações (se tiver)
+      // Observações
       if (f.observacoes && f.observacoes.trim() !== "") {
         $("f-observacoes").textContent = f.observacoes;
         $("boxObservacoes").hidden = false;
       }
 
-      // Se for Admin, preenche os campos de edição
+      // Se for Admin, preenche o painel de edição
       if (isAdmin) {
         $("edit-adv").value = f.advertencias || 0;
         $("edit-elo").value = f.elogios || 0;
+        $("edit-status").value = status;
         $("edit-tre").value = tre;
+        $("edit-discord").value = f.discord_id || "";
+        $("edit-gameid").value = f.game_id || "";
         $("edit-obs").value = f.observacoes || "";
+        
         $("adminEditar").style.display = "block";
-        matriculaAtual = f.matricula; // Atualiza a matrícula atual para o salvamento
+        matriculaAtual = f.matricula; // Trava a matrícula atual para o save
       }
 
       // Mostra os blocos
       $("cracha").hidden = false;
       $("stats").hidden = false;
+      $("statusGeral").hidden = false;
       $("statusTreinamento").hidden = false;
 
     } catch (e) {
@@ -220,14 +244,14 @@
     }
   }
 
-  // 3. Função para o Admin buscar outro membro
+  // 3. Buscar membro (Admin)
   function buscarMembro() {
     const mat = $("buscaMatricula").value.trim();
     if (!mat) { customAlert("Digite uma matrícula.", "Aviso"); return; }
     carregarFicha(mat);
   }
 
-  // 4. Função para o Admin salvar as edições
+  // 4. Salvar edições (Admin)
   async function salvarEdicao() {
     const confirmou = await customConfirm("Deseja salvar as alterações nesta ficha?", "Confirmar Edição");
     if (!confirmou) return;
@@ -240,7 +264,10 @@
           matricula: matriculaAtual,
           advertencias: $("edit-adv").value,
           elogios: $("edit-elo").value,
+          status: $("edit-status").value,
           treinamento_status: $("edit-tre").value,
+          discord_id: $("edit-discord").value,
+          game_id: $("edit-gameid").value,
           observacoes: $("edit-obs").value
         })
       });
@@ -248,7 +275,7 @@
 
       if (r.ok) {
         customAlert("Ficha atualizada com sucesso!", "Sucesso");
-        carregarFicha(matriculaAtual); // Recarrega para mostrar os dados novos
+        carregarFicha(matriculaAtual);
       } else {
         customAlert(d.erro || "Erro ao salvar", "Erro");
       }
