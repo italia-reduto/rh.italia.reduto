@@ -43,7 +43,12 @@
   .admin-panel { margin-top: 20px; background: rgba(184,155,94,.05); border: 1px dashed var(--ouro); border-radius: 14px; padding: 20px; display: none; }
   .admin-panel h3 { margin: 0 0 12px; color: var(--ouro); font-size: 16px; }
   .admin-panel label { color: var(--ouro); font-size: 11px; }
-  .admin-panel input, .admin-panel select, .admin-panel textarea { border-color: rgba(184,155,94,.3); }
+  .admin-panel input, .admin-panel select, .admin-panel textarea { 
+  border-color: rgba(184,155,94,.3); 
+  width: 100%; 
+  box-sizing: border-box; 
+  margin-top: 4px;
+  }
   .admin-panel input:focus, .admin-panel select:focus, .admin-panel textarea:focus { border-color: var(--ouro); box-shadow: 0 0 0 3px rgba(184,155,94,.15); }
   
   /* Busca de Admin */
