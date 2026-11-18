@@ -1,3 +1,5 @@
+import { rotasFicha } from "./ficha.js";
+
 import { rotasComunicados } from "./comunicados.js";
 const ITER = 10000;
 const enc = new TextEncoder();
@@ -521,8 +523,12 @@ export default {
         if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
       }
       const extra = await rotasComunicados(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
-      if (extra) return extra;
-      return json({ erro: "Não encontrado" }, 404);
+if (extra) return extra;
+
+const resFicha = await rotasFicha(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+if (resFicha) return resFicha;
+
+return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
       console.error("Erro interno:", e && e.message);
       return json({ erro: "Erro interno" }, 500);
