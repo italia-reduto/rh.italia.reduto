@@ -6,7 +6,7 @@ export async function rotasFicha(request, env, p, metodo, h) {
     if (!eu) return json({ erro: "Não autenticado" }, 401);
 
     const membro = await env.DB.prepare(
-      "SELECT matricula, nome, cargo, nivel, advertencias, elogios, treinamento_status, observacoes, criado_em, discord_id, game_id, status FROM membros WHERE id = ?"
+      "SELECT matricula, nome, cargo, nivel, advertencias, elogios, treinamento_status, observacoes, criado_em, discord_id, game_id, status, trust_score, badges, ultimo_ip, historico_eventos FROM membros WHERE id = ?"
     ).bind(eu.id).first();
 
     const tks = await env.DB.prepare("SELECT COUNT(*) as total FROM tickets WHERE membro_id = ?").bind(eu.id).first();
@@ -23,7 +23,7 @@ export async function rotasFicha(request, env, p, metodo, h) {
     if (!matricula) return json({ erro: "Matrícula não informada" }, 400);
 
     const membro = await env.DB.prepare(
-      "SELECT id, matricula, nome, cargo, nivel, advertencias, elogios, treinamento_status, observacoes, criado_em, discord_id, game_id, status FROM membros WHERE matricula = ?"
+      "SELECT id, matricula, nome, cargo, nivel, advertencias, elogios, treinamento_status, observacoes, criado_em, discord_id, game_id, status, trust_score, badges, ultimo_ip, historico_eventos FROM membros WHERE matricula = ?"
     ).bind(matricula).first();
     
     if (!membro) return json({ erro: "Membro não encontrado" }, 404);
@@ -50,10 +50,14 @@ export async function rotasFicha(request, env, p, metodo, h) {
     const discord_id = texto(d.discord_id, 50);
     const game_id = texto(d.game_id, 50);
     const status = texto(d.status, 20) || 'Ativo';
+    const trust_score = parseInt(d.trust_score, 10) || 100;
+    const badges = texto(d.badges, 100);
+    const ultimo_ip = texto(d.ultimo_ip, 50);
+    const historico_eventos = texto(d.historico_eventos, 3000); // JSON string
 
     await env.DB.prepare(
-      "UPDATE membros SET advertencias = ?, elogios = ?, treinamento_status = ?, observacoes = ?, discord_id = ?, game_id = ?, status = ? WHERE matricula = ?"
-    ).bind(advertencias, elogios, treinamento_status, observacoes, discord_id, game_id, status, matricula).run();
+      "UPDATE membros SET advertencias = ?, elogios = ?, treinamento_status = ?, observacoes = ?, discord_id = ?, game_id = ?, status = ?, trust_score = ?, badges = ?, ultimo_ip = ?, historico_eventos = ? WHERE matricula = ?"
+    ).bind(advertencias, elogios, treinamento_status, observacoes, discord_id, game_id, status, trust_score, badges, ultimo_ip, historico_eventos, matricula).run();
 
     await auditar(env, adm.id, "ficha_editada", "Matrícula: " + matricula, ip);
     return json({ ok: true, mensagem: "Ficha atualizada!" });
