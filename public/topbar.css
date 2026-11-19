@@ -1,0 +1,8 @@
+.global-topbar { display:flex; align-items:center; gap:12px; width:100%; flex:0 0 100%; max-width:440px; margin:0 auto; padding:16px 16px 12px; box-sizing:border-box; color:#F2F2EE; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; position:relative; z-index:50; }
+.global-topbar .avatar { width:46px; height:46px; border-radius:14px; background:#12261D; border:1.5px solid #35E08A; color:#35E08A; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; flex:none; overflow:hidden; cursor:pointer; box-sizing:border-box; }
+.global-topbar .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+.global-topbar .quem { flex:1; min-width:0; }
+.global-topbar .quem b { display:block; font-size:17px; font-weight:600; line-height:1.3; color:#F2F2EE; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.global-topbar .quem span { display:block; margin-top:1px; font-size:12px; color:#8C9690; }
+.global-topbar .sino { width:44px; height:44px; border-radius:14px; background:#171C19; border:0; color:#F2F2EE; display:flex; align-items:center; justify-content:center; flex:none; cursor:pointer; padding:0; }
+.global-topbar .sino svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
