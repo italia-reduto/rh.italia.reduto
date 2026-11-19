@@ -2,6 +2,14 @@
   const script = document.currentScript;
   const isHome = script && script.getAttribute("data-home") === "true";
 
+  if (!document.getElementById("topbar-css")) {
+    const link = document.createElement("link");
+    link.id = "topbar-css";
+    link.rel = "stylesheet";
+    link.href = "/topbar.css";
+    document.head.appendChild(link);
+  }
+
   try {
     const r = await fetch("/api/me");
     if (!r.ok) return;
@@ -12,7 +20,6 @@
 
     const avatar = document.createElement("div");
     avatar.className = "avatar";
-    avatar.style.cursor = "pointer";
     avatar.onclick = () => { window.location.href = "/perfil.html"; };
     const foto =
       typeof d.avatar_base64 === "string" &&
@@ -48,6 +55,12 @@
     barra.appendChild(quem);
     barra.appendChild(sino);
     document.body.insertAdjacentElement("afterbegin", barra);
+
+    const cs = getComputedStyle(document.body);
+    if (cs.display === "flex" && cs.flexDirection === "row") {
+      document.body.style.flexWrap = "wrap";
+      document.body.style.alignContent = "flex-start";
+    }
   } catch (e) {
     console.error("Erro ao carregar topbar", e);
   }
