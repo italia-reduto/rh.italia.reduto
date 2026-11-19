@@ -2,21 +2,43 @@
   const script = document.currentScript;
   const isHome = script && script.getAttribute("data-home") === "true";
 
-  if (!document.getElementById("topbar-css")) {
-    const link = document.createElement("link");
-    link.id = "topbar-css";
-    link.rel = "stylesheet";
-    link.href = "/topbar.css";
-    document.head.appendChild(link);
-  }
-
   try {
     const r = await fetch("/api/me");
     if (!r.ok) return;
     const d = await r.json();
 
+    // A barra fica dentro de um Shadow DOM: o CSS das páginas não consegue alterá-la.
+    const host = document.createElement("div");
+    host.id = "topbar-host";
+    host.style.cssText =
+      "display:block;position:relative;top:auto;left:auto;float:none;transform:none;" +
+      "width:100%;max-width:440px;margin:0 auto;padding:0;border:0;background:none;" +
+      "box-sizing:border-box;flex:0 0 100%;z-index:50";
+    const root = host.attachShadow({ mode: "open" });
+
+    const estilo = document.createElement("style");
+    estilo.textContent = `
+      :host { all: initial; }
+      * { -webkit-tap-highlight-color: transparent; }
+      .barra { display:flex; align-items:center; gap:12px; padding:16px 16px 12px; box-sizing:border-box;
+               font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:#F2F2EE; }
+      .avatar { width:46px; height:46px; border-radius:14px; background:#12261D; border:1.5px solid #35E08A;
+                color:#35E08A; display:flex; align-items:center; justify-content:center; font-size:18px;
+                font-weight:600; flex:none; overflow:hidden; cursor:pointer; box-sizing:border-box; }
+      .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+      .quem { flex:1; min-width:0; }
+      .quem b { display:block; font-size:17px; font-weight:600; line-height:1.3; overflow:hidden;
+                text-overflow:ellipsis; white-space:nowrap; }
+      .quem span { display:block; margin-top:1px; font-size:12px; color:#8C9690; overflow:hidden;
+                   text-overflow:ellipsis; white-space:nowrap; }
+      .sino { width:44px; height:44px; border-radius:14px; background:#171C19; border:0; color:#F2F2EE;
+              display:flex; align-items:center; justify-content:center; flex:none; cursor:pointer; padding:0; }
+      .sino svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8;
+                  stroke-linecap:round; stroke-linejoin:round; }
+    `;
+
     const barra = document.createElement("div");
-    barra.className = "global-topbar";
+    barra.className = "barra";
 
     const avatar = document.createElement("div");
     avatar.className = "avatar";
@@ -54,7 +76,9 @@
     barra.appendChild(avatar);
     barra.appendChild(quem);
     barra.appendChild(sino);
-    document.body.insertAdjacentElement("afterbegin", barra);
+    root.appendChild(estilo);
+    root.appendChild(barra);
+    document.body.insertAdjacentElement("afterbegin", host);
 
     const cs = getComputedStyle(document.body);
     if (cs.display === "flex" && cs.flexDirection === "row") {
