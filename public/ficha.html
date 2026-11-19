@@ -3,419 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
-<title>Dossiê · Itália RH</title>
+<title>Ficha · Itália RH</title>
 <link rel="stylesheet" href="/estilo.css">
 <style>
-  /* Reset para tirar a marcação azul de clique no celular */
-  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-  a, button, input, textarea, select { outline: none; user-select: none; -webkit-user-select: none; }
-
-  body { align-items: flex-start; padding-top: 16px; padding-bottom: 80px; background-color: var(--fundo); }
-  
-  /* Botão Voltar */
-  .btn-voltar { display: inline-flex; align-items: center; gap: 8px; background: var(--cartao); border: 1px solid var(--linha); padding: 10px 16px; border-radius: 12px; color: var(--marfim); text-decoration: none; font-size: 14px; margin-bottom: 24px; transition: 0.2s; }
-  .btn-voltar:active { transform: scale(0.97); opacity: 0.8; }
-  .btn-voltar svg { width: 16px; height: 16px; stroke: var(--marfim); fill: none; stroke-width: 2; }
-
-  /* Header / Crachá */
-  .header-ficha { border-bottom: 1px solid var(--linha); padding-bottom: 20px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 16px; }
-  .avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--cartao); border: 2px solid var(--verde); color: var(--verde); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 0 15px rgba(0,161,82,0.2); flex-shrink: 0; }
-  .info-topo { flex: 1; min-width: 0; }
-  .info-topo h1 { margin: 0; font-size: 22px; font-weight: 600; color: var(--marfim); letter-spacing: -0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .tag { font-size: 10px; font-family: monospace; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; border: 1px solid; }
-  .tag.cargo { color: var(--verde); border-color: rgba(0,161,82,0.3); background: rgba(0,161,82,0.1); }
-  .tag.mat { color: var(--ouro); border-color: rgba(184,155,94,0.3); background: rgba(184,155,94,0.1); }
-  .tag.status-Ativo { color: var(--verde); border-color: var(--verde); background: rgba(0,161,82,0.05); }
-  .tag.status-Suspenso { color: var(--vermelho); border-color: var(--vermelho); background: rgba(224,82,92,0.05); }
-
-  /* Trust Score */
-  .trust-box { display: flex; align-items: center; gap: 16px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 20px; padding: 16px; margin-bottom: 20px; }
-  .score-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; font-family: monospace; position: relative; flex-shrink: 0; transition: 0.3s; }
-  .score-circle::after { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; background: var(--cartao); border-radius: 50%; z-index: 1; }
-  .score-circle span { position: relative; z-index: 2; }
-  .trust-info h3 { margin: 0; font-size: 15px; color: var(--marfim); }
-  .trust-info p { margin: 4px 0 0; font-size: 13px; color: var(--suave); }
-
-  /* Grid de Métricas */
-  .grid-metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-  .metrica { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; }
-  .metrica span { display: block; font-size: 26px; font-family: monospace; font-weight: bold; line-height: 1; }
-  .metrica small { display: block; font-size: 11px; color: var(--suave); text-transform: uppercase; margin-top: 6px; letter-spacing: 0.5px; }
-  .metrica.adv span { color: var(--vermelho); }
-  .metrica.elo span { color: var(--verde); }
-  .metrica.tick span { color: #5E9BFF; }
-  .metrica.aus span { color: var(--ouro); }
-
-  /* Blocos de Dados */
-  .bloco { margin-bottom: 24px; }
-  .bloco h4 { margin: 0 0 12px; font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
-  .dados-lista { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; overflow: hidden; }
-  .linha-dado { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--linha); font-size: 14px; }
-  .linha-dado:last-child { border-bottom: none; }
-  .linha-dado .key { color: var(--suave); }
-  .linha-dado .val { font-family: monospace; color: var(--marfim); font-weight: 500; font-size: 13px; }
-
-  /* Histórico (Timeline) */
-  .hist-item { padding: 14px 16px; border-bottom: 1px solid var(--linha); font-size: 13px; display: flex; gap: 12px; }
-  .hist-item:last-child { border-bottom: none; }
-  .hist-data { font-family: monospace; color: var(--suave); font-size: 11px; width: 45px; flex-shrink: 0; padding-top: 2px; }
-  .hist-txt { color: var(--marfim); line-height: 1.5; }
-  .hist-item.adv .hist-txt { color: var(--vermelho); }
-  .hist-item.elo .hist-txt { color: var(--verde); }
-
-  /* Terminal de Notas */
-  .terminal { background: #050505; border: 1px solid var(--linha); border-radius: 16px; padding: 16px; font-family: monospace; font-size: 13px; color: var(--verde); line-height: 1.5; position: relative; }
-  .terminal::before { content: ">_"; position: absolute; top: 16px; left: 16px; opacity: 0.5; color: var(--verde); font-weight: bold; }
-  .terminal-txt { margin-left: 24px; color: var(--marfim); white-space: pre-wrap; }
-  .terminal-vazio { color: var(--suave); font-style: italic; }
-
-  /* Botões Flutuantes (Admin) */
-  .fab { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 50%; border: none; display: none; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100; cursor: pointer; transition: 0.2s; }
-  .fab:active { transform: scale(0.9); }
-  .fab svg { width: 24px; height: 24px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  
-  #btnEngrenagem { background: var(--ouro); }
-  #btnEngrenagem svg { stroke: #000; }
-  #btnSalvar { background: var(--verde); }
-  #btnSalvar svg { stroke: #000; }
-
-  /* Inputs de Edição (Modo Admin) */
-  .edit-input { width: 100%; background: #000; border: 1px solid var(--ouro); color: var(--marfim); padding: 8px; border-radius: 8px; font-family: monospace; font-size: 13px; display: none; box-sizing: border-box; }
-  .edit-input:focus { box-shadow: 0 0 0 2px rgba(184,155,94,0.3); }
-  
-  /* Busca Admin */
-  .busca-admin { display: none; margin-bottom: 24px; background: var(--cartao); padding: 16px; border: 1px solid var(--linha); border-radius: 16px; }
-  .busca-admin input { width: 100%; box-sizing: border-box; background: #000; border: 1px solid var(--linha); color: #fff; padding: 12px; margin-bottom: 10px; border-radius: 10px; }
-  .busca-admin button { width: 100%; padding: 12px; background: var(--suave); color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 10px; }
+  :root { --k-bg:#0E1110; --k-card:#171C19; --k-verde:#35E08A; --k-esc:#06281A; --k-suave:#8C9690; --k-texto:#F2F2EE; --k-coral:#FF7A6B; --k-ouro:#E0B85A; --k-azul:#6BA7FF; --k-linha:rgba(255,255,255,.08); }
+  * { -webkit-tap-highlight-color: transparent; }
+  body { display:block; min-height:100vh; margin:0; padding:0 0 110px; background:var(--k-bg); color:var(--k-texto); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  [hidden] { display:none !important; }
+  .tela { max-width:440px; margin:0 auto; padding:4px 16px 0; }
+  .tela button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; padding:0; }
+  .voltar { display:inline-flex; align-items:center; gap:6px; background:var(--k-card); border-radius:30px; padding:9px 14px; font-size:13px; color:var(--k-texto); text-decoration:none; margin-bottom:14px; }
+  .voltar svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .kcard { background:var(--k-card); border-radius:24px; padding:16px; margin-bottom:12px; }
+  .krot { font-size:12px; color:var(--k-suave); margin-bottom:10px; }
+  .klinha { display:flex; gap:8px; }
+  .klinha input { flex:1; min-width:0; }
+  .kbtn { background:var(--k-verde); color:var(--k-esc); border-radius:30px; padding:13px 18px; font-size:14px; font-weight:600; }
+  .kbtn.sec { background:var(--k-card); color:var(--k-texto); border:1px solid var(--k-linha); }
+  .klink { display:block; margin-top:10px; font-size:13px; color:var(--k-verde); text-decoration:underline; }
+  .kcab { display:flex; gap:14px; align-items:flex-start; }
+  .kfoto { width:72px; height:72px; border-radius:20px; background:#12261D; border:1.5px solid var(--k-verde); color:var(--k-verde); display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:600; flex:none; }
+  .kid { flex:1; min-width:0; }
+  .kid h1 { margin:0; font-size:20px; font-weight:600; line-height:1.25; overflow-wrap:anywhere; }
+  .ktags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .ktag { font-size:11px; padding:4px 10px; border-radius:30px; background:rgba(255,255,255,.06); color:var(--k-texto); }
+  .ktag.cargo { background:rgba(53,224,138,.12); color:var(--k-verde); }
+  .ktag.mat { background:rgba(224,184,90,.12); color:var(--k-ouro); }
+  .ktag.st-Ativo { background:rgba(53,224,138,.12); color:var(--k-verde); }
+  .ktag.st-Suspenso { background:rgba(255,122,107,.14); color:var(--k-coral); }
+  .ktag.st-Exonerado { background:rgba(255,255,255,.06); color:var(--k-suave); }
+  .ktrust { display:flex; align-items:center; gap:16px; }
+  .kanel { width:68px; height:68px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; position:relative; font-size:20px; font-weight:700; }
+  .kanel::after { content:""; position:absolute; inset:6px; background:var(--k-card); border-radius:50%; }
+  .kanel span { position:relative; z-index:1; }
+  .ktrust b { font-size:15px; font-weight:600; }
+  .ktrust p { margin:4px 0 0; font-size:13px; }
+  .kgrade { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:12px; }
+  .kmet { background:var(--k-card); border-radius:22px; padding:14px; }
+  .kmet .n { display:block; font-size:28px; font-weight:600; line-height:1; }
+  .kmet small { display:block; margin-top:8px; font-size:12px; color:var(--k-suave); }
+  .coral { color:var(--k-coral); } .verde { color:var(--k-verde); } .azul { color:var(--k-azul); } .ouro { color:var(--k-ouro); }
+  .ksec { margin:20px 4px 8px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--k-suave); }
+  .ksec.coral { color:var(--k-coral); }
+  .kcard.klista { padding:0; overflow:hidden; }
+  .klin { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--k-linha); font-size:14px; }
+  .klin:last-child { border-bottom:0; }
+  .klin span { color:var(--k-suave); }
+  .klin b { font-weight:500; text-align:right; overflow-wrap:anywhere; }
+  .kh { display:flex; gap:12px; padding:14px 16px; border-bottom:1px solid var(--k-linha); font-size:13px; }
+  .kh:last-child { border-bottom:0; }
+  .kd { width:44px; flex:none; font-family:monospace; font-size:11px; color:var(--k-suave); padding-top:2px; }
+  .kt { line-height:1.5; overflow-wrap:anywhere; }
+  .kh.adv .kt { color:var(--k-coral); } .kh.elo .kt { color:var(--k-verde); } .kh.promo .kt { color:var(--k-ouro); }
+  .kvazio { padding:16px; font-size:13px; color:var(--k-suave); }
+  .knota { font-family:monospace; font-size:13px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; background:#0A0D0B; }
+  .kacoes { display:flex; gap:8px; margin-top:8px; }
+  .kacoes .kbtn { flex:1; }
+  .kov { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.62); display:flex; align-items:flex-end; justify-content:center; }
+  .ksheet { width:100%; max-width:440px; max-height:88vh; overflow:auto; background:#131815; border-radius:26px 26px 0 0; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .ksheet h3 { margin:0 0 6px; font-size:19px; font-weight:600; }
+  .ksheet label { display:block; margin:14px 0 6px; font-size:12px; color:var(--k-suave); letter-spacing:0; text-transform:none; }
+  .ksheet input, .ksheet select, .ksheet textarea { width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid var(--k-linha); border-radius:14px; padding:13px; font:inherit; font-size:16px; color:var(--k-texto); outline:none; }
+  .ksheet input:focus, .ksheet select:focus, .ksheet textarea:focus { border-color:var(--k-verde); }
+  .ksheet textarea { min-height:90px; resize:vertical; }
+  .ksheet select option { background:#131815; }
+  .kdupla { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .kauto { display:flex; align-items:center; gap:10px; margin-top:14px; font-size:13px; color:var(--k-suave); }
+  .kauto input { width:20px; height:20px; flex:none; accent-color:var(--k-verde); }
+  .krodape { display:flex; gap:8px; margin-top:18px; }
+  .krodape .kbtn { flex:1; }
 </style>
 </head>
 <body>
-  <!-- Inserir Topbar Global -->
-  <script src="/topbar.js"></script>
+<script src="/topbar.js"></script>
 
-  <div class="caixa">
-    <!-- Botão Voltar -->
-    <a href="/painel.html" class="btn-voltar">
-      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Voltar ao painel
-    </a>
+<div class="tela">
+  <a class="voltar" href="/painel.html"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Painel</a>
 
-    <div class="busca-admin" id="buscaAdmin">
-      <h4 style="margin: 0 0 10px; color: var(--ouro); font-size: 11px; font-family: monospace;">BUSCAR DOSSIÊ (ADMIN)</h4>
-      <input type="text" id="buscaMatricula" placeholder="Matrícula do alvo...">
-      <button onclick="buscarMembro()">ACESSAR ARQUIVO</button>
+  <div class="kcard" id="buscaAdmin" hidden>
+    <div class="krot">Abrir a ficha de outro membro</div>
+    <div class="klinha">
+      <input id="buscaMat" type="text" maxlength="40" placeholder="Matrícula" autocomplete="off">
+      <button class="kbtn" id="btnBuscar">Abrir</button>
     </div>
-
-    <div class="header-ficha" id="headerFicha" hidden>
-      <div class="avatar" id="avatar">?</div>
-      <div class="info-topo">
-        <h1 id="f-nome">Carregando...</h1>
-        <div class="tags">
-          <span class="tag cargo" id="f-cargo">-</span>
-          <span class="tag mat" id="f-matricula">-</span>
-          <span class="tag" id="f-status">-</span>
-        </div>
-        <div id="badges-container" style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;"></div>
-      </div>
-    </div>
-
-    <div class="trust-box" id="trustBox" hidden>
-      <div class="score-circle" id="scoreCircle">
-        <span id="f-score">100</span>
-      </div>
-      <div class="trust-info">
-        <h3>Índice de Confiabilidade</h3>
-        <p id="score-txt">Membro em bom estado.</p>
-      </div>
-    </div>
-
-    <div class="grid-metricas" id="gridMetricas" hidden>
-      <div class="metrica adv"><span id="s-adv">0</span><small>Advertências</small></div>
-      <div class="metrica elo"><span id="s-elo">0</span><small>Elogios</small></div>
-      <div class="metrica tick"><span id="s-tick">0</span><small>Tickets</small></div>
-      <div class="metrica aus"><span id="s-aus">0</span><small>Ausências</small></div>
-    </div>
-
-    <div class="bloco" id="dadosJogo" hidden>
-      <h4>Dados Operacionais</h4>
-      <div class="dados-lista">
-        <div class="linha-dado"><span class="key">Registro RP</span><span class="val" id="f-rp">-</span><input class="edit-input" id="edit-rp" placeholder="Ex: 882910"></div>
-        <div class="linha-dado"><span class="key">Discord</span><span class="val" id="f-discord">-</span><input class="edit-input" id="edit-discord"></div>
-        <div class="linha-dado"><span class="key">Game ID</span><span class="val" id="f-gameid">-</span><input class="edit-input" id="edit-gameid"></div>
-        <div class="linha-dado"><span class="key">Treinamento</span><span class="val" id="f-tre">-</span><select class="edit-input" id="edit-tre"><option value="Pendente">Pendente</option><option value="Concluído">Concluído</option></select></div>
-      </div>
-    </div>
-
-    <div class="bloco" id="dadosClassificados" hidden>
-      <h4 style="color: var(--vermelho);">🔒 Dados Classificados (Comando)</h4>
-      <div class="dados-lista">
-        <div class="linha-dado"><span class="key">Último IP</span><span class="val" id="f-ip">-</span><input class="edit-input" id="edit-ip"></div>
-        <div class="linha-dado"><span class="key">Nome Real</span><span class="val" id="f-nomereal">-</span></div>
-      </div>
-    </div>
-
-    <div class="bloco" id="historicoBox" hidden>
-      <h4>Histórico de Eventos</h4>
-      <div class="dados-lista" id="listaHistorico"></div>
-    </div>
-
-    <div class="bloco" id="notasBox" hidden>
-      <h4>Notas do Comando</h4>
-      <div class="terminal" id="terminalBox">
-        <div class="terminal-txt" id="f-obs">Nenhuma nota registrada.</div>
-      </div>
-      <textarea class="edit-input" id="edit-obs" rows="4" style="margin-top: 10px;"></textarea>
-    </div>
-    
-    <!-- Inputs ocultos para edição -->
-    <div id="adminInputs" style="display:none;">
-      <input type="number" id="edit-adv">
-      <input type="number" id="edit-elo">
-      <input type="number" id="edit-score">
-      <input type="text" id="edit-badges">
-      <input type="text" id="edit-hist">
-      <select id="edit-status"><option value="Ativo">Ativo</option><option value="Suspenso">Suspenso</option><option value="Exonerado">Exonerado</option></select>
-    </div>
-
-    <!-- Botão de Editar (Lápis SVG) -->
-    <button class="fab" id="btnEngrenagem" onclick="toggleEdicao()">
-      <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    </button>
-    
-    <!-- Botão de Salvar (Check SVG) -->
-    <button class="fab" id="btnSalvar" onclick="salvarEdicao()" style="display:none;">
-      <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-    </button>
+    <button class="klink" id="btnMinha" hidden>Voltar à minha ficha</button>
   </div>
+
+  <div id="ficha" hidden>
+    <div class="kcard kcab">
+      <div class="kfoto" id="fInicial">?</div>
+      <div class="kid">
+        <h1 id="fNome">-</h1>
+        <div class="ktags">
+          <span class="ktag cargo" id="tCargo">-</span>
+          <span class="ktag mat" id="tMat">-</span>
+          <span class="ktag" id="tStatus">-</span>
+        </div>
+        <div class="ktags" id="fBadges"></div>
+      </div>
+    </div>
+
+    <div class="kcard ktrust">
+      <div class="kanel" id="kAnel"><span id="fScore">100</span></div>
+      <div><b>Índice de confiabilidade</b><p id="fScoreTxt">-</p></div>
+    </div>
+
+    <div class="kgrade">
+      <div class="kmet"><span class="n coral" id="sAdv">0</span><small>Advertências</small></div>
+      <div class="kmet"><span class="n verde" id="sElo">0</span><small>Elogios</small></div>
+      <div class="kmet"><span class="n azul" id="sTick">0</span><small>Tickets</small></div>
+      <div class="kmet"><span class="n ouro" id="sAus">0</span><small>Ausências</small></div>
+    </div>
+
+    <div class="ksec">Dados operacionais</div>
+    <div class="kcard klista">
+      <div class="klin"><span>Game ID</span><b id="fGame">-</b></div>
+      <div class="klin"><span>Discord</span><b id="fDisc">-</b></div>
+      <div class="klin"><span>Treinamento</span><b id="fTre">-</b></div>
+    </div>
+
+    <div id="blocoClass" hidden>
+      <div class="ksec coral">Dados classificados · comando</div>
+      <div class="kcard klista">
+        <div class="klin"><span>Último IP</span><b id="fIp">-</b></div>
+        <div class="klin"><span>Nome real</span><b id="fReal">-</b></div>
+      </div>
+    </div>
+
+    <div class="ksec">Linha do tempo</div>
+    <div class="kcard klista" id="fHist"></div>
+
+    <div id="blocoNotas" hidden>
+      <div class="ksec">Notas do comando</div>
+      <div class="kcard knota" id="fObs">-</div>
+    </div>
+
+    <div class="kacoes" id="acoesAdmin" hidden>
+      <button class="kbtn" id="btnEvento">Registrar evento</button>
+      <button class="kbtn sec" id="btnEditar">Editar ficha</button>
+    </div>
+  </div>
+</div>
+
+<div class="kov" id="ov" hidden>
+  <div class="ksheet" id="shEvento" hidden>
+    <h3>Registrar evento</h3>
+    <label for="evTipo">Tipo</label>
+    <select id="evTipo">
+      <option value="adv">Advertência</option>
+      <option value="elo">Elogio</option>
+      <option value="promo">Promoção</option>
+      <option value="nota">Anotação</option>
+    </select>
+    <label for="evTxt">O que aconteceu (máx. 100 caracteres)</label>
+    <input id="evTxt" type="text" maxlength="100" autocomplete="off">
+    <label class="kauto" id="evAutoBox"><input type="checkbox" id="evAuto" checked><span>Atualizar contador e índice automaticamente</span></label>
+    <div class="krodape">
+      <button class="kbtn sec" id="evCancelar">Cancelar</button>
+      <button class="kbtn" id="evSalvar">Registrar</button>
+    </div>
+  </div>
+
+  <div class="ksheet" id="shEditar" hidden>
+    <h3>Editar ficha</h3>
+    <label for="eStatus">Situação</label>
+    <select id="eStatus"><option>Ativo</option><option>Suspenso</option><option>Exonerado</option></select>
+    <div class="kdupla">
+      <div><label for="eAdv">Advertências</label><input id="eAdv" type="number" min="0" max="99" inputmode="numeric"></div>
+      <div><label for="eElo">Elogios</label><input id="eElo" type="number" min="0" max="99" inputmode="numeric"></div>
+    </div>
+    <label for="eScore">Índice de confiabilidade (0 a 100)</label>
+    <input id="eScore" type="number" min="0" max="100" inputmode="numeric">
+    <label for="eBadges">Distintivos (separe por vírgula)</label>
+    <input id="eBadges" type="text" maxlength="80" autocomplete="off">
+    <label for="eTre">Treinamento</label>
+    <select id="eTre"><option>Pendente</option><option>Concluído</option></select>
+    <div class="kdupla">
+      <div><label for="eGame">Game ID</label><input id="eGame" type="text" maxlength="30" autocomplete="off"></div>
+      <div><label for="eDisc">Discord</label><input id="eDisc" type="text" maxlength="40" autocomplete="off"></div>
+    </div>
+    <label for="eObs">Notas do comando</label>
+    <textarea id="eObs" maxlength="400"></textarea>
+    <div class="krodape">
+      <button class="kbtn sec" id="edCancelar">Cancelar</button>
+      <button class="kbtn" id="edSalvar">Salvar</button>
+    </div>
+  </div>
+</div>
 
 <script src="/ui.js"></script>
 <script>
   const $ = (id) => document.getElementById(id);
-  let isAdmin = false;
-  let matriculaAtual = "";
-  let editando = false;
+  let eu = null;
+  let ficha = null;
+  let souAdmin = false;
 
-  // 1. Verifica quem está logado
-  fetch("/api/me").then(async (r) => {
-    if (!r.ok) { location.href = "/"; return; }
-    const d = await r.json();
-    if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
-    
-    isAdmin = d.nivel >= 50;
-    matriculaAtual = d.matricula;
+  function el(tag, cls, txt) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function limpar(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  const nz = (v, d) => (v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? d : Number(v));
+  const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
 
-    if (isAdmin) {
-      $("buscaAdmin").style.display = "block";
-      $("dadosClassificados").hidden = false;
-      $("btnEngrenagem").style.display = "flex";
-    }
-    
-    carregarFicha(d.matricula);
-  }).catch(() => { location.href = "/"; });
-
-  // 2. Carrega os dados do Dossiê
-  async function carregarFicha(mat) {
-    ['headerFicha', 'trustBox', 'gridMetricas', 'dadosJogo', 'notasBox', 'historicoBox'].forEach(id => $(id).hidden = true);
-    
+  function lerEventos(txt) {
+    if (!txt) return [];
     try {
-      const url = (isAdmin && mat !== matriculaAtual) ? `/api/admin/ficha?matricula=${mat}` : "/api/ficha";
-      const r = await fetch(url);
-      const d = await r.json();
-
-      if (!r.ok) {
-        customAlert(d.erro || "Dossiê não encontrado", "Erro de Acesso");
-        return;
+      const a = JSON.parse(txt);
+      if (Array.isArray(a)) {
+        return a.map((e) => ({
+          data: String((e && e.data) || ""),
+          tipo: String((e && e.tipo) || "nota"),
+          txt: String((e && e.txt) || "")
+        }));
       }
+    } catch (e) {}
+    return [{ data: "", tipo: "nota", txt: String(txt) }];
+  }
 
-      const f = d.ficha;
-      matriculaAtual = f.matricula;
+  function itemHist(ev) {
+    const t = ["adv", "elo", "promo"].includes(ev.tipo) ? ev.tipo : "nota";
+    const it = el("div", "kh " + t);
+    it.appendChild(el("span", "kd", ev.data));
+    it.appendChild(el("div", "kt", ev.txt));
+    return it;
+  }
 
-      // Preenche os dados básicos
-      $("avatar").textContent = f.nome.charAt(0).toUpperCase();
-      $("f-nome").textContent = f.nome;
-      $("f-cargo").textContent = f.cargo;
-      $("f-matricula").textContent = "#" + f.matricula;
-      
-      const statusEl = $("f-status");
-      statusEl.textContent = f.status || "Ativo";
-      statusEl.className = "tag status-" + (f.status || "Ativo");
+  function desenhar(outra) {
+    const f = ficha;
+    $("fNome").textContent = f.nome;
+    $("fInicial").textContent = String(f.nome || "?").charAt(0).toUpperCase();
+    $("tCargo").textContent = f.cargo;
+    $("tMat").textContent = "#" + f.matricula;
+    const st = f.status || "Ativo";
+    $("tStatus").textContent = st;
+    $("tStatus").className = "ktag st-" + (["Ativo", "Suspenso", "Exonerado"].includes(st) ? st : "Ativo");
 
-      // Badges
-      const badgesContainer = $("badges-container");
-      badgesContainer.innerHTML = "";
-      if (f.badges) {
-        f.badges.split(",").forEach(b => {
-          if (b.trim()) {
-            const span = document.createElement("span");
-            span.className = "tag";
-            span.style.color = "var(--marfim)";
-            span.style.borderColor = "var(--suave)";
-            span.textContent = "🏆 " + b.trim();
-            badgesContainer.appendChild(span);
-          }
-        });
-      }
+    const bd = $("fBadges");
+    limpar(bd);
+    String(f.badges || "").split(",").map((b) => b.trim()).filter(Boolean).slice(0, 6)
+      .forEach((b) => bd.appendChild(el("span", "ktag", "★ " + b)));
 
-      // Trust Score
-      const score = f.trust_score || 100;
-      $("f-score").textContent = score;
-      const scoreCircle = $("scoreCircle");
-      
-      let corScore = "var(--verde)";
-      let txtScore = "Membro em bom estado.";
-      if (score < 50) { corScore = "var(--vermelho)"; txtScore = "ALERTA: Risco elevado."; }
-      else if (score < 80) { corScore = "var(--ouro)"; txtScore = "Membro requer observação."; }
+    const score = limitar(nz(f.trust_score, 100), 0, 100);
+    let cor = "var(--k-verde)", txt = "Membro em bom estado.";
+    if (score < 50) { cor = "var(--k-coral)"; txt = "Alerta: risco elevado."; }
+    else if (score < 80) { cor = "var(--k-ouro)"; txt = "Membro requer observação."; }
+    $("kAnel").style.background = "conic-gradient(" + cor + " " + score + "%, #26302B 0)";
+    $("fScore").textContent = score;
+    $("fScore").style.color = cor;
+    $("fScoreTxt").textContent = txt;
+    $("fScoreTxt").style.color = cor;
 
-      scoreCircle.style.background = `conic-gradient(${corScore} ${score}%, #222 0)`;
-      $("f-score").style.color = corScore;
-      $("score-txt").textContent = txtScore;
-      $("score-txt").style.color = corScore;
+    $("sAdv").textContent = nz(f.advertencias, 0);
+    $("sElo").textContent = nz(f.elogios, 0);
+    $("sTick").textContent = nz(stats.tickets, 0);
+    $("sAus").textContent = nz(stats.ausencias, 0);
 
-      // Métricas
-      $("s-adv").textContent = f.advertencias || 0;
-      $("s-elo").textContent = f.elogios || 0;
-      $("s-tick").textContent = d.stats.tickets;
-      $("s-aus").textContent = d.stats.ausencias;
+    $("fGame").textContent = f.game_id || "Não informado";
+    $("fDisc").textContent = f.discord_id || "Não informado";
+    $("fTre").textContent = f.treinamento_status || "Pendente";
 
-      // Dados Operacionais
-      $("f-rp").textContent = f.game_id || "Não informado";
-      $("f-discord").textContent = f.discord_id || "Não informado";
-      $("f-gameid").textContent = f.game_id || "Não informado";
-      $("f-tre").textContent = f.treinamento_status || "Pendente";
+    $("blocoClass").hidden = !souAdmin;
+    if (souAdmin) {
+      $("fIp").textContent = f.ultimo_ip || "Desconhecido";
+      $("fReal").textContent = f.nome_real || "Não informado";
+    }
 
-      // Dados Classificados
-      if (isAdmin) {
-        $("f-ip").textContent = f.ultimo_ip || "Desconhecido";
-        $("f-nomereal").textContent = f.nome_real || "Não informado";
-      }
+    const h = $("fHist");
+    limpar(h);
+    const evs = lerEventos(f.historico_eventos);
+    if (!evs.length) h.appendChild(el("div", "kvazio", "Nenhum evento registrado."));
+    else evs.slice().reverse().forEach((ev) => h.appendChild(itemHist(ev)));
 
-      // Histórico
-      const listaHist = $("listaHistorico");
-      listaHist.innerHTML = "";
-      if (f.historico_eventos) {
-        try {
-          const eventos = JSON.parse(f.historico_eventos);
-          eventos.forEach(ev => {
-            const div = document.createElement("div");
-            div.className = "hist-item " + (ev.tipo === 'adv' ? 'adv' : ev.tipo === 'elo' ? 'elo' : '');
-            div.innerHTML = `<div class="hist-data">${ev.data}</div><div class="hist-txt">${ev.txt}</div>`;
-            listaHist.appendChild(div);
-          });
-        } catch (e) {
-          listaHist.innerHTML = `<div class="hist-item"><div class="hist-txt">${f.historico_eventos}</div></div>`;
-        }
-      } else {
-        listaHist.innerHTML = `<div class="hist-item"><div class="hist-txt" style="color:var(--suave)">Nenhum evento registrado.</div></div>`;
-      }
+    $("blocoNotas").hidden = !souAdmin;
+    if (souAdmin) $("fObs").textContent = (f.observacoes && f.observacoes.trim()) || "Nenhuma nota registrada.";
 
-      // Notas
-      if (f.observacoes && f.observacoes.trim() !== "") {
-        $("f-obs").textContent = f.observacoes;
-        $("f-obs").classList.remove("terminal-vazio");
-      } else {
-        $("f-obs").textContent = "Nenhuma nota registrada.";
-        $("f-obs").classList.add("terminal-vazio");
-      }
+    $("acoesAdmin").hidden = !souAdmin;
+    $("btnMinha").hidden = !outra;
+    $("ficha").hidden = false;
+  }
 
-      ['headerFicha', 'trustBox', 'gridMetricas', 'dadosJogo', 'notasBox', 'historicoBox'].forEach(id => $(id).hidden = false);
-
-      // Preenche inputs de edição
-      if (isAdmin) {
-        $("edit-adv").value = f.advertencias || 0;
-        $("edit-elo").value = f.elogios || 0;
-        $("edit-score").value = score;
-        $("edit-badges").value = f.badges || "";
-        $("edit-hist").value = f.historico_eventos || "";
-        $("edit-status").value = f.status || "Ativo";
-        
-        $("edit-rp").value = f.game_id || "";
-        $("edit-discord").value = f.discord_id || "";
-        $("edit-gameid").value = f.game_id || "";
-        $("edit-tre").value = f.treinamento_status || "Pendente";
-        
-        $("edit-ip").value = f.ultimo_ip || "";
-        $("edit-obs").value = f.observacoes || "";
-      }
-
+  let stats = { tickets: 0, ausencias: 0 };
+  async function carregar(mat) {
+    const outra = souAdmin && mat && mat !== eu.matricula;
+    const url = outra ? "/api/admin/ficha?matricula=" + encodeURIComponent(mat) : "/api/ficha";
+    let r, d;
+    try {
+      r = await fetch(url);
+      d = await r.json();
     } catch (e) {
-      customAlert("Falha de conexão com o servidor.", "Erro Crítico");
+      customAlert("Falha de conexão com o servidor.", "Erro");
+      return;
     }
+    if (!r.ok) { customAlert(d.erro || "Ficha não encontrada", "Erro de acesso"); return; }
+    ficha = d.ficha;
+    stats = d.stats || { tickets: 0, ausencias: 0 };
+    desenhar(outra);
   }
 
-  // 3. Busca Admin
-  function buscarMembro() {
-    const mat = $("buscaMatricula").value.trim();
-    if (!mat) { customAlert("Digite a matrícula do alvo.", "Aviso"); return; }
-    if (editando) toggleEdicao();
-    carregarFicha(mat);
+  function corpoBase() {
+    const f = ficha;
+    return {
+      matricula: f.matricula,
+      advertencias: String(nz(f.advertencias, 0)),
+      elogios: String(nz(f.elogios, 0)),
+      trust_score: String(nz(f.trust_score, 100)),
+      badges: f.badges || "",
+      historico_eventos: f.historico_eventos || "",
+      status: f.status || "Ativo",
+      game_id: f.game_id || "",
+      discord_id: f.discord_id || "",
+      treinamento_status: f.treinamento_status || "Pendente",
+      ultimo_ip: f.ultimo_ip || "",
+      observacoes: f.observacoes || ""
+    };
   }
 
-  // 4. Alternar Edição
-  function toggleEdicao() {
-    editando = !editando;
-    const textos = document.querySelectorAll('.val');
-    const inputs = document.querySelectorAll('.edit-input');
-    
-    if (editando) {
-      textos.forEach(t => t.style.display = 'none');
-      inputs.forEach(i => i.style.display = 'block');
-      $("btnEngrenagem").style.display = 'none';
-      $("btnSalvar").style.display = 'flex';
-      $("buscaAdmin").style.display = 'none';
-      $("f-obs").style.display = 'none';
-    } else {
-      textos.forEach(t => t.style.display = 'block');
-      inputs.forEach(i => i.style.display = 'none');
-      $("btnEngrenagem").style.display = 'flex';
-      $("btnSalvar").style.display = 'none';
-      $("buscaAdmin").style.display = 'block';
-      $("f-obs").style.display = 'block';
+  function fecharSheets() {
+    $("ov").hidden = true;
+    $("shEvento").hidden = true;
+    $("shEditar").hidden = true;
+  }
+
+  async function enviar(mudancas, pergunta) {
+    const corpo = Object.assign(corpoBase(), mudancas);
+    if (JSON.stringify(corpo).length > 1900) {
+      customAlert("A ficha atingiu o limite de tamanho do servidor. Apague notas antigas ou peça o próximo passo (histórico em tabela própria).", "Limite atingido");
+      return;
     }
-  }
-
-  // 5. Salvar
-  async function salvarEdicao() {
-    const confirmou = await customConfirm("Deseja salvar as alterações neste Dossiê?", "Confirmação de Comando");
-    if (!confirmou) return;
-
+    const ok = await customConfirm(pergunta, "Confirmação de comando");
+    if (!ok) return;
     try {
-      const body = {
-        matricula: matriculaAtual,
-        advertencias: $("edit-adv").value,
-        elogios: $("edit-elo").value,
-        trust_score: $("edit-score").value,
-        badges: $("edit-badges").value,
-        historico_eventos: $("edit-hist").value,
-        status: $("edit-status").value,
-        game_id: $("edit-gameid").value,
-        discord_id: $("edit-discord").value,
-        treinamento_status: $("edit-tre").value,
-        ultimo_ip: $("edit-ip").value,
-        observacoes: $("edit-obs").value
-      };
-
       const r = await fetch("/api/admin/ficha/editar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(corpo)
       });
-      
-      const d = await r.json();
-
-      if (r.ok) {
-        customAlert("Dossiê atualizado com sucesso.", "Sucesso");
-        toggleEdicao();
-        carregarFicha(matriculaAtual);
-      } else {
-        customAlert(d.erro || "Erro ao salvar", "Erro");
-      }
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { customAlert(d.erro || "Erro ao salvar", "Erro"); return; }
+      fecharSheets();
+      customAlert("Ficha atualizada com sucesso.", "Sucesso");
+      carregar(ficha.matricula);
     } catch (e) {
       customAlert("Falha de conexão.", "Erro");
     }
   }
+
+  function abrirEvento() {
+    $("evTipo").value = "adv";
+    $("evTxt").value = "";
+    $("evAuto").checked = true;
+    $("evAutoBox").hidden = false;
+    $("ov").hidden = false;
+    $("shEditar").hidden = true;
+    $("shEvento").hidden = false;
+  }
+  function abrirEditar() {
+    const f = ficha;
+    $("eStatus").value = f.status || "Ativo";
+    $("eAdv").value = nz(f.advertencias, 0);
+    $("eElo").value = nz(f.elogios, 0);
+    $("eScore").value = nz(f.trust_score, 100);
+    $("eBadges").value = f.badges || "";
+    $("eTre").value = f.treinamento_status || "Pendente";
+    $("eGame").value = f.game_id || "";
+    $("eDisc").value = f.discord_id || "";
+    $("eObs").value = f.observacoes || "";
+    $("ov").hidden = false;
+    $("shEvento").hidden = true;
+    $("shEditar").hidden = false;
+  }
+
+  function registrarEvento() {
+    const tipo = $("evTipo").value;
+    const txt = $("evTxt").value.trim().slice(0, 100);
+    if (!txt) { customAlert("Escreva o que aconteceu.", "Aviso"); return; }
+    const lista = lerEventos(ficha.historico_eventos);
+    const hoje = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    lista.push({ data: hoje, tipo, txt });
+    const mud = { historico_eventos: JSON.stringify(lista) };
+    if ($("evAuto").checked) {
+      const score = nz(ficha.trust_score, 100);
+      if (tipo === "adv") {
+        mud.advertencias = String(nz(ficha.advertencias, 0) + 1);
+        mud.trust_score = String(limitar(score - 10, 0, 100));
+      } else if (tipo === "elo") {
+        mud.elogios = String(nz(ficha.elogios, 0) + 1);
+        mud.trust_score = String(limitar(score + 5, 0, 100));
+      }
+    }
+    enviar(mud, "Registrar este evento na ficha de " + ficha.nome + "?");
+  }
+
+  function salvarEdicao() {
+    const inteiro = (id, a, b, d) => String(limitar(Math.round(nz($(id).value, d)), a, b));
+    enviar({
+      status: $("eStatus").value,
+      advertencias: inteiro("eAdv", 0, 99, 0),
+      elogios: inteiro("eElo", 0, 99, 0),
+      trust_score: inteiro("eScore", 0, 100, 100),
+      badges: $("eBadges").value.trim().slice(0, 80),
+      treinamento_status: $("eTre").value,
+      game_id: $("eGame").value.trim().slice(0, 30),
+      discord_id: $("eDisc").value.trim().slice(0, 40),
+      observacoes: $("eObs").value.trim().slice(0, 400)
+    }, "Salvar as alterações na ficha de " + ficha.nome + "?");
+  }
+
+  $("evTipo").onchange = () => { $("evAutoBox").hidden = !["adv", "elo"].includes($("evTipo").value); };
+  $("btnEvento").onclick = abrirEvento;
+  $("btnEditar").onclick = abrirEditar;
+  $("evCancelar").onclick = fecharSheets;
+  $("edCancelar").onclick = fecharSheets;
+  $("evSalvar").onclick = registrarEvento;
+  $("edSalvar").onclick = salvarEdicao;
+  $("ov").onclick = (e) => { if (e.target === $("ov")) fecharSheets(); };
+  $("btnBuscar").onclick = () => {
+    const mat = $("buscaMat").value.trim();
+    if (!mat) { customAlert("Digite a matrícula.", "Aviso"); return; }
+    carregar(mat);
+    };
+  $("buscaMat").onkeydown = (e) => { if (e.key === "Enter") $("btnBuscar").click(); };
+  $("btnMinha").onclick = () => { $("buscaMat").value = ""; carregar(null); };
+
+  (async () => {
+    try {
+      const r = await fetch("/api/me");
+      if (!r.ok) { location.href = "/"; return; }
+      eu = await r.json();
+      if (eu.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      souAdmin = eu.nivel >= 50;
+      $("buscaAdmin").hidden = !souAdmin;
+      await carregar(null);
+    } catch (e) { location.href = "/"; }
+  })();
 </script>
 </body>
-                                                                     </html>
+</html>
