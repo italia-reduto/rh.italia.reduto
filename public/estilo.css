@@ -216,3 +216,9 @@ body {
 #app-topbar-fixed .quem span { font-size: 13px; color: #8C9690; margin-top: 2px; }
 #app-topbar-fixed .sino { width: 44px; height: 44px; border-radius: 14px; background: #171C19; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.08); flex-shrink: 0; cursor: pointer; }
 #app-topbar-fixed .sino svg { width: 22px; height: 22px; fill: none; stroke: #F2F2EE; stroke-width: 1.8; }
+
+#app-topbar-fixed .avatar {
+  border-radius: 14px !important;
+  width: 46px !important;
+  height: 46px !important;
+}
