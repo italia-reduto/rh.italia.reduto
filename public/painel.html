@@ -11,19 +11,11 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   [hidden] { display: none !important; }
   body { margin:0; background:var(--fundo); color:var(--texto); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:120px; }
-  .tela { max-width:440px; margin:0 auto; padding:16px; }
+  .tela { max-width:440px; margin:0 auto; padding:4px 16px 16px; }
   svg.i { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; }
   button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; padding:0; }
 
-  .global-topbar { display:flex; align-items:center; gap:12px; max-width:440px; margin:0 auto; padding:20px 16px 0; }
-  .global-topbar .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-  .global-topbar .quem { flex:1; min-width:0; }
-  .global-topbar .quem b { display:block; font-size:18px; font-weight:500; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .global-topbar .quem span { font-size:13px; color:var(--suave); }
-  .global-topbar .sino { width:42px; height:42px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; flex:none; }
-  .global-topbar .sino svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-
-  .destaque { background:var(--verde); color:var(--verde-esc); border-radius:22px; padding:18px; margin-top:18px; }
+  .destaque { background:var(--verde); color:var(--verde-esc); border-radius:22px; padding:18px; margin-top:6px; }
   .destaque .l { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:500; }
   .destaque h2 { margin:10px 0 4px; font-size:19px; font-weight:500; line-height:1.3; }
   .destaque p { margin:0; font-size:13px; }
@@ -131,7 +123,7 @@
       <button class="it ativa"><svg class="i"><use href="#i-casa"/></svg>Painel</button>
       <a href="/tickets.html" class="it"><svg class="i"><use href="#i-ticket"/></svg></a>
       <button class="it" data-breve="O ponto chega em breve"><svg class="i"><use href="#i-rel"/></svg></button>
-      <button class="it" onclick="location.href='/ficha.html'">
+      <button class="it" onclick="location.href='/ficha.html'"><svg class="i"><use href="#i-id"/></svg></button>
       <button class="it" data-breve="O menu Mais chega em breve"><svg class="i"><use href="#i-grade"/></svg></button>
     </div>
   </div>
@@ -195,4 +187,4 @@
 </script>
 <script src="/painel-extra.js"></script>
 </body>
-  </html>
+      </html>
