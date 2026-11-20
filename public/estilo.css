@@ -188,3 +188,31 @@ a.link { display: block; margin-top: 20px; text-align: center; font-size: 14px; 
 body {
   padding-top: 76px !important; 
 }
+
+
+/* Topbar Global Blindada */
+#app-topbar-fixed {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 76px !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px !important;
+  background: #0E1110 !important; 
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+  box-sizing: border-box !important;
+}
+
+#app-topbar-fixed .avatar {
+  width: 46px; height: 46px; border-radius: 14px; background: #171C19; color: #35E08A; border: 1px solid #35E08A; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; flex-shrink: 0; overflow: hidden;
+}
+#app-topbar-fixed .avatar img { width: 100%; height: 100%; object-fit: cover; }
+#app-topbar-fixed .quem { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+#app-topbar-fixed .quem b { font-size: 18px; font-weight: 700; color: #F2F2EE; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#app-topbar-fixed .quem span { font-size: 13px; color: #8C9690; margin-top: 2px; }
+#app-topbar-fixed .sino { width: 44px; height: 44px; border-radius: 14px; background: #171C19; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.08); flex-shrink: 0; cursor: pointer; }
+#app-topbar-fixed .sino svg { width: 22px; height: 22px; fill: none; stroke: #F2F2EE; stroke-width: 1.8; }
