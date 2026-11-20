@@ -1,26 +1,35 @@
 (async function () {
   const script = document.currentScript;
   const isHome = script && script.getAttribute("data-home") === "true";
+  const ALTURA_INICIAL = 74;
+
+  // Reserva o espaço da barra já no início, para o conteúdo não "pular" quando ela carregar.
+  if (document.body) document.body.style.setProperty("padding-top", ALTURA_INICIAL + "px", "important");
+
+  function tirarReserva() {
+    if (document.body) document.body.style.removeProperty("padding-top");
+  }
 
   try {
     const r = await fetch("/api/me");
-    if (!r.ok) return;
+    if (!r.ok) { tirarReserva(); return; }
     const d = await r.json();
 
-    // A barra fica dentro de um Shadow DOM: o CSS das páginas não consegue alterá-la.
+    // A barra fica dentro de um Shadow DOM e presa ao topo do documento:
+    // nem o CSS nem o layout da página conseguem mexer nela.
     const host = document.createElement("div");
     host.id = "topbar-host";
     host.style.cssText =
-      "display:block;position:relative;top:auto;left:auto;float:none;transform:none;" +
-      "width:100%;max-width:440px;margin:0 auto;padding:0;border:0;background:none;" +
-      "box-sizing:border-box;flex:0 0 100%;z-index:50";
+      "position:absolute;top:0;left:0;right:0;width:auto;margin:0;padding:0;border:0;" +
+      "background:none;transform:none;float:none;display:block;z-index:90";
     const root = host.attachShadow({ mode: "open" });
 
     const estilo = document.createElement("style");
     estilo.textContent = `
       :host { all: initial; }
       * { -webkit-tap-highlight-color: transparent; }
-      .barra { display:flex; align-items:center; gap:12px; padding:16px 16px 12px; box-sizing:border-box;
+      .barra { display:flex; align-items:center; gap:12px; max-width:440px; margin:0 auto;
+               padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 12px; box-sizing:border-box;
                font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:#F2F2EE; }
       .avatar { width:46px; height:46px; border-radius:14px; background:#12261D; border:1.5px solid #35E08A;
                 color:#35E08A; display:flex; align-items:center; justify-content:center; font-size:18px;
@@ -80,12 +89,19 @@
     root.appendChild(barra);
     document.body.insertAdjacentElement("afterbegin", host);
 
-    const cs = getComputedStyle(document.body);
-    if (cs.display === "flex" && cs.flexDirection === "row") {
-      document.body.style.flexWrap = "wrap";
-      document.body.style.alignContent = "flex-start";
-    }
+    // Zera qualquer espaço/margem de cima que a página tenha e reserva só a altura da barra.
+    const ajustar = () => {
+      const h = Math.ceil(host.getBoundingClientRect().height) || ALTURA_INICIAL;
+      document.documentElement.style.setProperty("margin-top", "0", "important");
+      document.documentElement.style.setProperty("padding-top", "0", "important");
+      document.body.style.setProperty("margin-top", "0", "important");
+      document.body.style.setProperty("padding-top", h + "px", "important");
+    };
+    ajustar();
+    if (window.ResizeObserver) new ResizeObserver(ajustar).observe(host);
+    window.addEventListener("load", ajustar);
   } catch (e) {
+    tirarReserva();
     console.error("Erro ao carregar topbar", e);
   }
 })();
