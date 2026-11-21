@@ -501,6 +501,27 @@ if (d.imagem.length > 150000) return json({ erro: "Imagem muito grande" }, 400);
 
   return json({ ok: true, mensagem: "Foto atualizada!" });
 }
+async function salvarFotoSegura(request, env) {
+  const eu = await quemSou(request, env);
+  if (!eu || eu.trocar_senha) return json({ erro: "Não autenticado" }, 401);
+  if (Number(request.headers.get("Content-Length") || 0) > 200000) return json({ erro: "Imagem muito grande" }, 413);
+
+  let d;
+  try { d = await request.json(); } catch (e) { return json({ erro: "Formato inválido" }, 400); }
+
+  const img = d && d.imagem;
+  if (typeof img !== "string") return json({ erro: "Imagem inválida" }, 400);
+  if (img.length > 150000) return json({ erro: "Imagem muito grande" }, 400);
+  if (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(img)) return json({ erro: "Formato inválido (use JPG, PNG ou WebP)" }, 400);
+
+  try {
+    await env.DB.prepare("UPDATE membros SET avatar_base64 = ? WHERE id = ?").bind(img, eu.id).run();
+  } catch (e) {
+    console.error("Erro ao salvar foto:", e && e.message);
+    return json({ erro: "Não foi possível salvar a foto. Tente de novo." }, 500);
+  }
+  return json({ ok: true, mensagem: "Foto atualizada!" });
+    }
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -526,7 +547,7 @@ export default {
         if (p === "/api/ausencias/pedir") return await pedirAusencia(request, env);
         if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
-        if (p === "/api/perfil/foto") return await salvarFotoPerfil(request, env);
+        if (p === "/api/perfil/foto") return await salvarFotoSegura(request, env);
         if (p === "/api/logout") {
           const token = pegarCookie(request, "sessao");
           if (token) await env.DB.prepare("DELETE FROM sessoes WHERE token_hash = ?").bind(await sha256(token)).run();
