@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Ponto · Itália RH</title>
+<style>
+  :root{--bg:#0E1110;--card:#171C19;--verde:#35E08A;--esc:#06281A;--suave:#8C9690;--texto:#F2F2EE;--coral:#FF7A6B;--ouro:#E0B85A;--linha:rgba(255,255,255,.08)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
+  .tela{max-width:440px;margin:0 auto;padding:16px}
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+  .card{background:var(--card);border-radius:24px;padding:20px 16px;text-align:center}
+  .rot{font-size:13px;color:var(--suave)}
+  .rot.on{color:var(--verde)}
+  .tempo{margin:8px 0 2px;font-size:44px;font-weight:600;letter-spacing:1px;font-variant-numeric:tabular-nums}
+  .desde{min-height:18px;font-size:13px;color:var(--suave)}
+  .bater{width:100%;margin-top:18px;padding:16px;border-radius:30px;background:var(--verde);color:var(--esc);font-size:16px;font-weight:600}
+  .bater.sair{background:var(--coral);color:#2A0A06}
+  .bater:disabled{opacity:.55}
+  .grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+  .met{background:var(--card);border-radius:20px;padding:14px 8px;text-align:center}
+  .met b{display:block;font-size:19px;font-weight:600}
+  .met small{display:block;margin-top:6px;font-size:11px;color:var(--suave)}
+  .sec{margin:22px 4px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--suave)}
+  .lista{background:var(--card);border-radius:24px;overflow:hidden}
+  .lin{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha);font-size:14px}
+  .lin:last-child{border-bottom:0}
+  .lin .e{flex:1;min-width:0}
+  .lin .e b{display:block;font-weight:500;overflow-wrap:anywhere}
+  .lin .e small{display:block;margin-top:2px;font-size:12px;color:var(--suave)}
+  .lin .d{font-size:13px;color:var(--verde);white-space:nowrap}
+  .lin .pos{width:22px;font-size:13px;color:var(--ouro);font-weight:600}
+  .enc{font-size:12px;color:var(--coral);text-decoration:underline}
+  .vazio{padding:16px;font-size:13px;color:var(--suave)}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--texto);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:300}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<script src="/topbar.js"></script>
+<div class="tela">
+  <div class="card">
+    <div class="rot" id="stRot">Carregando...</div>
+    <div class="tempo" id="stTempo">00:00:00</div>
+    <div class="desde" id="stDesde"></div>
+    <button class="bater" id="btnBater" disabled>Aguarde...</button>
+  </div>
+
+  <div class="grade">
+    <div class="met"><b id="mHoje">0min</b><small>Hoje</small></div>
+    <div class="met"><b id="mSem">0min</b><small>Esta semana</small></div>
+    <div class="met"><b id="mSeq">0</b><small>Dias seguidos</small></div>
+  </div>
+
+  <div class="sec">Histórico recente</div>
+  <div class="lista" id="hist"></div>
+
+  <div id="admin" hidden>
+    <div class="sec">Em serviço agora</div>
+    <div class="lista" id="online"></div>
+    <div class="sec">Ranking da semana</div>
+    <div class="lista" id="rank"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let desvio = 0, aberto = null, base = { hoje: 0, semana: 0, t: 0 }, ocupado = false, timerToast;
+
+  const agoraServ = () => Math.floor(Date.now() / 1000) + desvio;
+  const dois = (n) => String(n).padStart(2, "0");
+  const cronometro = (s) => dois(Math.floor(s / 3600)) + ":" + dois(Math.floor((s % 3600) / 60)) + ":" + dois(s % 60);
+  function duracao(s) {
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h ? h + "h " + dois(m) + "min" : m + "min";
+  }
+  const hora = (t) => new Date(t * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const dia = (t) => new Date(t * 1000).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+
+  function aviso(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(timerToast);
+    timerToast = setTimeout(() => t.classList.remove("on"), 2600);
+  }
+  function el(tag, cls, txt) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function limpar(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function vazio(box, txt) { limpar(box); box.appendChild(el("div", "vazio", txt)); }
+  async function api(url, corpo) {
+    const opc = corpo === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) };
+    try {
+      const r = await fetch(url, opc);
+      let d = {};
+      try { d = await r.json(); } catch (e) {}
+      if (r.status === 401) { location.href = "/"; }
+      return { ok: r.ok, d };
+    } catch (e) { return { ok: false, d: { erro: "Falha de conexão." } }; }
+  }
+
+  function atualizarRelogio() {
+    const now = agoraServ();
+    if (aberto) {
+      const passou = now - aberto.entrada;
+      $("stTempo").textContent = cronometro(passou);
+      const extra = now - base.t;
+      $("mHoje").textContent = duracao(base.hoje + extra);
+      $("mSem").textContent = duracao(base.semana + extra);
+    }
+  }
+
+  function desenharStatus() {
+    const btn = $("btnBater");
+    btn.disabled = false;
+    if (aberto) {
+      $("stRot").textContent = "Em serviço";
+      $("stRot").className = "rot on";
+      $("stDesde").textContent = "Desde as " + hora(aberto.entrada);
+      btn.textContent = "Bater saída";
+      btn.className = "bater sair";
+    } else {
+      $("stRot").textContent = "Fora de serviço";
+      $("stRot").className = "rot";
+      $("stTempo").textContent = "00:00:00";
+      $("stDesde").textContent = "";
+      btn.textContent = "Bater entrada";
+      btn.className = "bater";
+    }
+  }
+
+  function desenharHistorico(lista) {
+    const box = $("hist");
+    if (!lista.length) { vazio(box, "Nenhum registro ainda."); return; }
+    limpar(box);
+    lista.forEach((s) => {
+      const lin = el("div", "lin");
+      const e = el("div", "e");
+      e.appendChild(el("b", null, dia(s.entrada) + " · " + hora(s.entrada) + (s.saida ? " → " + hora(s.saida) : " → em serviço")));
+      if (s.nota) e.appendChild(el("small", null, s.nota));
+      lin.appendChild(e);
+      lin.appendChild(el("span", "d", s.saida ? duracao(s.saida - s.entrada) : "agora"));
+      box.appendChild(lin);
+    });
+  }
+
+  async function carregar() {
+    const { ok, d } = await api("/api/ponto");
+    if (!ok) { aviso(d.erro || "Erro ao carregar o ponto."); return; }
+    desvio = d.agora - Math.floor(Date.now() / 1000);
+    aberto = d.aberto;
+    base = { hoje: d.hoje, semana: d.semana, t: d.agora };
+    $("mHoje").textContent = duracao(d.hoje);
+    $("mSem").textContent = duracao(d.semana);
+    $("mSeq").textContent = d.sequencia;
+    desenharStatus();
+    desenharHistorico(d.historico || []);
+    atualizarRelogio();
+  }
+
+  $("btnBater").onclick = async () => {
+    if (ocupado) return;
+    ocupado = true;
+    $("btnBater").disabled = true;
+    const { ok, d } = await api(aberto ? "/api/ponto/sair" : "/api/ponto/entrar", {});
+    ocupado = false;
+    if (!ok) { aviso(d.erro || "Não foi possível bater o ponto."); $("btnBater").disabled = false; return; }
+    aviso(aberto ? "Saída registrada: " + duracao(d.duracao || 0) : "Entrada registrada!");
+    await carregar();
+    if (!$("admin").hidden) carregarAdmin();
+  };
+
+  async function carregarAdmin() {
+    const { ok, d } = await api("/api/admin/ponto");
+    if (!ok) return;
+    $("admin").hidden = false;
+    const on = $("online");
+    if (!d.online.length) vazio(on, "Ninguém em serviço agora.");
+    else {
+      limpar(on);
+      d.online.forEach((s) => {
+        const lin = el("div", "lin");
+        const e = el("div", "e");
+        e.appendChild(el("b", null, s.nome));
+        e.appendChild(el("small", null, s.cargo + " · desde as " + hora(s.entrada) + " · " + duracao(d.agora - s.entrada)));
+        lin.appendChild(e);
+        const b = el("button", "enc", "Encerrar");
+        let armado = false;
+        b.onclick = async () => {
+          if (!armado) { armado = true; b.textContent = "Toque de novo"; setTimeout(() => { armado = false; b.textContent = "Encerrar"; }, 3000); return; }
+          const r = await api("/api/admin/ponto/encerrar", { id: s.id });
+          aviso(r.ok ? "Ponto encerrado." : (r.d.erro || "Erro ao encerrar."));
+          carregarAdmin();
+        };
+        lin.appendChild(b);
+        on.appendChild(lin);
+      });
+    }
+    const rk = $("rank");
+    if (!d.ranking.length) vazio(rk, "Sem registros nesta semana.");
+    else {
+      limpar(rk);
+      d.ranking.forEach((s, i) => {
+        const lin = el("div", "lin");
+        lin.appendChild(el("span", "pos", String(i + 1)));
+        const e = el("div", "e");
+        e.appendChild(el("b", null, s.nome));
+        e.appendChild(el("small", null, "Mat. " + s.matricula));
+        lin.appendChild(e);
+        lin.appendChild(el("span", "d", duracao(Math.max(0, s.seg || 0))));
+        rk.appendChild(lin);
+      });
+    }
+  }
+
+  (async () => {
+    try {
+      const r = await fetch("/api/me");
+      if (!r.ok) { location.href = "/"; return; }
+      const eu = await r.json();
+      if (eu.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      await carregar();
+      setInterval(atualizarRelogio, 1000);
+      if (eu.nivel >= 50) { carregarAdmin(); setInterval(carregarAdmin, 60000); }
+    } catch (e) { location.href = "/"; }
+  })();
+</script>
+</body>
+</html>
