@@ -1,3 +1,4 @@
+import { rotasPonto } from "./ponto.js";
 const TIPOS = ["adv", "elo", "promo", "nota"];
 const STATUS_OK = ["Ativo", "Suspenso", "Exonerado"];
 const TREINO_OK = ["Pendente", "Concluído"];
