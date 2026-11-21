@@ -112,7 +112,7 @@ async function quemSou(request, env) {
   const token = pegarCookie(request, "sessao");
   if (!token) return null;
   return await env.DB.prepare(
-  "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha, m.matricula, m.avatar_base64 FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
+  "SELECT m.id, m.nome, m.cargo, m.nivel, m.trocar_senha, m.matricula FROM sessoes s JOIN membros m ON m.id = s.membro_id WHERE s.token_hash = ? AND s.expira_em > ? AND m.ativo = 1"
 ).bind(await sha256(token), agora()).first();
 }
 
@@ -121,6 +121,11 @@ async function exigirAdmin(request, env) {
   return eu && eu.nivel >= 50 && !eu.trocar_senha ? eu : null;
 }
 
+function ipDiscreto(ip) {
+  if (!ip) return "";
+  if (ip.includes(".")) return ip.split(".").slice(0, 3).join(".") + ".x";
+  return ip.split(":").slice(0, 3).join(":") + "::x";
+}
 async function login(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const d = await lerCorpo(request);
@@ -152,7 +157,8 @@ async function login(request, env) {
   await env.DB.prepare(
     "INSERT INTO sessoes (token_hash, membro_id, aparelho, expira_em) VALUES (?, ?, ?, ?)"
   ).bind(await sha256(token), m.id, (request.headers.get("User-Agent") || "").slice(0, 120), agora() + duracao).run();
-  await auditar(env, m.id, "login_ok", null, ip);
+  await env.DB.prepare("UPDATE membros SET ultimo_ip = ? WHERE id = ?").bind(ipDiscreto(ip), m.id).run();
+await auditar(env, m.id, "login_ok", null, ip);
 
   return json(
     { ok: true, nome: m.nome, cargo: m.cargo, trocar_senha: m.trocar_senha },
@@ -484,18 +490,12 @@ async function salvarFotoPerfil(request, env) {
   const eu = await quemSou(request, env);
   if (!eu) return json({ erro: "Não autenticado" }, 401);
 
-  // Lê o corpo ignorando o limite de 2000 caracteres do lerCorpo padrão
-  let d;
-  try {
-    d = await request.json();
-  } catch(e) {
-    return json({ erro: "Formato inválido" }, 400);
-  }
+if (eu.trocar_senha) return json({ erro: "Não autenticado" }, 401);
+if (Number(request.headers.get("Content-Length") || 0) > 200000) return json({ erro: "Imagem muito grande" }, 413);
 
-  if (!d || !d.imagem) return json({ erro: "Imagem inválida" }, 400);
-  if (!d.imagem.startsWith("data:image/")) return json({ erro: "Formato inválido" }, 400);
-  if (d.imagem.length > 800000) return json({ erro: "Imagem muito grande (máx 800kb)" }, 400);
-
+  if (!d || typeof d.imagem !== "string") return json({ erro: "Imagem inválida" }, 400);
+if (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(d.imagem)) return json({ erro: "Formato inválido (use JPG, PNG ou WebP)" }, 400);
+if (d.imagem.length > 150000) return json({ erro: "Imagem muito grande" }, 400);
   await env.DB.prepare("UPDATE membros SET avatar_base64 = ? WHERE id = ?")
     .bind(d.imagem, eu.id).run();
 
@@ -536,7 +536,9 @@ export default {
       if (metodo === "GET") {
         if (p === "/api/me") {
           const eu = await quemSou(request, env);
-          return eu ? json({ ok: true, ...eu }) : json({ erro: "Não autenticado" }, 401);
+          if (!eu) return json({ erro: "Não autenticado" }, 401);
+const fr = await env.DB.prepare("SELECT avatar_base64 FROM membros WHERE id = ?").bind(eu.id).first();
+return json({ ok: true, ...eu, avatar_base64: fr ? fr.avatar_base64 : null });
         }
         if (p === "/api/admin/pedidos") return await listarPedidos(request, env);
         if (p === "/api/tickets/meus") return await meusTickets(request, env);
