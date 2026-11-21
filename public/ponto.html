@@ -13,144 +13,273 @@
   body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
   .tela{max-width:440px;margin:0 auto;padding:16px}
   button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
-  .card{background:var(--card);border-radius:24px;padding:20px 16px;text-align:center}
+  .abas{display:flex;gap:4px;background:var(--card);border-radius:20px;padding:4px;margin-bottom:12px}
+  .abas button{flex:1;padding:11px 4px;border-radius:16px;font-size:13px;font-weight:600;color:var(--suave)}
+  .abas button.on{background:var(--verde);color:var(--esc)}
+  .card{background:var(--card);border-radius:24px;padding:20px 16px;text-align:center;margin-bottom:10px}
   .rot{font-size:13px;color:var(--suave)}
-  .rot.on{color:var(--verde)}
+  .rot.on{color:var(--verde)} .rot.pausa{color:var(--ouro)}
   .tempo{margin:8px 0 2px;font-size:44px;font-weight:600;letter-spacing:1px;font-variant-numeric:tabular-nums}
-  .desde{min-height:18px;font-size:13px;color:var(--suave)}
-  .bater{width:100%;margin-top:18px;padding:16px;border-radius:30px;background:var(--verde);color:var(--esc);font-size:16px;font-weight:600}
-  .bater.sair{background:var(--coral);color:#2A0A06}
-  .bater:disabled{opacity:.55}
-  .grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
-  .met{background:var(--card);border-radius:20px;padding:14px 8px;text-align:center}
-  .met b{display:block;font-size:19px;font-weight:600}
-  .met small{display:block;margin-top:6px;font-size:11px;color:var(--suave)}
-  .sec{margin:22px 4px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--suave)}
+  .desde{min-height:18px;font-size:12px;color:var(--suave);line-height:1.5}
+  .acoes{display:flex;gap:10px;margin-top:18px}
+  .bt{flex:1;padding:15px 10px;border-radius:30px;background:var(--verde);color:var(--esc);font-size:15px;font-weight:600}
+  .bt.sec{background:transparent;color:var(--texto);border:1px solid var(--linha)}
+  .bt.perigo{background:var(--coral);color:#2A0A06}
+  .bt:disabled{opacity:.5}
+  .espera{background:rgba(224,184,90,.1);border:1px solid rgba(224,184,90,.4);border-radius:18px;padding:14px;margin-bottom:16px}
+  .espera .et{font-size:12px;color:var(--ouro);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .espera .ec{margin-top:6px;font-size:16px;font-weight:600}
+  .barra{height:6px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:10px;overflow:hidden}
+  .barra i{display:block;height:100%;width:100%;background:var(--ouro);transition:width 1s linear}
+  .grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+  .met{background:var(--card);border-radius:20px;padding:14px}
+  .met b{display:block;font-size:22px;font-weight:600}
+  .met small{display:block;margin-top:6px;font-size:12px;color:var(--suave)}
+  .sec{margin:20px 4px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--suave)}
   .lista{background:var(--card);border-radius:24px;overflow:hidden}
   .lin{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha);font-size:14px}
   .lin:last-child{border-bottom:0}
   .lin .e{flex:1;min-width:0}
   .lin .e b{display:block;font-weight:500;overflow-wrap:anywhere}
-  .lin .e small{display:block;margin-top:2px;font-size:12px;color:var(--suave)}
+  .lin .e small{display:block;margin-top:3px;font-size:12px;color:var(--suave)}
   .lin .d{font-size:13px;color:var(--verde);white-space:nowrap}
   .lin .pos{width:22px;font-size:13px;color:var(--ouro);font-weight:600}
+  .lin.sessao{display:block}
+  .lin.tocavel{cursor:pointer}
+  .stop{display:flex;align-items:center;gap:12px}
+  .chips2{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .ch{font-size:11px;padding:4px 10px;border-radius:30px;background:rgba(255,255,255,.06);color:var(--texto)}
+  .det{margin-top:10px;padding-top:10px;border-top:1px dashed var(--linha)}
+  .pl{font-size:12px;color:var(--suave);padding:3px 0}
+  .dia{display:flex;justify-content:space-between;align-items:center;margin:18px 4px 8px;font-size:13px}
+  .dia b{text-transform:capitalize;font-weight:600}
+  .dia span{color:var(--verde);font-weight:600}
   .enc{font-size:12px;color:var(--coral);text-decoration:underline}
   .vazio{padding:16px;font-size:13px;color:var(--suave)}
-  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--texto);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:300}
+  .filtros{text-align:left}
+  .dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{display:block;margin:0 0 6px;font-size:12px;color:var(--suave)}
+  input[type=date]{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:12px;font:inherit;font-size:15px;color:var(--texto);outline:none}
+  .chips{display:flex;gap:6px;margin:12px 0}
+  .chips button{flex:1;padding:10px 4px;border-radius:30px;border:1px solid var(--linha);font-size:12px;color:var(--suave)}
+  .chips button.on{border-color:var(--verde);color:var(--verde)}
+  .filtros .bt{width:100%;flex:none}
+  .topo-sec{display:flex;justify-content:space-between;align-items:flex-end}
+  .topo-sec button{font-size:12px;color:var(--verde);text-decoration:underline;margin:0 4px 8px}
+  .ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center}
+  .sheet{width:100%;max-width:440px;background:#131815;border-radius:26px 26px 0 0;padding:24px 18px calc(22px + env(safe-area-inset-bottom));text-align:center}
+  .sheet h3{margin:0 0 8px;font-size:20px;font-weight:600}
+  .sheet p{margin:0;font-size:14px;line-height:1.55;color:var(--suave)}
+  .icone{width:56px;height:56px;margin:0 auto 14px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:rgba(53,224,138,.12);color:var(--verde)}
+  .icone svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .alerta{margin:16px 0 4px;padding:14px;border-radius:16px;text-align:left;background:rgba(224,184,90,.1);border:1px solid rgba(224,184,90,.4)}
+  .alerta b{display:block;font-size:13px;color:var(--ouro);margin-bottom:4px}
+  .alerta span{font-size:13px;line-height:1.5}
+  .resumo{margin:16px 0 0;background:var(--card);border-radius:16px;overflow:hidden;text-align:left}
+  .resumo div{display:flex;justify-content:space-between;padding:12px 14px;font-size:14px;border-bottom:1px solid var(--linha)}
+  .resumo div:last-child{border-bottom:0}
+  .resumo span{color:var(--suave)}
+  .contagem{margin-top:16px;font-size:17px;font-weight:600;color:var(--ouro);font-variant-numeric:tabular-nums}
+  .botoes{display:flex;gap:10px;margin-top:20px}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--texto);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:400}
   .toast.on{opacity:1}
 </style>
 </head>
 <body>
 <script src="/topbar.js"></script>
 <div class="tela">
-  <div class="card">
-    <div class="rot" id="stRot">Carregando...</div>
-    <div class="tempo" id="stTempo">00:00:00</div>
-    <div class="desde" id="stDesde"></div>
-    <button class="bater" id="btnBater" disabled>Aguarde...</button>
+  <div class="abas">
+    <button class="on" data-aba="ponto">Meu ponto</button>
+    <button data-aba="hist">Histórico</button>
+    <button data-aba="cmd" id="abaCmd" hidden>Comando</button>
   </div>
 
-  <div class="grade">
-    <div class="met"><b id="mHoje">0min</b><small>Hoje</small></div>
-    <div class="met"><b id="mSem">0min</b><small>Esta semana</small></div>
-    <div class="met"><b id="mSeq">0</b><small>Dias seguidos</small></div>
-  </div>
+  <section id="sPonto">
+    <div class="card">
+      <div class="espera" id="espera" hidden>
+        <div class="et">Ponto encerrado</div>
+        <div class="ec" id="esperaTxt"></div>
+        <div class="barra"><i id="esperaBarra"></i></div>
+      </div>
+      <div class="rot" id="stRot">Carregando...</div>
+      <div class="tempo" id="stTempo">00:00:00</div>
+      <div class="desde" id="stDesde"></div>
+      <div class="acoes" id="acoes"></div>
+    </div>
+    <div class="grade">
+      <div class="met"><b id="mHoje">0min</b><small>Hoje</small></div>
+      <div class="met"><b id="mSem">0min</b><small>Esta semana</small></div>
+      <div class="met"><b id="mSeq">0</b><small>Dias seguidos</small></div>
+      <div class="met"><b id="mMeta">0/7</b><small id="mMetaRot">Dias com meta</small></div>
+    </div>
+    <div class="sec">Registros de hoje</div>
+    <div class="lista" id="hojeLista"></div>
+  </section>
 
-  <div class="sec">Histórico recente</div>
-  <div class="lista" id="hist"></div>
+  <section id="sHist" hidden>
+    <div class="card filtros">
+      <div class="dupla">
+        <div><label for="de">De</label><input type="date" id="de"></div>
+        <div><label for="ate">Até</label><input type="date" id="ate"></div>
+      </div>
+      <div class="chips">
+        <button data-n="1">Hoje</button><button data-n="7">7 dias</button><button data-n="30" class="on">30 dias</button><button data-n="90">90 dias</button>
+      </div>
+      <button class="bt" id="btnBuscar">Buscar</button>
+    </div>
+    <div class="grade">
+      <div class="met"><b id="rTrab">0min</b><small>Tempo trabalhado</small></div>
+      <div class="met"><b id="rPaus">0min</b><small>Tempo pausado</small></div>
+      <div class="met"><b id="rInic">0</b><small>Inícios de ponto</small></div>
+      <div class="met"><b id="rDias">0</b><small>Dias com registro</small></div>
+    </div>
+    <button class="bt sec" id="btnCsv" style="width:100%">Exportar CSV detalhado</button>
+    <div id="histLista"></div>
+  </section>
 
-  <div id="admin" hidden>
+  <section id="sCmd" hidden>
     <div class="sec">Em serviço agora</div>
     <div class="lista" id="online"></div>
-    <div class="sec">Ranking da semana</div>
+    <div class="topo-sec"><div class="sec">Ranking da semana</div><button id="btnRank">Atualizar</button></div>
     <div class="lista" id="rank"></div>
-  </div>
+  </section>
 </div>
+
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
   const $ = (id) => document.getElementById(id);
-  let desvio = 0, aberto = null, base = { hoje: 0, semana: 0, t: 0 }, ocupado = false, timerToast;
+  let desvio = 0, aberto = null, base = { hoje: 0, semana: 0, t: 0 }, esperaFim = 0;
+  let ocupado = false, btnIniciar = null, sheetEspera = null, ultimo = null, timerToast, timerOnline = null;
+  let histCarregado = false, souAdmin = false, rankCarregado = false;
 
   const agoraServ = () => Math.floor(Date.now() / 1000) + desvio;
   const dois = (n) => String(n).padStart(2, "0");
-  const cronometro = (s) => dois(Math.floor(s / 3600)) + ":" + dois(Math.floor((s % 3600) / 60)) + ":" + dois(s % 60);
-  function duracao(s) {
+  const cron = (s) => { s = Math.max(0, Math.floor(s)); return dois(Math.floor(s / 3600)) + ":" + dois(Math.floor((s % 3600) / 60)) + ":" + dois(s % 60); };
+  function dur(s) {
+    s = Math.max(0, Math.floor(s));
+    if (s < 60) return s + "s";
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
     return h ? h + "h " + dois(m) + "min" : m + "min";
   }
   const hora = (t) => new Date(t * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-  const dia = (t) => new Date(t * 1000).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const horaSeg = (t) => new Date(t * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const chaveDia = (t) => new Date((t - 3 * 3600) * 1000).toISOString().slice(0, 10);
+  const dataBR = (c) => c.slice(8, 10) + "/" + c.slice(5, 7) + "/" + c.slice(0, 4);
+  const rotuloDia = (c) => new Date(Date.UTC(+c.slice(0, 4), +c.slice(5, 7) - 1, +c.slice(8, 10)))
+    .toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", timeZone: "UTC" });
 
-  function aviso(msg) {
-    const t = $("toast");
-    t.textContent = msg;
-    t.classList.add("on");
-    clearTimeout(timerToast);
-    timerToast = setTimeout(() => t.classList.remove("on"), 2600);
-  }
-  function el(tag, cls, txt) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (txt !== undefined) e.textContent = txt;
-    return e;
-  }
+  function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
   function limpar(n) { while (n.firstChild) n.removeChild(n.firstChild); }
   function vazio(box, txt) { limpar(box); box.appendChild(el("div", "vazio", txt)); }
+  function aviso(msg) {
+    const t = $("toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(timerToast); timerToast = setTimeout(() => t.classList.remove("on"), 2800);
+  }
   async function api(url, corpo) {
     const opc = corpo === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) };
     try {
       const r = await fetch(url, opc);
       let d = {};
       try { d = await r.json(); } catch (e) {}
-      if (r.status === 401) { location.href = "/"; }
+      if (r.status === 401) location.href = "/";
       return { ok: r.ok, d };
     } catch (e) { return { ok: false, d: { erro: "Falha de conexão." } }; }
   }
 
-  function atualizarRelogio() {
+  // ---------- Janelas (sheet) ----------
+  function abrirSheet(montar) { const s = $("sheet"); limpar(s); sheetEspera = null; montar(s); $("ov").hidden = false; }
+  function fecharSheet() { $("ov").hidden = true; sheetEspera = null; }
+  $("ov").onclick = (e) => { if (e.target === $("ov")) fecharSheet(); };
+  function icone(path) {
+    const d = el("div", "icone");
+    d.innerHTML = '<svg viewBox="0 0 24 24">' + path + "</svg>";
+    return d;
+  }
+
+  // ---------- Aba "Meu ponto" ----------
+  function tick() {
     const now = agoraServ();
     if (aberto) {
-      const passou = now - aberto.entrada;
-      $("stTempo").textContent = cronometro(passou);
-      const extra = now - base.t;
-      $("mHoje").textContent = duracao(base.hoje + extra);
-      $("mSem").textContent = duracao(base.semana + extra);
+      const emPausa = aberto.pausa_inicio !== null;
+      const pausaAtual = emPausa ? now - aberto.pausa_inicio : 0;
+      $("stTempo").textContent = cron(now - aberto.entrada - aberto.pausa_total - pausaAtual);
+      if (emPausa) $("stDesde").textContent = "Em pausa há " + cron(pausaAtual) + " · pausas acima de 30 min encerram o ponto";
+      const extra = emPausa ? 0 : now - base.t;
+      $("mHoje").textContent = dur(base.hoje + extra);
+      $("mSem").textContent = dur(base.semana + extra);
+    }
+    const falta = Math.max(0, esperaFim - now);
+    if (falta > 0) {
+      const mmss = cron(falta).slice(3);
+      $("espera").hidden = false;
+      $("esperaTxt").textContent = "Você poderá iniciar de novo em " + mmss;
+      $("esperaBarra").style.width = Math.round((falta / 60) * 100) + "%";
+      if (btnIniciar) btnIniciar.textContent = "Aguarde " + mmss;
+      if (sheetEspera) sheetEspera.textContent = "Novo ponto liberado em " + mmss;
+    } else if (esperaFim) {
+      esperaFim = 0;
+      $("espera").hidden = true;
+      desenharAcoes();
+      if (sheetEspera) sheetEspera.textContent = "Você já pode iniciar um novo ponto.";
     }
   }
 
-  function desenharStatus() {
-    const btn = $("btnBater");
-    btn.disabled = false;
-    if (aberto) {
-      $("stRot").textContent = "Em serviço";
-      $("stRot").className = "rot on";
-      $("stDesde").textContent = "Desde as " + hora(aberto.entrada);
-      btn.textContent = "Bater saída";
-      btn.className = "bater sair";
-    } else {
-      $("stRot").textContent = "Fora de serviço";
-      $("stRot").className = "rot";
-      $("stTempo").textContent = "00:00:00";
-      $("stDesde").textContent = "";
-      btn.textContent = "Bater entrada";
-      btn.className = "bater";
-    }
+  function desenharStatus(estado) {
+    const rot = $("stRot");
+    if (estado === "servico") { rot.textContent = "Em serviço"; rot.className = "rot on"; $("stDesde").textContent = "Desde as " + hora(aberto.entrada); }
+    else if (estado === "pausado") { rot.textContent = "Em pausa"; rot.className = "rot pausa"; }
+    else { rot.textContent = "Fora de serviço"; rot.className = "rot"; $("stTempo").textContent = "00:00:00"; $("stDesde").textContent = ""; }
   }
 
-  function desenharHistorico(lista) {
-    const box = $("hist");
-    if (!lista.length) { vazio(box, "Nenhum registro ainda."); return; }
+  function desenharAcoes() {
+    const box = $("acoes"); limpar(box); btnIniciar = null;
+    const falta = Math.max(0, esperaFim - agoraServ());
+    if (!aberto) {
+      const b = el("button", "bt", falta > 0 ? "Aguarde " + cron(falta).slice(3) : "Iniciar ponto");
+      b.disabled = falta > 0;
+      b.onclick = () => acao("/api/ponto/entrar");
+      box.appendChild(b);
+      btnIniciar = b;
+      return;
+    }
+    const emPausa = aberto.pausa_inicio !== null;
+    const b1 = el("button", emPausa ? "bt" : "bt sec", emPausa ? "Retornar" : "Pausar");
+    b1.onclick = () => acao(emPausa ? "/api/ponto/retomar" : "/api/ponto/pausar");
+    const b2 = el("button", "bt perigo", "Encerrar");
+    b2.onclick = pedirEncerrar;
+    box.appendChild(b1); box.appendChild(b2);
+  }
+
+  function itemSessao(s) {
+    const lin = el("div", "lin sessao");
+    const topo = el("div", "stop");
+    const e = el("div", "e");
+    e.appendChild(el("b", null, hora(s.entrada) + " → " + (s.saida ? hora(s.saida) : "em serviço")));
+    const chips = el("div", "chips2");
+    chips.appendChild(el("span", "ch", "Trabalhado " + dur(s.trabalhado)));
+    if (s.pausas.length) chips.appendChild(el("span", "ch", s.pausas.length + (s.pausas.length === 1 ? " pausa · " : " pausas · ") + dur(s.pausa_total)));
+    e.appendChild(chips);
+    if (s.nota) e.appendChild(el("small", null, s.nota));
+    topo.appendChild(e);
+    topo.appendChild(el("span", "d", dur(s.trabalhado)));
+    lin.appendChild(topo);
+    if (s.pausas.length) {
+      const det = el("div", "det"); det.hidden = true;
+      s.pausas.forEach((p, i) => det.appendChild(el("div", "pl", "Pausa " + (i + 1) + ": " + hora(p.inicio) + " → " + (p.fim ? hora(p.fim) : "em andamento"))));
+      lin.appendChild(det);
+      lin.classList.add("tocavel");
+      lin.onclick = () => { det.hidden = !det.hidden; };
+    }
+    return lin;
+  }
+
+  function desenharHoje(lista) {
+    const box = $("hojeLista");
+    if (!lista.length) { vazio(box, "Nenhum registro hoje ainda."); return; }
     limpar(box);
-    lista.forEach((s) => {
-      const lin = el("div", "lin");
-      const e = el("div", "e");
-      e.appendChild(el("b", null, dia(s.entrada) + " · " + hora(s.entrada) + (s.saida ? " → " + hora(s.saida) : " → em serviço")));
-      if (s.nota) e.appendChild(el("small", null, s.nota));
-      lin.appendChild(e);
-      lin.appendChild(el("span", "d", s.saida ? duracao(s.saida - s.entrada) : "agora"));
-      box.appendChild(lin);
-    });
+    lista.forEach((s) => box.appendChild(itemSessao(s)));
   }
 
   async function carregar() {
@@ -159,68 +288,197 @@
     desvio = d.agora - Math.floor(Date.now() / 1000);
     aberto = d.aberto;
     base = { hoje: d.hoje, semana: d.semana, t: d.agora };
-    $("mHoje").textContent = duracao(d.hoje);
-    $("mSem").textContent = duracao(d.semana);
+    esperaFim = d.espera > 0 ? d.agora + d.espera : 0;
+    $("mHoje").textContent = dur(d.hoje);
+    $("mSem").textContent = dur(d.semana);
     $("mSeq").textContent = d.sequencia;
-    desenharStatus();
-    desenharHistorico(d.historico || []);
-    atualizarRelogio();
+    $("mMeta").textContent = d.dias_meta + "/7";
+    $("mMetaRot").textContent = "Dias com meta de " + Math.round(d.meta / 3600) + "h";
+    desenharStatus(d.estado);
+    desenharAcoes();
+    desenharHoje(d.hoje_registros || []);
+    tick();
   }
 
-  $("btnBater").onclick = async () => {
-    if (ocupado) return;
+  async function acao(url) {
+    if (ocupado) return null;
     ocupado = true;
-    $("btnBater").disabled = true;
-    const { ok, d } = await api(aberto ? "/api/ponto/sair" : "/api/ponto/entrar", {});
+    document.querySelectorAll("#acoes button").forEach((b) => { b.disabled = true; });
+    const { ok, d } = await api(url, {});
     ocupado = false;
-    if (!ok) { aviso(d.erro || "Não foi possível bater o ponto."); $("btnBater").disabled = false; return; }
-    aviso(aberto ? "Saída registrada: " + duracao(d.duracao || 0) : "Entrada registrada!");
+    if (!ok) {
+      if (d.espera) { esperaFim = agoraServ() + d.espera; }
+      aviso(d.erro || "Não foi possível concluir.");
+      await carregar();
+      return null;
+    }
     await carregar();
-    if (!$("admin").hidden) carregarAdmin();
-  };
+    return d;
+  }
 
-  async function carregarAdmin() {
+  function pedirEncerrar() {
+    abrirSheet((s) => {
+      s.appendChild(icone('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'));
+      s.appendChild(el("h3", null, "Encerrar o ponto?"));
+      s.appendChild(el("p", null, "O tempo trabalhado neste turno será salvo no seu histórico."));
+      const a = el("div", "alerta");
+      a.appendChild(el("b", null, "Atenção: tempo de espera"));
+      a.appendChild(el("span", null, "Depois de encerrar, você precisa esperar 1 minuto para iniciar um novo ponto. Enquanto o relógio corre no topo da tela, o botão de iniciar fica travado."));
+      s.appendChild(a);
+      const bs = el("div", "botoes");
+      const c = el("button", "bt sec", "Cancelar"); c.onclick = fecharSheet;
+      const e = el("button", "bt perigo", "Encerrar agora");
+      e.onclick = async () => {
+        e.disabled = true;
+        const d = await acao("/api/ponto/sair");
+        if (d) mostrarEncerrado(d); else fecharSheet();
+      };
+      bs.appendChild(c); bs.appendChild(e); s.appendChild(bs);
+    });
+  }
+
+  function mostrarEncerrado(d) {
+    abrirSheet((s) => {
+      s.appendChild(icone('<path d="M20 6L9 17l-5-5"/>'));
+      s.appendChild(el("h3", null, "Ponto encerrado!"));
+      s.appendChild(el("p", null, "Bom trabalho. Seu turno foi salvo no histórico."));
+      const r = el("div", "resumo");
+      const lin = (a, b) => { const x = el("div"); x.appendChild(el("span", null, a)); x.appendChild(el("b", null, b)); r.appendChild(x); };
+      lin("Tempo trabalhado", dur(d.duracao));
+      lin("Pausas", d.pausas ? d.pausas + " · " + dur(d.pausa) : "nenhuma");
+      s.appendChild(r);
+      s.appendChild(el("p", null, "Para evitar toques repetidos, o próximo ponto só libera depois de 1 minuto:"));
+      sheetEspera = el("div", "contagem", "");
+      s.appendChild(sheetEspera);
+      const bs = el("div", "botoes");
+      const ok = el("button", "bt", "Entendi"); ok.onclick = fecharSheet;
+      bs.appendChild(ok); s.appendChild(bs);
+    });
+    tick();
+  }
+
+  // ---------- Aba "Histórico" ----------
+  function setIntervalo(n) {
+    const t = agoraServ();
+    $("ate").value = chaveDia(t);
+    $("de").value = chaveDia(t - (n - 1) * 86400);
+    document.querySelectorAll(".chips button").forEach((b) => b.classList.toggle("on", +b.dataset.n === n));
+  }
+
+  async function carregarHistorico() {
+    const de = $("de").value, ate = $("ate").value;
+    if (!de || !ate) { aviso("Escolha as duas datas."); return; }
+    const { ok, d } = await api("/api/ponto/historico?de=" + encodeURIComponent(de) + "&ate=" + encodeURIComponent(ate));
+    if (!ok) { aviso(d.erro || "Erro ao carregar o histórico."); return; }
+    ultimo = d;
+    $("rTrab").textContent = dur(d.resumo.trabalhado);
+    $("rPaus").textContent = dur(d.resumo.pausado);
+    $("rInic").textContent = d.resumo.inicios;
+    $("rDias").textContent = d.resumo.dias;
+    const box = $("histLista"); limpar(box);
+    if (!d.sessoes.length) { box.appendChild(el("div", "vazio", "Nenhum registro neste período.")); return; }
+    let grupo = null, lista = null, soma = 0, rotSoma = null;
+    d.sessoes.forEach((s) => {
+      const c = chaveDia(s.entrada);
+      if (c !== grupo) {
+        grupo = c; soma = 0;
+        const cab = el("div", "dia");
+        cab.appendChild(el("b", null, rotuloDia(c)));
+        rotSoma = el("span", null, "");
+        cab.appendChild(rotSoma);
+        box.appendChild(cab);
+        lista = el("div", "lista");
+        box.appendChild(lista);
+      }
+      soma += s.trabalhado;
+      rotSoma.textContent = dur(soma);
+      lista.appendChild(itemSessao(s));
+    });
+  }
+
+  function exportarCsv() {
+    if (!ultimo || !ultimo.sessoes.length) { aviso("Nada para exportar neste período."); return; }
+    const linhas = ["Data;Entrada;Saída;Pausas;Tempo pausado;Tempo trabalhado;Observação"];
+    ultimo.sessoes.forEach((s) => {
+      linhas.push([
+        dataBR(chaveDia(s.entrada)), horaSeg(s.entrada), s.saida ? horaSeg(s.saida) : "em serviço",
+        s.pausas.length, cron(s.pausa_total), cron(s.trabalhado), String(s.nota || "").replace(/;/g, ","),
+      ].join(";"));
+    });
+    const blob = new Blob(["\ufeff" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "ponto_" + ultimo.de + "_a_" + ultimo.ate + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  }
+
+  // ---------- Aba "Comando" ----------
+  async function carregarOnline() {
     const { ok, d } = await api("/api/admin/ponto");
     if (!ok) return;
-    $("admin").hidden = false;
     const on = $("online");
-    if (!d.online.length) vazio(on, "Ninguém em serviço agora.");
-    else {
-      limpar(on);
-      d.online.forEach((s) => {
-        const lin = el("div", "lin");
-        const e = el("div", "e");
-        e.appendChild(el("b", null, s.nome));
-        e.appendChild(el("small", null, s.cargo + " · desde as " + hora(s.entrada) + " · " + duracao(d.agora - s.entrada)));
-        lin.appendChild(e);
-        const b = el("button", "enc", "Encerrar");
-        let armado = false;
-        b.onclick = async () => {
-          if (!armado) { armado = true; b.textContent = "Toque de novo"; setTimeout(() => { armado = false; b.textContent = "Encerrar"; }, 3000); return; }
-          const r = await api("/api/admin/ponto/encerrar", { id: s.id });
-          aviso(r.ok ? "Ponto encerrado." : (r.d.erro || "Erro ao encerrar."));
-          carregarAdmin();
-        };
-        lin.appendChild(b);
-        on.appendChild(lin);
-      });
-    }
+    if (!d.online.length) { vazio(on, "Ninguém em serviço agora."); return; }
+    limpar(on);
+    d.online.forEach((s) => {
+      const lin = el("div", "lin");
+      const e = el("div", "e");
+      e.appendChild(el("b", null, s.nome));
+      e.appendChild(el("small", null, s.cargo + " · desde as " + hora(s.entrada) + " · " + dur(d.agora - s.entrada) + (s.pausado ? " · em pausa" : "")));
+      lin.appendChild(e);
+      const b = el("button", "enc", "Encerrar");
+      let armado = false;
+      b.onclick = async () => {
+        if (!armado) { armado = true; b.textContent = "Toque de novo"; setTimeout(() => { armado = false; b.textContent = "Encerrar"; }, 3000); return; }
+        const r = await api("/api/admin/ponto/encerrar", { id: s.id });
+        aviso(r.ok ? "Ponto encerrado." : (r.d.erro || "Erro ao encerrar."));
+        carregarOnline();
+      };
+      lin.appendChild(b);
+      on.appendChild(lin);
+    });
+  }
+  async function carregarRanking() {
+    const { ok, d } = await api("/api/admin/ponto/ranking");
+    if (!ok) return;
     const rk = $("rank");
-    if (!d.ranking.length) vazio(rk, "Sem registros nesta semana.");
-    else {
-      limpar(rk);
-      d.ranking.forEach((s, i) => {
-        const lin = el("div", "lin");
-        lin.appendChild(el("span", "pos", String(i + 1)));
-        const e = el("div", "e");
-        e.appendChild(el("b", null, s.nome));
-        e.appendChild(el("small", null, "Mat. " + s.matricula));
-        lin.appendChild(e);
-        lin.appendChild(el("span", "d", duracao(Math.max(0, s.seg || 0))));
-        rk.appendChild(lin);
-      });
+    if (!d.ranking.length) { vazio(rk, "Sem registros nesta semana."); return; }
+    limpar(rk);
+    d.ranking.forEach((s, i) => {
+      const lin = el("div", "lin");
+      lin.appendChild(el("span", "pos", String(i + 1)));
+      const e = el("div", "e");
+      e.appendChild(el("b", null, s.nome));
+      e.appendChild(el("small", null, "Mat. " + s.matricula));
+      lin.appendChild(e);
+      lin.appendChild(el("span", "d", dur(s.seg)));
+      rk.appendChild(lin);
+    });
+  }
+
+  // ---------- Abas ----------
+  function abrirAba(nome) {
+    ["ponto", "hist", "cmd"].forEach((n) => {
+      $("s" + n.charAt(0).toUpperCase() + n.slice(1)).hidden = n !== nome;
+    });
+    document.querySelectorAll(".abas button").forEach((b) => b.classList.toggle("on", b.dataset.aba === nome));
+    history.replaceState(null, "", "#" + nome);
+    clearInterval(timerOnline); timerOnline = null;
+    if (nome === "hist" && !histCarregado) { histCarregado = true; carregarHistorico(); }
+    if (nome === "cmd" && souAdmin) {
+      carregarOnline();
+      timerOnline = setInterval(carregarOnline, 60000);
+      if (!rankCarregado) { rankCarregado = true; carregarRanking(); }
     }
   }
+  document.querySelectorAll(".abas button").forEach((b) => { b.onclick = () => abrirAba(b.dataset.aba); });
+  document.querySelectorAll(".chips button").forEach((b) => { b.onclick = () => { setIntervalo(+b.dataset.n); carregarHistorico(); }; });
+  $("btnBuscar").onclick = () => {
+    document.querySelectorAll(".chips button").forEach((b) => b.classList.remove("on"));
+    carregarHistorico();
+  };
+  $("btnCsv").onclick = exportarCsv;
+  $("btnRank").onclick = carregarRanking;
 
   (async () => {
     try {
@@ -228,9 +486,13 @@
       if (!r.ok) { location.href = "/"; return; }
       const eu = await r.json();
       if (eu.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      souAdmin = eu.nivel >= 50;
+      $("abaCmd").hidden = !souAdmin;
       await carregar();
-      setInterval(atualizarRelogio, 1000);
-      if (eu.nivel >= 50) { carregarAdmin(); setInterval(carregarAdmin, 60000); }
+      setInterval(tick, 1000);
+      setIntervalo(30);
+      const h = location.hash.replace("#", "");
+      if (["hist", "cmd"].includes(h) && (h !== "cmd" || souAdmin)) abrirAba(h);
     } catch (e) { location.href = "/"; }
   })();
 </script>
