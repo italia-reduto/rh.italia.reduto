@@ -171,5 +171,5 @@ export async function rotasFicha(request, env, p, metodo, h) {
     return json({ ok: true });
   }
 
-  return null;
+    return await rotasPonto(request, env, p, metodo, h);
   }
