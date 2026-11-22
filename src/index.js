@@ -1,3 +1,4 @@
+import { rotasFrequencia } from "./frequencia.js";
 import { rotasFicha } from "./ficha.js";
 
 import { rotasComunicados } from "./comunicados.js";
