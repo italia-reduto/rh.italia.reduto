@@ -23,7 +23,7 @@
       ico: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
     { rot: "Ficha", href: "/ficha.html", paginas: ["/ficha"],
       ico: '<rect width="18" height="14" x="3" y="5" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4M6 17c.5-1.5 1.5-2 3-2s2.5.5 3 2"/>' },
-    { rot: "Mais", breve: "O menu Mais chega em breve", paginas: ["/ausencias", "/comunicados", "/perfil"],
+    { rot: "Mais", href: "/mais.html", paginas: ["/mais", "/equipe", "/ausencias", "/comunicados", "/perfil"],
       ico: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>' }
   ];
 
