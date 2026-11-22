@@ -111,6 +111,11 @@
       <div class="meio"><div class="tit" style="margin-top:0">Gerenciar Ausências</div><div class="rot">Aprovar ou negar afastamentos</div></div>
     </a>
 
+    <a class="adm" id="admFrequencia" href="/admin-frequencia.html" hidden style="margin-top:10px">
+  <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+  <div class="meio"><div class="tit" style="margin-top:0">Gerenciar Frequência</div><div class="rot">Lançar faltas e ver membros ativos</div></div>
+    </a>
+
     <div class="acoes">
       <a href="/tickets.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
       <a href="/ausencias.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
@@ -160,6 +165,7 @@
         $("admCadastro").hidden = false;
         $("admTickets").hidden = false;
         $("admAusencias").hidden = false;
+        $("admFrequencia").hidden = false;
         
         const p = await fetch("/api/admin/pedidos");
         if (p.ok) {
