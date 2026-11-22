@@ -569,6 +569,21 @@ return json({ ok: true, ...eu, avatar_base64: fr ? fr.avatar_base64 : null });
         if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
         if (p === "/api/ausencias/minhas") return await minhasAusencias(request, env);
         if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
+        (p === "/api/membros/status") {
+          const r = await env.DB.prepare(`
+            SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
+            FROM membros m 
+            LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
+            WHERE m.ativo = 1
+            ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
+          `).all();
+          
+          const online = r.results.filter(m => m.entrada !== null);
+          const offline = r.results.filter(m => m.entrada === null);
+          
+          return json({ ok: true, online, offline, total_online: online.length });
+        }
+      }
       }
       const extra = await rotasComunicados(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
 if (extra) return extra;
@@ -576,25 +591,10 @@ if (extra) return extra;
 const resFicha = await rotasFicha(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
 if (resFicha) return resFicha;
 
-return json({ erro: "Não encontrado" }, 404);
+      return json({ erro: "Não encontrado" }, 404);
     } catch (e) {
       console.error("Erro interno:", e && e.message);
       return json({ erro: "Erro interno" }, 500);
     }
   },
 };
-if (p === "/api/membros/status") {
-  // Puxa todos os membros ativos e verifica se eles têm um ponto aberto
-  const r = await env.DB.prepare(`
-    SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
-    FROM membros m 
-    LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
-    WHERE m.ativo = 1
-    ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
-  `).all();
-  
-  const online = r.results.filter(m => m.entrada !== null);
-  const offline = r.results.filter(m => m.entrada === null);
-  
-  return json({ ok: true, online, offline, total_online: online.length });
-}
