@@ -598,3 +598,81 @@ if (resFicha) return resFicha;
     }
   },
 };
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const p = url.pathname;
+    const metodo = request.method;
+    if (!p.startsWith("/api/")) return new Response("Não encontrado", { status: 404 });
+    try {
+      if (metodo === "POST") {
+        const origem = request.headers.get("Origin");
+        if (origem && new URL(origem).host !== url.host)
+          return json({ erro: "Origem inválida" }, 403);
+      }
+      if (metodo === "POST") {
+        if (p === "/api/login") return await login(request, env);
+        if (p === "/api/aparelho/autorizar") return await autorizarAparelho(request, env);
+        if (p === "/api/recuperar/aparelho") return await recuperarAparelho(request, env);
+        if (p === "/api/recuperar/codigo") return await recuperarCodigo(request, env);
+        if (p === "/api/recuperar/pedido") return await pedirRecuperacao(request, env);
+        if (p === "/api/admin/pedidos/resolver") return await resolverPedido(request, env);
+        if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
+        if (p === "/api/tickets/abrir") return await abrirTicket(request, env);
+        if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
+        
+        const resFreq = await rotasFrequencia(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+        if (resFreq) return resFreq;
+        
+        if (p === "/api/ausencias/pedir") return await pedirAusencia(request, env);
+        if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
+        if (p === "/api/senha/trocar") return await trocarSenha(request, env);
+        if (p === "/api/perfil/foto") return await salvarFotoSegura(request, env);
+        if (p === "/api/logout") {
+          const token = pegarCookie(request, "sessao");
+          if (token) await env.DB.prepare("DELETE FROM sessoes WHERE token_hash = ?").bind(await sha256(token)).run();
+          return json({ ok: true }, 200, { "Set-Cookie": cookie("sessao", "", 0) });
+        }
+      }
+      if (metodo === "GET") {
+        if (p === "/api/me") {
+          const eu = await quemSou(request, env);
+          if (!eu) return json({ erro: "Não autenticado" }, 401);
+          const fr = await env.DB.prepare("SELECT avatar_base64 FROM membros WHERE id = ?").bind(eu.id).first();
+          return json({ ok: true, ...eu, avatar_base64: fr ? fr.avatar_base64 : null });
+        }
+        if (p === "/api/admin/pedidos") return await listarPedidos(request, env);
+        if (p === "/api/tickets/meus") return await meusTickets(request, env);
+        if (p === "/api/admin/tickets") return await adminListarTickets(request, env);
+        if (p === "/api/ausencias/minhas") return await minhasAusencias(request, env);
+        if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
+        
+        if (p === "/api/membros/status") {
+          const r = await env.DB.prepare(`
+            SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
+            FROM membros m 
+            LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
+            WHERE m.ativo = 1
+            ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
+          `).all();
+          
+          const online = r.results.filter(m => m.entrada !== null);
+          const offline = r.results.filter(m => m.entrada === null);
+          
+          return json({ ok: true, online, offline, total_online: online.length });
+        }
+      }
+      
+      const extra = await rotasComunicados(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+      if (extra) return extra;
+
+      const resFicha = await rotasFicha(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+      if (resFicha) return resFicha;
+
+      return json({ erro: "Não encontrado" }, 404);
+    } catch (e) {
+      console.error("Erro interno:", e && e.message);
+      return json({ erro: "Erro interno" }, 500);
+    }
+  },
+};
