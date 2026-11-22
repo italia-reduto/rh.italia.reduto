@@ -583,3 +583,18 @@ return json({ erro: "Não encontrado" }, 404);
     }
   },
 };
+if (p === "/api/membros/status") {
+  // Puxa todos os membros ativos e verifica se eles têm um ponto aberto
+  const r = await env.DB.prepare(`
+    SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
+    FROM membros m 
+    LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
+    WHERE m.ativo = 1
+    ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
+  `).all();
+  
+  const online = r.results.filter(m => m.entrada !== null);
+  const offline = r.results.filter(m => m.entrada === null);
+  
+  return json({ ok: true, online, offline, total_online: online.length });
+}
