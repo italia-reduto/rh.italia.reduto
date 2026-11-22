@@ -3,7 +3,7 @@ const LIMITE = 12 * 3600;      // ponto aberto há mais de 12h é encerrado sozi
 const LIMITE_PAUSA = 30 * 60;  // pausa acima de 30 min encerra o ponto
 const MAX_PAUSAS = 8;          // pausas por turno
 const ESPERA_ENTRADA = 60;     // segundos de espera depois de encerrar
-const MIN_SESSAO = 60;         // segundos mínimos antes de encerrar
+const MIN_SESSAO = 5;          // segundos mínimos antes de encerrar (evita toque duplo)
 const ESPERA_PAUSA = 10;       // segundos entre iniciar/retornar e pausar
 const MIN_SEQUENCIA = 600;     // dia só entra na sequência com 10 min ou mais
 const META_DIA = 2 * 3600;     // meta diária (2h)
@@ -238,7 +238,7 @@ export async function rotasPonto(request, env, p, metodo, h) {
         "SELECT id, entrada FROM ponto_registros WHERE membro_id = ? AND saida IS NULL"
       ).bind(eu.id).first();
       if (!aberto) return json({ erro: "Você não está em serviço." }, 409);
-      if (now - aberto.entrada < MIN_SESSAO) return json({ erro: "Aguarde 1 minuto antes de encerrar o ponto." }, 429);
+      if (now - aberto.entrada < MIN_SESSAO) return json({ erro: "Aguarde alguns segundos antes de encerrar o ponto." }, 429);
       const res = await env.DB.batch([
         env.DB.prepare("UPDATE ponto_pausas SET fim = ? WHERE registro_id = ? AND fim IS NULL").bind(now, aberto.id),
         env.DB.prepare("UPDATE ponto_registros SET saida = ? WHERE id = ? AND saida IS NULL").bind(now, aberto.id),
