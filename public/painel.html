@@ -81,15 +81,17 @@
         <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
         <div class="num" id="num-ausencias">–</div><div class="rot">Ausência pendente</div>
       </a>
-      <button class="cx" data-breve="Treinamentos chegam em breve">
-        <div class="ic"><svg class="i"><use href="#i-cap"/></svg></div>
-        <div class="num">–</div><div class="rot">Treinamentos novos</div>
-      </button>
-      <button class="cx" onclick="location.href='/ficha.html'">
-        <div class="ic"><svg class="i"><use href="#i-id"/></svg></div>
-        <div class="tit" style="margin-top:10px">Minha ficha</div><div class="rot">Cargo, histórico, dados</div>
-      </button>
-    </div>
+      <!-- Card de Membros Ativos -->
+<button class="cx" onclick="abrirMembros()">
+  <div class="ic"><svg class="i"><use href="#i-eq"/></svg></div>
+  <div class="num" id="num-ativos">–</div><div class="rot">Membros Ativos</div>
+</button>
+
+<!-- Card de Frequência (Substitui a Ficha) -->
+<a href="/frequencia.html" class="cx">
+  <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+  <div class="tit" style="margin-top:10px">Frequência</div><div class="rot">Ver histórico</div>
+</a>
 
     <a class="adm" id="adm" href="/pedidos.html" hidden>
       <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
@@ -133,6 +135,18 @@
     </div>
   </div>
 </div>
+  <!-- Modal de Membros Ativos -->
+<div id="modal-membros" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter: blur(4px); align-items:flex-end;">
+  <div style="background:var(--card); width:100%; max-height:85vh; border-radius:26px 26px 0 0; padding:20px; overflow-y:auto; box-sizing:border-box;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 style="margin:0; color:#fff; font-size:20px;">Membros</h3>
+      <button onclick="fecharMembros()" style="background:none; border:none; color:var(--suave); font-size:24px;">×</button>
+    </div>
+    
+    <div id="lista-online" style="margin-bottom: 24px;"></div>
+    <div id="lista-offline"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -152,7 +166,71 @@
     try { await fetch("/api/logout", { method: "POST" }); } catch (err) {}
     location.href = "/";
   };
+// Funções do Modal de Membros
+async function abrirMembros() {
+  const modal = document.getElementById('modal-membros');
+  modal.style.display = 'flex';
+  
+  const listaOnline = document.getElementById('lista-online');
+  const listaOffline = document.getElementById('lista-offline');
+  
+  listaOnline.innerHTML = '<p style="color:var(--suave)">Carregando...</p>';
+  listaOffline.innerHTML = '';
+  
+  try {
+    const r = await fetch('/api/membros/status');
+    const d = await r.json();
+    
+    let htmlOnline = `<h4 style="color:var(--verde); font-size:12px; letter-spacing:1px; margin-bottom:10px;">ONLINE (${d.total_online})</h4>`;
+    if (d.online.length === 0) htmlOnline += `<p style="color:var(--suave); font-size:13px;">Nenhum membro em serviço.</p>`;
+    else {
+      d.online.forEach(m => {
+        htmlOnline += `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--linha);">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div style="width:36px; height:36px; border-radius:50%; background:var(--verde); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">${m.nome.charAt(0).toUpperCase()}</div>
+              <div>
+                <div style="color:#fff; font-weight:600; font-size:14px;">${m.nome}</div>
+                <div style="color:var(--suave); font-size:11px;">Passaporte: ${m.matricula}</div>
+              </div>
+            </div>
+            <span style="color:var(--verde); font-weight:bold; font-size:12px;">ON</span>
+          </div>
+        `;
+      });
+    }
+    listaOnline.innerHTML = htmlOnline;
 
+    let htmlOffline = `<h4 style="color:var(--suave); font-size:12px; letter-spacing:1px; margin-bottom:10px;">OFFLINE</h4>`;
+    if (d.offline.length === 0) htmlOffline += `<p style="color:var(--suave); font-size:13px;">Todos estão online.</p>`;
+    else {
+      d.offline.forEach(m => {
+        htmlOffline += `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--linha); opacity:0.6;">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div style="width:36px; height:36px; border-radius:50%; background:var(--suave); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">${m.nome.charAt(0).toUpperCase()}</div>
+              <div>
+                <div style="color:#fff; font-weight:600; font-size:14px;">${m.nome}</div>
+                <div style="color:var(--suave); font-size:11px;">Passaporte: ${m.matricula}</div>
+              </div>
+            </div>
+            <span style="color:var(--suave); font-weight:bold; font-size:12px;">OFF</span>
+          </div>
+        `;
+      });
+    }
+    listaOffline.innerHTML = htmlOffline;
+
+    document.getElementById('num-ativos').textContent = d.total_online;
+
+  } catch (e) {
+    listaOnline.innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar membros.</p>';
+  }
+}
+
+function fecharMembros() {
+  document.getElementById('modal-membros').style.display = 'none';
+  }
   (async () => {
     try {
       const r = await fetch("/api/me");
@@ -182,10 +260,16 @@
           const rj = await resumo.json();
           if(rj.tickets_abertos !== undefined) $("num-tickets").textContent = rj.tickets_abertos;
           if(rj.ausencias_pendentes !== undefined) $("num-ausencias").textContent = rj.ausencias_pendentes;
-      } else {
-          $("num-tickets").textContent = "0";
-          $("num-ausencias").textContent = "0";
+            } else {
+        $("num-tickets").textContent = "0";
+        $("num-ausencias").textContent = "0";
       }
+
+      // 👇 COLE ESSE BLOCO AQUI 👇
+      fetch('/api/membros/status').then(r => r.json()).then(d => {
+        if(d.total_online !== undefined) $("num-ativos").textContent = d.total_online;
+      }).catch(()=>{});
+      // 👆 FIM DO BLOCO 👆
 
       $("app").hidden = false;
     } catch (e) { location.href = "/"; }
@@ -193,4 +277,4 @@
 </script>
 <script src="/painel-extra.js"></script>
 </body>
-      </html>
+</html>
