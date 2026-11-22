@@ -545,6 +545,8 @@ export default {
         if (p === "/api/admin/cadastrar-membro") return await cadastrarMembro(request, env);
         if (p === "/api/tickets/abrir") return await abrirTicket(request, env);
         if (p === "/api/admin/tickets/responder") return await adminResponderTicket(request, env);
+        const resFreq = await rotasFrequencia(request, env, p, metodo, { json, quemSou, exigirAdmin, lerCorpo, texto, agora, auditar });
+if (resFreq) return resFreq;
         if (p === "/api/ausencias/pedir") return await pedirAusencia(request, env);
         if (p === "/api/admin/ausencias/resolver") return await adminResolverAusencia(request, env);
         if (p === "/api/senha/trocar") return await trocarSenha(request, env);
