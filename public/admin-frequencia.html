@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Frequência · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  body { align-items: flex-start; padding-top: 90px; padding-bottom: 40px; background-color: var(--fundo); }
+  
+  .abas { display: flex; gap: 8px; margin-bottom: 20px; }
+  .abas button { flex: 1; padding: 12px; font-size: 14px; color: var(--suave); background: none; border: 1px solid var(--linha); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+  .abas button.ativa { color: var(--marfim); border-color: var(--verde); background: rgba(0,161,82,.12); }
+  
+  .card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+  .card h3 { margin: 0 0 12px; font-size: 16px; color: var(--marfim); border-bottom: 1px solid var(--linha); padding-bottom: 8px; }
+  
+  label { display: block; margin: 12px 0 6px; font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; }
+  input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--linha); background: #000; color: #fff; font-size: 15px; outline: none; }
+  input:focus, select:focus { border-color: var(--verde); }
+  
+  .btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; color: #fff; border: 0; border-radius: 10px; cursor: pointer; margin-top: 20px; background: var(--verde); transition: 0.2s; }
+  .btn:active { opacity: 0.8; transform: scale(0.98); }
+  
+  .ativo-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,161,82,0.05); border: 1px solid var(--linha); padding: 12px; border-radius: 10px; margin-bottom: 8px; }
+  .ativo-info { display: flex; flex-direction: column; gap: 4px; }
+  .ativo-nome { font-weight: 600; color: var(--marfim); font-size: 15px; }
+  .ativo-cargo { font-size: 11px; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; }
+  .ativo-tempo { background: var(--verde); color: #000; font-size: 12px; font-weight: bold; padding: 6px 10px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <script src="/topbar.js"></script>
+
+  <div class="caixa">
+    <h2 style="color: var(--marfim); margin-bottom: 20px; font-size: 24px;">Frequência</h2>
+    
+    <div class="abas">
+      <button type="button" id="btnAbaLancar" class="ativa" onclick="mudarAba(1)">Lançar Falta</button>
+      <button type="button" id="btnAbaAtivos" onclick="mudarAba(2)">Membros Ativos</button>
+    </div>
+
+    <!-- ABA 1: LANÇAR FREQUÊNCIA -->
+    <div id="abaLancar">
+      <div class="card">
+        <h3>Registrar Ocorrência</h3>
+        <form id="formLancar">
+          <label for="matricula">Matrícula do Membro</label>
+          <input type="text" id="matricula" required placeholder="Ex: 17267">
+
+          <label for="tipo">Tipo de Ocorrência</label>
+          <select id="tipo">
+            <option value="Ponto">Não bateu ponto</option>
+            <option value="Meta">Não registrou a meta no grupo</option>
+            <option value="Reunião">Faltou à reunião</option>
+            <option value="Outro">Outro</option>
+          </select>
+
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="Falta">Falta</option>
+            <option value="Presença">Presença</option>
+            <option value="Justificada">Falta Justificada</option>
+          </select>
+
+          <label for="data">Data</label>
+          <input type="date" id="data">
+
+          <label for="observacao">Observação (opcional)</label>
+          <input type="text" id="observacao" placeholder="Motivo ou detalhe..." maxlength="200">
+
+          <button type="submit" class="btn" id="btnSalvar">LANÇAR REGISTRO</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ABA 2: MEMBROS ATIVOS -->
+    <div id="abaAtivos" hidden>
+      <div class="card">
+        <h3>Em Serviço no Momento</h3>
+        <div id="listaAtivos">
+          <p class="sub">Carregando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/ui.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  // 1. Verifica se é Admin
+  fetch("/api/me").then(async (r) => {
+    if (!r.ok) { location.href = "/"; return; }
+    const d = await r.json();
+    if (d.nivel < 50) { location.href = "/painel.html"; return; }
+    
+    // Carrega os ativos assim que abrir
+    carregarAtivos();
+  }).catch(() => { location.href = "/"; });
+
+  // 2. Preenche a data de hoje por padrão
+  const hoje = new Date().toISOString().split("T")[0];
+  $("data").value = hoje;
+
+  // 3. Controle das Abas
+  function mudarAba(n) {
+    $("abaLancar").hidden = n !== 1;
+    $("abaAtivos").hidden = n !== 2;
+    $("btnAbaLancar").classList.toggle("ativa", n === 1);
+    $("btnAbaAtivos").classList.toggle("ativa", n === 2);
+    
+    if (n === 2) carregarAtivos(); // Atualiza a lista ao clicar na aba
+  }
+
+  // 4. Enviar o Lançamento de Falta/Presença
+  $("formLancar").onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = $("btnSalvar");
+    btn.disabled = true;
+    btn.textContent = "LANÇANDO...";
+
+    const body = {
+      matricula: $("matricula").value.trim(),
+      tipo: $("tipo").value,
+      status: $("status").value,
+      data: $("data").value,
+      observacao: $("observacao").value.trim()
+    };
+
+    try {
+      const r = await fetch("/api/admin/frequencia/lancar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const d = await r.json();
+
+      if (r.ok) {
+        customAlert("Registro lançado com sucesso!", "Sucesso");
+        $("matricula").value = "";
+        $("observacao").value = "";
+      } else {
+        customAlert(d.erro || "Erro ao lançar", "Erro");
+      }
+    } catch (err) {
+      customAlert("Falha de conexão.", "Erro");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "LANÇAR REGISTRO";
+  };
+
+  // 5. Carregar Membros Ativos
+  async function carregarAtivos() {
+    const lista = $("listaAtivos");
+    lista.innerHTML = '<p class="sub">Buscando quem está online...</p>';
+
+    try {
+      const r = await fetch("/api/admin/membros-ativos");
+      const d = await r.json();
+
+      if (!r.ok) {
+        lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">${d.erro || "Erro ao carregar"}</p>`;
+        return;
+      }
+
+      lista.innerHTML = "";
+
+      if (d.ativos.length === 0) {
+        lista.innerHTML = '<p class="sub">Nenhum membro em serviço no momento.</p>';
+        return;
+      }
+
+      d.ativos.forEach(a => {
+        // Calcula o tempo online (assumindo que entrada é um timestamp unix em segundos)
+        const agora = Math.floor(Date.now() / 1000);
+        const diff = agora - a.entrada;
+        
+        const horas = Math.floor(diff / 3600);
+        const minutos = Math.floor((diff % 3600) / 60);
+        const tempoTxt = `${horas}h ${minutos}m`;
+
+        const div = document.createElement("div");
+        div.className = "ativo-item";
+        
+        const info = document.createElement("div");
+        info.className = "ativo-info";
+        
+        const nome = document.createElement("span");
+        nome.className = "ativo-nome";
+        nome.textContent = a.nome;
+        
+        const cargo = document.createElement("span");
+        cargo.className = "ativo-cargo";
+        cargo.textContent = a.cargo + " · Mat: " + a.matricula;
+        
+        info.appendChild(nome);
+        info.appendChild(cargo);
+
+        const tempo = document.createElement("span");
+        tempo.className = "ativo-tempo";
+        tempo.textContent = tempoTxt;
+
+        div.appendChild(info);
+        div.appendChild(tempo);
+        lista.appendChild(div);
+      });
+
+    } catch (e) {
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Falha de conexão.</p>';
+    }
+  }
+</script>
+</body>
+</html>
