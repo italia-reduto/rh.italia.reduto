@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Equipe · Itália RH</title>
+<style>
+  :root{--bg:#0E1110;--card:#171C19;--verde:#35E08A;--esc:#06281A;--suave:#8C9690;--texto:#F2F2EE;--coral:#FF7A6B;--ouro:#E0B85A;--linha:rgba(255,255,255,.08)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
+  .tela{max-width:440px;margin:0 auto;padding:16px}
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+  .abas{display:flex;gap:4px;background:var(--card);border-radius:20px;padding:4px;margin-bottom:12px}
+  .abas button{flex:1;padding:11px 4px;border-radius:16px;font-size:13px;font-weight:600;color:var(--suave)}
+  .abas button.on{background:var(--verde);color:var(--esc)}
+  .card{background:var(--card);border-radius:24px;padding:18px 16px;margin-bottom:10px}
+  .rot{font-size:12px;color:var(--suave)}
+  .eq h1{margin:6px 0 2px;font-size:26px;font-weight:600}
+  .fn{font-size:14px;color:var(--suave)}
+  .minha{margin-top:14px;display:inline-flex;align-items:center;gap:10px;background:rgba(53,224,138,.12);border-radius:16px;padding:10px 14px;font-size:13px;color:var(--verde)}
+  .minha b{font-size:22px;color:var(--texto)}
+  .grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+  .met{background:var(--card);border-radius:20px;padding:14px}
+  .met small{display:block;font-size:12px;color:var(--suave)}
+  .met b{display:block;margin-top:6px;font-size:16px;font-weight:600;overflow-wrap:anywhere}
+  .met b.on{color:var(--verde)} .met b.off{color:var(--suave)}
+  .titulo{margin:20px 4px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--suave);display:flex;justify-content:space-between}
+  .lista{background:var(--card);border-radius:24px;overflow:hidden}
+  .lin{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha);font-size:14px}
+  .lin:last-child{border-bottom:0}
+  .lin .e{flex:1;min-width:0}
+  .lin .e b{display:block;font-weight:500;overflow-wrap:anywhere}
+  .lin .e small{display:block;margin-top:2px;font-size:12px;color:var(--suave)}
+  .chip{font-size:11px;padding:4px 10px;border-radius:30px;background:rgba(255,255,255,.07);color:var(--texto)}
+  .chip.voce{background:rgba(53,224,138,.15);color:var(--verde)}
+  .chip.pos{background:rgba(224,184,90,.15);color:var(--ouro)}
+  .vazio{padding:16px;font-size:13px;color:var(--suave);line-height:1.5}
+  .btns{display:flex;gap:10px;margin-top:14px}
+  .bt{flex:1;padding:14px 10px;border-radius:30px;background:var(--verde);color:var(--esc);font-size:14px;font-weight:600}
+  .bt.fantasma{background:transparent;color:var(--texto);border:1px solid var(--linha)}
+  .bt:disabled{opacity:.5}
+  .ctopo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .ctopo h2{margin:0;font-size:18px;font-weight:600}
+  .ctopo small{display:block;margin-top:3px;font-size:12px;color:var(--suave)}
+  .editar{font-size:12px;color:var(--verde);text-decoration:underline;white-space:nowrap}
+  .rem{font-size:12px;color:var(--coral);text-decoration:underline}
+  .inativa{opacity:.55}
+  .ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center}
+  .sheet{width:100%;max-width:440px;max-height:90vh;overflow:auto;background:#131815;border-radius:26px 26px 0 0;padding:22px 16px calc(20px + env(safe-area-inset-bottom))}
+  .sheet h3{margin:0 0 6px;font-size:19px;font-weight:600}
+  .sheet p{margin:0;font-size:14px;line-height:1.55;color:var(--suave)}
+  .sheet label{display:block;margin:14px 0 6px;font-size:12px;color:var(--suave)}
+  .sheet input[type=text],.sheet input[type=number],.sheet input[type=time]{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:13px;font:inherit;font-size:16px;color:var(--texto);outline:none}
+  .dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .chk{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px}
+  .chk input{width:20px;height:20px;accent-color:var(--verde)}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--texto);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:400}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<script src="/topbar.js"></script>
+<div class="tela">
+  <div class="abas">
+    <button class="on" data-aba="min">Minha equipe</button>
+    <button data-aba="cmd" id="abaCmd" hidden>Comando</button>
+  </div>
+
+  <section id="sMin">
+    <div class="card" id="semEquipe" hidden>
+      <div class="rot">Sem equipe por enquanto</div>
+      <p class="vazio" style="padding:8px 0 0">Bata o ponto e aguarde o sorteio do comando. Quando você for escalado, sua equipe, posto e turno aparecem aqui.</p>
+    </div>
+    <div id="comEquipe" hidden>
+      <div class="card eq">
+        <div class="rot">Sua equipe</div>
+        <h1 id="eNome"></h1>
+        <div class="fn" id="eFuncao"></div>
+        <div class="minha" id="eMinha" hidden>Sua posição <b id="ePos"></b></div>
+      </div>
+      <div class="grade">
+        <div class="met"><small>Posto</small><b id="ePosto"></b></div>
+        <div class="met"><small>Turno</small><b id="eTurno"></b></div>
+        <div class="met"><small>Situação</small><b id="eSit"></b></div>
+        <div class="met"><small>Responsável</small><b id="eResp"></b></div>
+      </div>
+      <div class="titulo"><span>Quem está comigo</span><span id="eVagas"></span></div>
+      <div class="lista" id="eColegas"></div>
+    </div>
+  </section>
+
+  <section id="sCmd" hidden>
+    <div class="card">
+      <div class="rot" id="cInfo">Carregando...</div>
+      <div class="btns">
+        <button class="bt" id="btnNovo">Novo sorteio</button>
+        <button class="bt fantasma" id="btnCompletar">Completar vagas</button>
+      </div>
+    </div>
+    <div class="titulo"><span>Em serviço, sem equipe</span></div>
+    <div class="lista" id="cReserva"></div>
+    <div id="cEquipes"></div>
+  </section>
+</div>
+
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let timerToast, ocupado = false;
+
+  function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+  function limpar(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function aviso(msg) {
+    const t = $("toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(timerToast); timerToast = setTimeout(() => t.classList.remove("on"), 2800);
+  }
+  async function api(url, corpo) {
+    const opc = corpo === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) };
+    try {
+      const r = await fetch(url, opc);
+      let d = {};
+      try { d = await r.json(); } catch (e) {}
+      if (r.status === 401) location.href = "/";
+      return { ok: r.ok, d };
+    } catch (e) { return { ok: false, d: { erro: "Falha de conexão." } }; }
+  }
+  const dataHora = (t) => new Date(t * 1000).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const minutos = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
+  function noTurno(ini, fim) {
+    const d = new Date(), agora = d.getHours() * 60 + d.getMinutes();
+    const i = minutos(ini), f = minutos(fim);
+    return i <= f ? agora >= i && agora < f : agora >= i || agora < f;
+  }
+
+  function fecharSheet() { $("ov").hidden = true; }
+  $("ov").onclick = (e) => { if (e.target === $("ov")) fecharSheet(); };
+  function abrirSheet(montar) { const s = $("sheet"); limpar(s); montar(s); $("ov").hidden = false; }
+
+  // ---------- Minha equipe ----------
+  async function carregarMinha() {
+    const { ok, d } = await api("/api/equipe");
+    if (!ok) { aviso(d.erro || "Erro ao carregar a equipe."); return; }
+    if (!d.equipe) { $("semEquipe").hidden = false; $("comEquipe").hidden = true; return; }
+    const e = d.equipe;
+    $("semEquipe").hidden = true; $("comEquipe").hidden = false;
+    $("eNome").textContent = e.nome;
+    $("eFuncao").textContent = e.funcao;
+    $("eMinha").hidden = !d.minha_posicao;
+    $("ePos").textContent = d.minha_posicao || "";
+    $("ePosto").textContent = e.posto;
+    $("eTurno").textContent = e.turno_inicio + " — " + e.turno_fim;
+    const dentro = noTurno(e.turno_inicio, e.turno_fim);
+    $("eSit").textContent = dentro ? "Turno em andamento" : "Fora do turno";
+    $("eSit").className = dentro ? "on" : "off";
+    $("eResp").textContent = e.responsavel || "Não definido";
+    $("eVagas").textContent = e.ocupadas + "/" + e.vagas + " vagas";
+    const box = $("eColegas"); limpar(box);
+    d.colegas.forEach((c) => {
+      const lin = el("div", "lin");
+      const x = el("div", "e");
+      x.appendChild(el("b", null, c.nome));
+      x.appendChild(el("small", null, c.cargo));
+      lin.appendChild(x);
+      if (c.posicao) lin.appendChild(el("span", "chip pos", c.posicao));
+      if (c.voce) lin.appendChild(el("span", "chip voce", "Você"));
+      box.appendChild(lin);
+    });
+  }
+
+  // ---------- Comando ----------
+  function editarEquipe(e) {
+    abrirSheet((s) => {
+      s.appendChild(el("h3", null, "Editar " + e.nome));
+      const campo = (rot, tipo, valor, extra) => {
+        s.appendChild(el("label", null, rot));
+        const i = el("input"); i.type = tipo; i.value = valor;
+        if (extra) Object.assign(i, extra);
+        s.appendChild(i);
+        return i;
+      };
+      const posto = campo("Posto", "text", e.posto, { maxLength: 60 });
+      const dup = el("div", "dupla"); s.appendChild(dup);
+      const ini = el("input"); ini.type = "time"; ini.value = e.turno_inicio;
+      const fim = el("input"); fim.type = "time"; fim.value = e.turno_fim;
+      const a = el("div"); a.appendChild(el("label", null, "Turno começa")); a.appendChild(ini);
+      const b = el("div"); b.appendChild(el("label", null, "Turno termina")); b.appendChild(fim);
+      dup.appendChild(a); dup.appendChild(b);
+      let lim = null;
+      if (!e.posicoes) lim = campo("Limite de vagas (1 a 30)", "number", e.limite, { min: 1, max: 30 });
+      else s.appendChild(el("p", null, "Vagas fixas por posição (" + e.posicoes.split(",").join(" e ") + "): sorteadas pelo sistema."));
+      const resp = campo("Responsável (matrícula, opcional)", "text", e.responsavel_matricula || "", { maxLength: 40 });
+      const chk = el("label", "chk");
+      const cb = el("input"); cb.type = "checkbox"; cb.checked = !!e.ativa;
+      chk.appendChild(cb); chk.appendChild(el("span", null, "Equipe ativa (entra no sorteio)"));
+      s.appendChild(chk);
+      const bs = el("div", "btns");
+      const c = el("button", "bt fantasma", "Cancelar"); c.onclick = fecharSheet;
+      const sv = el("button", "bt", "Salvar");
+      sv.onclick = async () => {
+        sv.disabled = true;
+        const r = await api("/api/admin/equipes/editar", {
+          id: e.id, posto: posto.value, turno_inicio: ini.value, turno_fim: fim.value,
+          limite: lim ? lim.value : e.limite, responsavel: resp.value, ativa: cb.checked,
+        });
+        sv.disabled = false;
+        if (!r.ok) { aviso(r.d.erro || "Erro ao salvar."); return; }
+        fecharSheet(); aviso("Equipe atualizada."); carregarCmd();
+      };
+      bs.appendChild(c); bs.appendChild(sv); s.appendChild(bs);
+    });
+  }
+
+  function cartaoEquipe(e) {
+    const c = el("div", "card" + (e.ativa ? "" : " inativa"));
+    const topo = el("div", "ctopo");
+    const t = el("div");
+    t.appendChild(el("h2", null, e.nome + (e.ativa ? "" : " (inativa)")));
+    t.appendChild(el("small", null, e.posto + " · " + e.turno_inicio + " — " + e.turno_fim + " · " + e.membros.length + "/" + e.vagas + " vagas"));
+    if (e.responsavel) t.appendChild(el("small", null, "Responsável: " + e.responsavel));
+    topo.appendChild(t);
+    const ed = el("button", "editar", "Editar"); ed.onclick = () => editarEquipe(e);
+    topo.appendChild(ed);
+    c.appendChild(topo);
+    const lista = el("div", "lista"); lista.style.marginTop = "12px"; lista.style.background = "rgba(255,255,255,.03)";
+    if (!e.membros.length) lista.appendChild(el("div", "vazio", "Ninguém escalado."));
+    e.membros.forEach((m) => {
+      const lin = el("div", "lin");
+      const x = el("div", "e");
+      x.appendChild(el("b", null, m.nome));
+      x.appendChild(el("small", null, m.cargo));
+      lin.appendChild(x);
+      if (m.posicao) lin.appendChild(el("span", "chip pos", m.posicao));
+      const r = el("button", "rem", "Remover");
+      let armado = false;
+      r.onclick = async () => {
+        if (!armado) { armado = true; r.textContent = "Toque de novo"; setTimeout(() => { armado = false; r.textContent = "Remover"; }, 3000); return; }
+        const x2 = await api("/api/admin/equipes/remover", { membro_id: m.membro_id });
+        aviso(x2.ok ? "Removido da equipe." : (x2.d.erro || "Erro ao remover."));
+        carregarCmd();
+      };
+      lin.appendChild(r);
+      lista.appendChild(lin);
+    });
+    c.appendChild(lista);
+    return c;
+  }
+
+  async function carregarCmd() {
+    const { ok, d } = await api("/api/admin/equipes");
+    if (!ok) { aviso(d.erro || "Erro ao carregar."); return; }
+    $("cInfo").textContent = d.sorteio
+      ? "Último sorteio: " + dataHora(d.sorteio.criado_em) + (d.sorteio.autor ? " por " + d.sorteio.autor : "")
+      : "Nenhum sorteio feito ainda.";
+    const rs = $("cReserva"); limpar(rs);
+    if (!d.reserva.length) rs.appendChild(el("div", "vazio", "Ninguém esperando vaga."));
+    d.reserva.forEach((m) => {
+      const lin = el("div", "lin");
+      const x = el("div", "e"); x.appendChild(el("b", null, m.nome)); x.appendChild(el("small", null, m.cargo));
+      lin.appendChild(x); rs.appendChild(lin);
+    });
+    const box = $("cEquipes"); limpar(box);
+    d.equipes.forEach((e) => box.appendChild(cartaoEquipe(e)));
+  }
+
+  async function sortear(modo) {
+    if (ocupado) return;
+    ocupado = true;
+    const { ok, d } = await api("/api/admin/equipes/sortear", { modo });
+    ocupado = false;
+    if (!ok) { aviso(d.erro || "Não foi possível sortear."); return; }
+    aviso(d.escalados + " escalados" + (d.sem_vaga ? " · " + d.sem_vaga + " sem vaga" : "") + ".");
+    carregarCmd();
+  }
+
+  $("btnNovo").onclick = () => abrirSheet((s) => {
+    s.appendChild(el("h3", null, "Novo sorteio?"));
+    s.appendChild(el("p", null, "Quem está em serviço agora será redistribuído entre as equipes, respeitando o limite de vagas. O sistema evita repetir a equipe e o posto do sorteio anterior. A escala atual é substituída."));
+    const bs = el("div", "btns");
+    const c = el("button", "bt fantasma", "Cancelar"); c.onclick = fecharSheet;
+    const ok = el("button", "bt", "Sortear agora"); ok.onclick = () => { fecharSheet(); sortear("novo"); };
+    bs.appendChild(c); bs.appendChild(ok); s.appendChild(bs);
+  });
+  $("btnCompletar").onclick = () => sortear("completar");
+
+  function abrirAba(nome) {
+    $("sMin").hidden = nome !== "min";
+    $("sCmd").hidden = nome !== "cmd";
+    document.querySelectorAll(".abas button").forEach((b) => b.classList.toggle("on", b.dataset.aba === nome));
+    if (nome === "cmd") carregarCmd();
+  }
+  document.querySelectorAll(".abas button").forEach((b) => { b.onclick = () => abrirAba(b.dataset.aba); });
+
+  (async () => {
+    try {
+      const r = await fetch("/api/me");
+      if (!r.ok) { location.href = "/"; return; }
+      const eu = await r.json();
+      if (eu.trocar_senha) { location.href = "/trocar-senha.html"; return; }
+      $("abaCmd").hidden = eu.nivel < 50;
+      await carregarMinha();
+    } catch (e) { location.href = "/"; }
+  })();
+</script>
+</body>
+</html>
