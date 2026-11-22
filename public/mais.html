@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Mais · Itália RH</title>
+<style>
+  :root{--bg:#0E1110;--card:#171C19;--verde:#35E08A;--suave:#8C9690;--texto:#F2F2EE;--linha:rgba(255,255,255,.08)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
+  .tela{max-width:440px;margin:0 auto;padding:16px}
+  h1{margin:0 4px 14px;font-size:22px;font-weight:600}
+  .lista{background:var(--card);border-radius:24px;overflow:hidden}
+  .lista a,.lista button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px;border:0;background:none;border-bottom:1px solid var(--linha);color:var(--texto);text-decoration:none;font:inherit;text-align:left;cursor:pointer}
+  .lista > :last-child{border-bottom:0}
+  .t{display:block;font-size:15px;font-weight:500}
+  .s{display:block;margin-top:3px;font-size:12px;color:var(--suave)}
+  .seta{color:var(--suave)}
+  .breve{font-size:11px;padding:4px 10px;border-radius:30px;background:rgba(255,255,255,.06);color:var(--suave)}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--texto);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<script src="/topbar.js"></script>
+<div class="tela">
+  <h1>Mais</h1>
+  <div class="lista">
+    <a href="/equipe.html"><span><b class="t">Minha equipe</b><span class="s">Posto, turno e quem está com você</span></span><span class="seta">›</span></a>
+    <a href="/comunicados.html"><span><b class="t">Comunicados</b><span class="s">Avisos do comando</span></span><span class="seta">›</span></a>
+    <a href="/ausencias.html"><span><b class="t">Ausências</b><span class="s">Pedir e acompanhar afastamentos</span></span><span class="seta">›</span></a>
+    <a href="/perfil.html"><span><b class="t">Meu perfil</b><span class="s">Foto e senha</span></span><span class="seta">›</span></a>
+    <button id="trein"><span><b class="t">Treinamentos</b><span class="s">Cursos e presença</span></span><span class="breve">em breve</span></button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  let t;
+  document.getElementById("trein").onclick = () => {
+    const x = document.getElementById("toast");
+    x.textContent = "Treinamentos chegam em breve";
+    x.classList.add("on");
+    clearTimeout(t);
+    t = setTimeout(() => x.classList.remove("on"), 1800);
+  };
+</script>
+</body>
+</html>
