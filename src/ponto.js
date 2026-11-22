@@ -1,3 +1,4 @@
+import { rotasEquipes } from "./equipes.js";
 const OFFSET = -3 * 3600;      // Brasília (UTC-3)
 const LIMITE = 12 * 3600;      // ponto aberto há mais de 12h é encerrado sozinho
 const LIMITE_PAUSA = 30 * 60;  // pausa acima de 30 min encerra o ponto
@@ -103,7 +104,7 @@ async function manter(env, now) {
 }
 
 export async function rotasPonto(request, env, p, metodo, h) {
-  if (!p.startsWith("/api/ponto") && !p.startsWith("/api/admin/ponto")) return null;
+  if (!p.startsWith("/api/ponto") && !p.startsWith("/api/admin/ponto")) return await rotasEquipes(request, env, p, metodo, h);
   const { json, quemSou, exigirAdmin, lerCorpo, agora, auditar } = h;
   const ip = request.headers.get("CF-Connecting-IP");
   const now = agora();
