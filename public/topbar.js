@@ -15,15 +15,15 @@
 
   const svg = (p) => '<svg viewBox="0 0 24 24">' + p + "</svg>";
   const ITENS = [
-    { rot: "Painel", href: "/painel.html", paginas: ["/painel", "/pedidos", "/admin", "/admin-ausencias"],
+    { rot: "Painel", href: "/painel.html", paginas: ["/painel", "/pedidos", "/admin", "/admin-ausencias", "/membros", "/frequencia"],
       ico: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>' },
     { rot: "Tickets", href: "/tickets.html", paginas: ["/tickets", "/admin-tickets"],
       ico: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 11v2M13 17v2"/>' },
     { rot: "Ponto", href: "/ponto.html", paginas: ["/ponto"],
       ico: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
-    { rot: "Ficha", href: "/ficha.html", paginas: ["/ficha"],
-      ico: '<rect width="18" height="14" x="3" y="5" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4M6 17c.5-1.5 1.5-2 3-2s2.5.5 3 2"/>' },
-    { rot: "Mais", href: "/mais.html", paginas: ["/mais", "/equipe", "/ausencias", "/comunicados", "/perfil"],
+        { rot: "Equipe", href: "/equipe.html", paginas: ["/equipe"],
+      ico: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4.5 1.8 4.5 4.5"/>' },
+    { rot: "Mais", href: "/mais.html", paginas: ["/mais", "/ficha", "/ausencias", "/comunicados", "/perfil"],
       ico: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>' }
   ];
 
