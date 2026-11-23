@@ -676,4 +676,7 @@ export default {
       return json({ erro: "Erro interno" }, 500);
     }
   },
+    async scheduled(event, env, ctx) {
+    ctx.waitUntil(rodarEscala(env));
+  },
 };
