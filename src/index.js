@@ -1,3 +1,4 @@
+import { rodarEscala } from "./equipes.js";
 import { rotasFrequencia } from "./frequencia.js";
 import { rotasFicha } from "./ficha.js";
 
