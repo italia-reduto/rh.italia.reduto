@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0E1110"><meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
 <title>Equipe · Itália RH</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
   :root{--bg:#0E1110;--card:#171C19;--verde:#35E08A;--esc:#06281A;--suave:#8C9690;--texto:#F2F2EE;--coral:#FF7A6B;--ouro:#E0B85A;--linha:rgba(255,255,255,.08)}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -13,52 +14,66 @@
   body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
   .tela{max-width:440px;margin:0 auto;padding:16px}
   button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
-  .abas{display:flex;gap:4px;background:var(--card);border-radius:20px;padding:4px;margin-bottom:12px}
+  .abas{display:flex;gap:4px;background:var(--card);border-radius:20px;padding:4px;margin-bottom:14px}
   .abas button{flex:1;padding:11px 4px;border-radius:16px;font-size:13px;font-weight:600;color:var(--suave)}
   .abas button.on{background:var(--verde);color:var(--esc)}
-  .card{background:var(--card);border-radius:24px;padding:18px 16px;margin-bottom:10px}
-  .topo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-  .sup{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--suave)}
-  .topo h1{margin:6px 0 4px;font-size:28px;font-weight:700;line-height:1.1}
-  .sub{font-size:14px;color:var(--suave)}
-  .on-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:30px;font-size:12px;font-weight:700;background:rgba(53,224,138,.15);color:var(--verde);white-space:nowrap}
-  .on-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
-  .on-badge.pausa{background:rgba(224,184,90,.15);color:var(--ouro)}
-  .tile{background:var(--card);border-radius:22px;padding:14px;margin-bottom:10px}
-  .tile small{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--suave)}
-  .tile b{display:block;margin-top:8px;font-size:18px;font-weight:600;overflow-wrap:anywhere}
+  .card{background:var(--card);border-radius:26px;padding:18px 16px;margin-bottom:12px}
+  .hero{background:linear-gradient(165deg,#15301F 0%,#121715 45%,#0F1311 100%);border:1px solid rgba(53,224,138,.2);border-radius:30px;padding:20px 16px 16px;margin-bottom:14px}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .hero-sup{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde);padding-top:6px}
+  .badge{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(53,224,138,.12);border:1px solid rgba(53,224,138,.45);color:var(--verde);white-space:nowrap}
+  .badge i{font-size:8px}
+  .badge.pausa{background:rgba(224,184,90,.12);border-color:rgba(224,184,90,.5);color:var(--ouro)}
+  .hero h1{margin:12px 0 4px;font-size:38px;line-height:1.02;font-weight:800;text-transform:uppercase;letter-spacing:-.5px;overflow-wrap:anywhere}
+  .hero-sub{font-size:16px;color:var(--suave);margin-bottom:18px}
+  .tile{background:#0E1210;border:1px solid var(--linha);border-radius:22px;padding:14px;margin-bottom:10px}
+  .tile .rot{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--suave)}
+  .tile .rot i{color:var(--verde);font-size:13px}
+  .tile b{display:block;margin-top:8px;font-size:20px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+  .tile small{display:block;margin-top:4px;font-size:12px;color:var(--suave)}
+  .tile.full{display:flex;align-items:center;gap:14px}
+  .tile.full .txt{min-width:0}
+  .tile.full b{margin-top:6px}
+  .ib{width:52px;height:52px;border-radius:16px;background:rgba(53,224,138,.1);border:1px solid rgba(53,224,138,.25);color:var(--verde);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
   .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .duo .tile{margin:0}
-  .duo-wrap{margin-bottom:10px}
-  .pos{display:inline-flex;align-items:center;justify-content:center;min-width:56px;height:46px;padding:0 14px;margin-top:8px;border-radius:16px;background:var(--verde);color:var(--esc);font-size:22px;font-weight:800}
-  .pos.vazio{background:rgba(255,255,255,.07);color:var(--suave);font-size:15px;font-weight:600}
-  .sync{display:flex;justify-content:space-between;gap:8px;margin:14px 4px;font-size:12px;color:var(--suave)}
-  .titulo{display:flex;justify-content:space-between;align-items:center;margin:22px 4px 10px}
-  .titulo h2{margin:0;font-size:20px;font-weight:700}
-  .chip{font-size:11px;padding:5px 12px;border-radius:30px;border:1px solid var(--linha);color:var(--verde);text-transform:uppercase;letter-spacing:.6px}
-  .lista{background:var(--card);border-radius:24px;overflow:hidden}
-  .lin{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha);font-size:14px}
-  .lin:last-child{border-bottom:0}
-  .lin.eu{background:rgba(53,224,138,.07)}
-  .ico{width:44px;height:44px;border-radius:14px;background:#12261D;color:var(--verde);display:flex;align-items:center;justify-content:center;flex:none;font-weight:700}
+  .duo .tile{margin-bottom:10px}
+  .pos{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:50px;padding:0 16px;margin-top:8px;border-radius:16px;background:linear-gradient(180deg,#35E08A,#1FB86C);color:var(--esc);font-size:24px;font-weight:800}
+  .pos.vazio{background:rgba(255,255,255,.07);color:var(--suave);font-size:16px;font-weight:600}
+  .hero-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;padding-top:12px;border-top:1px solid var(--linha);font-size:12px;color:var(--suave)}
+  .hero-foot i{margin-right:6px}
+  .titulo{display:flex;justify-content:space-between;align-items:center;margin:6px 4px 12px}
+  .titulo h2{margin:0;font-size:22px;font-weight:700}
+  .chip{font-size:11px;padding:6px 13px;border-radius:30px;border:1px solid rgba(53,224,138,.4);color:var(--verde);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .lin{display:flex;align-items:center;gap:12px;background:#0E1210;border:1px solid var(--linha);border-radius:20px;padding:12px;font-size:14px}
+  .lin.eu{border-color:rgba(53,224,138,.55);background:rgba(53,224,138,.06)}
+  .lin .ib{width:46px;height:46px;border-radius:14px;font-size:17px}
   .lin .e{flex:1;min-width:0}
-  .lin .e b{display:block;font-weight:600;overflow-wrap:anywhere}
+  .lin .e b{display:block;font-weight:600;font-size:16px;overflow-wrap:anywhere}
   .lin .e small{display:block;margin-top:3px;font-size:12px;color:var(--suave)}
   .tagp{font-size:11px;padding:4px 10px;border-radius:30px;background:rgba(224,184,90,.15);color:var(--ouro);font-weight:700}
-  .voce{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--verde)}
-  .vazio{padding:18px 16px;font-size:14px;line-height:1.55;color:var(--suave)}
+  .voce{font-size:12px;font-weight:700;letter-spacing:1.2px;color:var(--verde)}
+  .vazio{padding:8px 4px;font-size:14px;line-height:1.55;color:var(--suave)}
   .bt{display:block;width:100%;margin-top:14px;padding:14px;border-radius:30px;background:var(--verde);color:var(--esc);font-size:14px;font-weight:600;text-align:center;text-decoration:none}
   .bt.fantasma{background:transparent;color:var(--texto);border:1px solid var(--linha)}
   .bt:disabled{opacity:.5}
+  .sup{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--suave)}
+  .topo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .topo h3{margin:6px 0 2px;font-size:22px;font-weight:700}
+  .topo .sub{font-size:13px;color:var(--suave);line-height:1.5}
   .editar{font-size:12px;color:var(--verde);text-decoration:underline;white-space:nowrap}
   .inativa{opacity:.55}
+  .hbloco{margin:16px 4px 8px;font-size:13px;font-weight:700;color:var(--verde);display:flex;justify-content:space-between}
+  .hbloco span{color:var(--suave);font-weight:400}
+  .filtro{display:flex;gap:8px;margin-top:12px}
+  .filtro input{flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:12px;font:inherit;font-size:15px;color:var(--texto);outline:none}
+  .filtro .bt{width:auto;margin:0;padding:12px 18px}
   .ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center}
   .sheet{width:100%;max-width:440px;max-height:90vh;overflow:auto;background:#131815;border-radius:26px 26px 0 0;padding:22px 16px calc(20px + env(safe-area-inset-bottom))}
   .sheet h3{margin:0 0 6px;font-size:19px;font-weight:600}
   .sheet p{margin:0;font-size:13px;line-height:1.55;color:var(--suave)}
   .sheet label{display:block;margin:14px 0 6px;font-size:12px;color:var(--suave)}
-  .sheet input[type=text],.sheet input[type=number],.sheet input[type=time]{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:13px;font:inherit;font-size:16px;color:var(--texto);outline:none}
-  .dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sheet input[type=text],.sheet input[type=number]{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:13px;font:inherit;font-size:16px;color:var(--texto);outline:none}
   .chk{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px}
   .chk input{width:20px;height:20px;accent-color:var(--verde)}
   .btns{display:flex;gap:10px;margin-top:16px}
@@ -76,57 +91,75 @@
   </div>
 
   <section id="sMin">
-    <div class="card" id="estFora" hidden>
-      <div class="sup">Escala atual</div>
-      <h1 style="margin:6px 0 4px;font-size:24px">Fora de serviço</h1>
-      <p class="vazio" style="padding:6px 0 0">Bata o ponto para entrar na escala. A equipe é escolhida automaticamente pelo sistema, na hora em que você iniciar.</p>
-      <a class="bt" href="/ponto.html">Ir para o Ponto</a>
+    <div class="hero" id="estFora" hidden>
+      <div class="hero-sup">Escala atual</div>
+      <h1>Fora de serviço</h1>
+      <div class="hero-sub">Bata o ponto para entrar na escala. O sistema escolhe sua equipe automaticamente.</div>
+      <a class="bt" href="/ponto.html"><i class="fa-solid fa-clock"></i>&nbsp; Ir para o Ponto</a>
     </div>
-    <div class="card" id="estSemVaga" hidden>
-      <div class="sup">Escala atual</div>
-      <h1 style="margin:6px 0 4px;font-size:24px">Aguardando vaga</h1>
-      <p class="vazio" style="padding:6px 0 0">Todas as equipes estão cheias no momento. Você entra automaticamente assim que abrir uma vaga.</p>
+    <div class="hero" id="estSemVaga" hidden>
+      <div class="hero-sup">Escala atual</div>
+      <h1>Aguardando vaga</h1>
+      <div class="hero-sub">Todas as equipes estão cheias agora. Você entra sozinho assim que abrir uma vaga.</div>
     </div>
 
     <div id="estEscala" hidden>
-      <div class="card">
-        <div class="topo">
-          <div>
-            <div class="sup">Escala atual</div>
-            <h1 id="eNome"></h1>
-            <div class="sub">Veja sua alocação atual</div>
-          </div>
-          <span class="on-badge" id="eBadge">ON</span>
+      <div class="hero">
+        <div class="hero-top">
+          <div class="hero-sup" id="hSup"></div>
+          <span class="badge" id="eBadge"><i class="fa-solid fa-circle"></i><span id="eBadgeTxt"></span></span>
         </div>
-      </div>
-      <div class="tile"><small>Missão / Área</small><b id="ePosto"></b></div>
-      <div class="duo duo-wrap">
-        <div class="tile"><small>Minha posição</small><span class="pos" id="ePos"></span></div>
-        <div class="tile"><small>Função</small><b id="eFuncao"></b></div>
-      </div>
-      <div class="duo duo-wrap">
-        <div class="tile"><small>Minha entrada</small><b id="eEntrada"></b></div>
-        <div class="tile"><small>Em serviço há</small><b id="eTempo"></b></div>
-      </div>
-      <div class="duo duo-wrap">
-        <div class="tile"><small>Turno da equipe</small><b id="eTurno"></b></div>
-        <div class="tile"><small>Limite de vagas</small><b id="eVagas"></b></div>
-      </div>
-      <div class="tile" id="eRespBox"><small>Responsável</small><b id="eResp"></b></div>
-      <div class="sync"><span>Atualização automática</span><span id="eSync"></span></div>
+        <h1 id="eNome"></h1>
+        <div class="hero-sub">Veja sua alocação atual</div>
 
-      <div class="titulo"><h2>Integrantes</h2><span class="chip" id="eQtd"></span></div>
-      <div class="lista" id="eLista"></div>
+        <div class="tile full">
+          <span class="ib"><i class="fa-solid fa-location-dot"></i></span>
+          <div class="txt"><div class="rot" style="display:block">Missão / Área</div><b id="ePosto"></b></div>
+        </div>
+        <div class="duo">
+          <div class="tile"><div class="rot"><i class="fa-solid fa-flag"></i> Minha posição</div><span class="pos" id="ePos"></span></div>
+          <div class="tile"><div class="rot"><i class="fa-solid fa-briefcase"></i> Função</div><b id="eFuncao"></b></div>
+        </div>
+        <div class="duo">
+          <div class="tile"><div class="rot"><i class="fa-solid fa-right-to-bracket"></i> Minha entrada</div><b id="eEntrada"></b></div>
+          <div class="tile"><div class="rot"><i class="fa-solid fa-stopwatch"></i> Em serviço há</div><b id="eTempo"></b></div>
+        </div>
+        <div class="duo">
+          <div class="tile"><div class="rot"><i class="fa-solid fa-clock"></i> Turno atual</div><b id="eTurno"></b><small>Horário de Brasília</small></div>
+          <div class="tile"><div class="rot"><i class="fa-solid fa-users"></i> Limite de vagas</div><b id="eVagas"></b></div>
+        </div>
+        <div class="tile full">
+          <span class="ib"><i class="fa-solid fa-hourglass-half"></i></span>
+          <div class="txt"><div class="rot" style="display:block">Próxima troca de equipe</div><b id="eTroca"></b><small id="eContagem"></small></div>
+        </div>
+        <div class="tile full" id="eRespBox">
+          <span class="ib"><i class="fa-solid fa-user-shield"></i></span>
+          <div class="txt"><div class="rot" style="display:block">Responsável</div><b id="eResp"></b></div>
+        </div>
+        <div class="hero-foot"><span><i class="fa-solid fa-rotate"></i>Atualização automática</span><span id="eSync"></span></div>
+      </div>
+
+      <div class="card">
+        <div class="titulo"><h2>Integrantes</h2><span class="chip" id="eQtd"></span></div>
+        <div class="lista" id="eLista"></div>
+      </div>
     </div>
   </section>
 
   <section id="sAdm" hidden>
-    <div class="card" style="margin-bottom:6px">
+    <div class="card">
       <div class="sup">Visão do comando</div>
-      <p class="vazio" style="padding:6px 0 0">As equipes se formam sozinhas quando os membros batem o ponto. Aqui você acompanha quem está em cada uma e ajusta turno, posto e vagas.</p>
+      <p class="vazio" style="padding:6px 0 0">As equipes se formam sozinhas quando os membros batem o ponto e se renovam a cada 3 horas. Aqui você acompanha quem está em cada uma e ajusta posto e vagas.</p>
+      <div class="sup" style="margin-top:10px" id="aBloco"></div>
     </div>
     <div id="aSemVaga"></div>
     <div id="aEquipes"></div>
+
+    <div class="card">
+      <div class="titulo" style="margin-bottom:0"><h2>Histórico de turnos</h2></div>
+      <div class="filtro"><input type="date" id="hDia"><button class="bt" id="hBuscar">Ver</button></div>
+      <div id="hLista"></div>
+    </div>
   </section>
 </div>
 
@@ -135,9 +168,10 @@
 
 <script>
   const $ = (id) => document.getElementById(id);
-  let dados = null, desvio = 0, timerToast, souAdmin = false, aba = "min";
+  let dados = null, desvio = 0, timerToast, souAdmin = false, aba = "min", recarregando = false;
 
   function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+  function icone(cls) { const i = document.createElement("i"); i.className = cls; return i; }
   function limpar(n) { while (n.firstChild) n.removeChild(n.firstChild); }
   function aviso(msg) {
     const t = $("toast"); t.textContent = msg; t.classList.add("on");
@@ -157,7 +191,8 @@
   const dois = (n) => String(n).padStart(2, "0");
   const cron = (s) => { s = Math.max(0, Math.floor(s)); return dois(Math.floor(s / 3600)) + ":" + dois(Math.floor((s % 3600) / 60)) + ":" + dois(s % 60); };
   const hora = (t) => new Date(t * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-  const minutos = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
+  const brHora = (t) => { const d = new Date((t - 3 * 3600) * 1000); return dois(d.getUTCHours()) + ":" + dois(d.getUTCMinutes()); };
+  const brData = (t) => { const d = new Date((t - 3 * 3600) * 1000); return dois(d.getUTCDate()) + "/" + dois(d.getUTCMonth() + 1); };
 
   function fecharSheet() { $("ov").hidden = true; }
   $("ov").onclick = (e) => { if (e.target === $("ov")) fecharSheet(); };
@@ -170,17 +205,19 @@
     $("estEscala").hidden = d.estado !== "escala";
     if (d.estado !== "escala") return;
     const e = d.equipe;
+    $("hSup").textContent = "Escala atual · " + e.nome + (d.minha_posicao ? " " + d.minha_posicao : "");
     $("eNome").textContent = e.nome;
     const pausado = d.pausa_inicio !== null;
-    $("eBadge").textContent = pausado ? "PAUSA" : "ON";
-    $("eBadge").className = "on-badge" + (pausado ? " pausa" : "");
+    $("eBadgeTxt").textContent = pausado ? "Em pausa" : "Em serviço";
+    $("eBadge").className = "badge" + (pausado ? " pausa" : "");
     $("ePosto").textContent = e.posto;
     $("eFuncao").textContent = e.funcao;
     $("ePos").textContent = d.minha_posicao || "—";
     $("ePos").className = "pos" + (d.minha_posicao ? "" : " vazio");
     $("eEntrada").textContent = hora(d.entrada);
-    $("eTurno").textContent = e.turno_inicio + " — " + e.turno_fim;
+    $("eTurno").textContent = d.bloco.turno_inicio + " — " + d.bloco.turno_fim;
     $("eVagas").textContent = e.ocupadas + " de " + e.vagas + " ocupadas";
+    $("eTroca").textContent = "às " + d.bloco.turno_fim;
     $("eRespBox").hidden = !e.responsavel;
     $("eResp").textContent = e.responsavel || "";
     $("eSync").textContent = "Sincronizado " + new Date().toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -188,7 +225,7 @@
     const box = $("eLista"); limpar(box);
     d.integrantes.forEach((x) => {
       const lin = el("div", "lin" + (x.voce ? " eu" : ""));
-      lin.appendChild(el("div", "ico", String(x.nome).charAt(0).toUpperCase()));
+      const ib = el("span", "ib"); ib.appendChild(icone("fa-solid fa-user")); lin.appendChild(ib);
       const t = el("div", "e");
       t.appendChild(el("b", null, x.nome));
       t.appendChild(el("small", null, "Passaporte " + x.matricula + " · desde " + hora(x.desde)));
@@ -205,6 +242,9 @@
     const now = agoraServ();
     const pausaAtual = d.pausa_inicio !== null ? now - d.pausa_inicio : 0;
     $("eTempo").textContent = cron(now - d.entrada - d.pausa_total - pausaAtual);
+    const falta = d.bloco.fim_ts - now;
+    $("eContagem").textContent = falta > 0 ? "faltam " + cron(falta) : "trocando de equipe...";
+    if (falta <= -2 && !recarregando) { recarregando = true; carregar().then(() => { recarregando = false; }); }
   }
   async function carregar() {
     const { ok, d } = await api("/api/equipe");
@@ -226,12 +266,6 @@
       return i;
     };
     const posto = campo("Posto", "text", e.posto, { maxLength: 60 });
-    const dup = el("div", "dupla"); s.appendChild(dup);
-    const ini = el("input"); ini.type = "time"; ini.value = e.turno_inicio;
-    const fim = el("input"); fim.type = "time"; fim.value = e.turno_fim;
-    const a = el("div"); a.appendChild(el("label", null, "Turno começa")); a.appendChild(ini);
-    const b = el("div"); b.appendChild(el("label", null, "Turno termina")); b.appendChild(fim);
-    dup.appendChild(a); dup.appendChild(b);
     let lim = null;
     if (e.modo_posicao !== "sorteio") lim = campo("Limite de vagas (1 a 30)", "number", e.limite, { min: 1, max: 30 });
     else s.appendChild(el("p", null, "Vagas fixas por posição (" + e.posicoes.split(",").join(" e ") + "), sorteadas pelo sistema."));
@@ -246,8 +280,7 @@
     sv.onclick = async () => {
       sv.disabled = true;
       const r = await api("/api/admin/equipes/editar", {
-        id: e.id, posto: posto.value, turno_inicio: ini.value, turno_fim: fim.value,
-        limite: lim ? lim.value : e.limite, responsavel: resp.value, ativa: cb.checked,
+        id: e.id, posto: posto.value, limite: lim ? lim.value : e.limite, responsavel: resp.value, ativa: cb.checked,
       });
       sv.disabled = false;
       if (!r.ok) { aviso(r.d.erro || "Erro ao salvar."); return; }
@@ -260,6 +293,7 @@
   async function carregarAdm() {
     const { ok, d } = await api("/api/admin/equipes");
     if (!ok) { aviso(d.erro || "Erro ao carregar."); return; }
+    $("aBloco").textContent = "Turno atual: " + d.bloco.turno_inicio + " — " + d.bloco.turno_fim + " (Brasília)";
     const sv = $("aSemVaga"); limpar(sv);
     if (d.sem_vaga.length) {
       const c = el("div", "card");
@@ -273,18 +307,17 @@
       const topo = el("div", "topo");
       const t = el("div");
       t.appendChild(el("div", "sup", e.membros.length + "/" + e.vagas + " vagas"));
-      t.appendChild(el("h1", null, e.nome + (e.ativa ? "" : " (inativa)")));
-      t.appendChild(el("div", "sub", e.posto + " · " + e.turno_inicio + " — " + e.turno_fim));
-      if (e.responsavel) t.appendChild(el("div", "sub", "Responsável: " + e.responsavel));
+      t.appendChild(el("h3", null, e.nome + (e.ativa ? "" : " (inativa)")));
+      t.appendChild(el("div", "sub", e.posto + (e.responsavel ? " · Responsável: " + e.responsavel : "")));
       topo.appendChild(t);
       const ed = el("button", "editar", "Editar"); ed.onclick = () => editarEquipe(e);
       topo.appendChild(ed);
       c.appendChild(topo);
-      const lista = el("div", "lista"); lista.style.marginTop = "12px"; lista.style.background = "rgba(255,255,255,.03)";
+      const lista = el("div", "lista"); lista.style.marginTop = "12px";
       if (!e.membros.length) lista.appendChild(el("div", "vazio", "Ninguém escalado agora."));
       e.membros.forEach((m) => {
         const lin = el("div", "lin");
-        lin.appendChild(el("div", "ico", String(m.nome).charAt(0).toUpperCase()));
+        const ib = el("span", "ib"); ib.appendChild(icone("fa-solid fa-user")); lin.appendChild(ib);
         const x = el("div", "e");
         x.appendChild(el("b", null, m.nome));
         x.appendChild(el("small", null, "Passaporte " + m.matricula + " · desde " + hora(m.desde)));
@@ -297,12 +330,40 @@
     });
   }
 
+  async function carregarHistorico() {
+    const dia = $("hDia").value;
+    if (!dia) { aviso("Escolha a data."); return; }
+    const { ok, d } = await api("/api/admin/equipes/historico?dia=" + encodeURIComponent(dia));
+    if (!ok) { aviso(d.erro || "Erro ao carregar o histórico."); return; }
+    const box = $("hLista"); limpar(box);
+    if (!d.itens.length) { box.appendChild(el("div", "vazio", "Nenhum registro neste dia.")); return; }
+    let atual = null, lista = null;
+    d.itens.forEach((x) => {
+      if (x.bloco_inicio !== atual) {
+        atual = x.bloco_inicio;
+        const fim = x.bloco_inicio + d.bloco_seg;
+        const h = el("div", "hbloco", brData(atual) + " · " + brHora(atual) + " — " + brHora(fim));
+        h.appendChild(el("span", null, fim > d.agora ? "em andamento" : "concluído"));
+        box.appendChild(h);
+        lista = el("div", "lista"); box.appendChild(lista);
+      }
+      const lin = el("div", "lin");
+      const ib = el("span", "ib"); ib.appendChild(icone("fa-solid fa-user")); lin.appendChild(ib);
+      const t = el("div", "e");
+      t.appendChild(el("b", null, x.nome));
+      t.appendChild(el("small", null, x.equipe + (x.posicao ? " (" + x.posicao + ")" : "") + (x.anterior ? " · veio de " + x.anterior : " · primeiro turno")));
+      lin.appendChild(t);
+      lista.appendChild(lin);
+    });
+  }
+  $("hBuscar").onclick = carregarHistorico;
+
   function abrirAba(n) {
     aba = n;
     $("sMin").hidden = n !== "min";
     $("sAdm").hidden = n !== "adm";
     document.querySelectorAll(".abas button").forEach((b) => b.classList.toggle("on", b.dataset.aba === n));
-    if (n === "adm") carregarAdm();
+    if (n === "adm") { carregarAdm(); carregarHistorico(); }
   }
   document.querySelectorAll(".abas button").forEach((b) => { b.onclick = () => abrirAba(b.dataset.aba); });
 
@@ -314,9 +375,10 @@
       if (eu.trocar_senha) { location.href = "/trocar-senha.html"; return; }
       souAdmin = eu.nivel >= 50;
       $("abas").hidden = !souAdmin;
+      $("hDia").value = new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
       await carregar();
       setInterval(tick, 1000);
-      setInterval(() => { if (!document.hidden) { if (aba === "min") carregar(); else carregarAdm(); } }, 30000);
+      setInterval(() => { if (!document.hidden && aba === "min") carregar(); }, 30000);
     } catch (e) { location.href = "/"; }
   })();
 </script>
