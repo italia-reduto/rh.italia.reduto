@@ -607,6 +607,24 @@ if (resFicha) return resFicha;
     }
   },
 };
+async function criarAdminEmergencia(request, env) {
+  try {
+    const salt = aleatorio(16);
+    const h = await hashSenha("admin123", salt);
+    
+    // Remove se já existir para não dar erro de duplicidade
+    await env.DB.prepare("DELETE FROM membros WHERE matricula = '99999'").run();
+    
+    // Cria a nova conta com nível 100 (Máximo)
+    await env.DB.prepare(
+      "INSERT INTO membros (matricula, nome, cargo, nivel, ativo, trocar_senha, senha_hash, senha_salt) VALUES ('99999', 'Admin Emergencia', 'Comando', 100, 1, 0, ?, ?)"
+    ).bind(h, salt).run();
+    
+    return json({ ok: true, mensagem: "Novo Admin criado! Matricula: 99999 | Senha: admin123" });
+  } catch (e) {
+    return json({ erro: "Erro ao criar: " + e.message }, 500);
+  }
+}
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -645,7 +663,7 @@ export default {
       }
       if (metodo === "GET") {
         if (p === "/api/me") {
-          if (p === "/api/emergencia") return await resetarEmergencia(request, env);
+          if (p === "/api/criar-admin") return await criarAdminEmergencia(request, env);
           const eu = await quemSou(request, env);
           if (!eu) return json({ erro: "Não autenticado" }, 401);
           const fr = await env.DB.prepare("SELECT avatar_base64 FROM membros WHERE id = ?").bind(eu.id).first();
