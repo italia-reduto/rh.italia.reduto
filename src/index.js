@@ -420,13 +420,6 @@ async function salvarFotoSegura(request, env) {
   return json({ ok: true, mensagem: "Foto atualizada!" });
 }
 
-async function resetarEmergencia(request, env) {
-  const salt = aleatorio(16);
-  const h = await hashSenha("admin123", salt);
-  await env.DB.prepare("UPDATE membros SET senha_hash = ?, senha_salt = ?, trocar_senha = 0, bloqueado_ate = 0, tentativas_falhas = 0 WHERE matricula = '17274'").bind(h, salt).run();
-  return json({ ok: true, mensagem: "Senha da conta 17274 resetada para admin123" });
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -465,8 +458,6 @@ export default {
       }
       
       if (metodo === "GET") {
-        if (p === "/api/emergencia") return await resetarEmergencia(request, env);
-        
         if (p === "/api/me") {
           const eu = await quemSou(request, env);
           if (!eu) return json({ erro: "Não autenticado" }, 401);
@@ -480,6 +471,10 @@ export default {
         if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
         
         if (p === "/api/membros/status") {
+          // CORREÇÃO DE SEGURANÇA: Exige login para ver quem está online
+          const eu = await quemSou(request, env);
+          if (!eu) return json({ erro: "Não autenticado" }, 401);
+
           const r = await env.DB.prepare(`
             SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
             FROM membros m 
@@ -508,4 +503,4 @@ export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(rodarEscala(env));
   },
-}; 
+};
