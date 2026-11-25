@@ -72,26 +72,34 @@
       <p>Os avisos do comando vão aparecer aqui.</p>
     </div>
 
-    <div class="grade">
-      <a href="/tickets.html" class="cx">
-        <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
-        <div class="num" id="num-tickets">–</div><div class="rot">Tickets abertos</div>
-      </a>
-      <a href="/ausencias.html" class="cx">
-        <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
-        <div class="num" id="num-ausencias">–</div><div class="rot">Ausência pendente</div>
-      </a>
-      <!-- Card de Membros Ativos -->
-<button class="cx" onclick="abrirMembros()">
-  <div class="ic"><svg class="i"><use href="#i-eq"/></svg></div>
-  <div class="num" id="num-ativos">–</div><div class="rot">Membros Ativos</div>
-</button>
+    <!-- GRADE DE CARDS PEQUENOS (2x2) -->
+<div class="grade">
+  <a href="/tickets.html" class="cx">
+    <div class="ic"><svg class="i"><use href="#i-ticket"/></svg></div>
+    <div class="num" id="num-tickets">–</div>
+    <div class="rot">Tickets abertos</div>
+  </a>
+  
+  <a href="/ausencias.html" class="cx">
+    <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+    <div class="num" id="num-ausencias">–</div>
+    <div class="rot">Ausência pendente</div>
+  </a>
 
-<!-- Card de Frequência (Substitui a Ficha) -->
-<a href="/frequencia.html" class="cx">
-  <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
-  <div class="tit" style="margin-top:10px">Frequência</div><div class="rot">Ver histórico</div>
-</a>
+  <button class="cx" onclick="abrirMembros()">
+    <div class="ic"><svg class="i"><use href="#i-eq"/></svg></div>
+    <div class="num" id="num-ativos">–</div>
+    <div class="rot">Membros Ativos</div>
+  </button>
+  
+  <a href="/frequencia.html" class="cx">
+    <div class="ic"><svg class="i"><use href="#i-cal"/></svg></div>
+    <div class="tit" style="margin-top:10px">Frequência</div>
+    <div class="rot">Ver histórico</div>
+  </a>
+</div>
+
+<!-- AQUI ACABA A GRADE. OS CARDS DE ADMIN FICAM FORA DELA (LARGURA TOTAL) -->
 
 <a class="adm" id="adm" href="/pedidos.html" hidden>
   <div class="ic"><svg class="i"><use href="#i-escudo"/></svg><span class="ponto" id="admdot" hidden></span></div>
@@ -118,9 +126,10 @@
   <div class="meio"><div class="tit" style="margin-top:0">Gerenciar Frequência</div><div class="rot">Lançar faltas e ver membros ativos</div></div>
 </a>
 
-<div class="acoes" style="margin-top: 16px;">
-  <a href="/tickets.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
-  <a href="/ausencias.html" class="pil"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
+<!-- BOTÕES REDONDOS EMBAIXO -->
+<div class="acoes" style="display: flex; gap: 8px; margin-top: 24px;">
+  <a href="/tickets.html" class="pil" style="flex: 1;"><svg class="i"><use href="#i-mais"/></svg>Abrir ticket</a>
+  <a href="/ausencias.html" class="pil" style="flex: 1;"><svg class="i"><use href="#i-mais"/></svg>Pedir ausência</a>
 </div>
 
 <a class="sair" href="#" id="sair">Sair da conta</a>
