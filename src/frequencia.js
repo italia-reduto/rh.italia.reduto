@@ -50,6 +50,32 @@ export async function rotasFrequencia(request, env, p, metodo, h) {
 
     return json({ ok: true, ativos: r.results });
   }
+// 4. O ADMIN VÊ QUEM BATEU PONTO EM UM DIA ESPECÍFICO
+if (metodo === "GET" && p === "/api/admin/frequencia/dia") {
+  const adm = await exigirAdmin(request, env);
+  if (!adm) return json({ erro: "Sem permissão" }, 403);
+  
+  const url = new URL(request.url);
+  const data = url.searchParams.get("data"); // Formato YYYY-MM-DD
+  if (!data) return json({ erro: "Data não informada" }, 400);
 
+  // Puxa os membros que têm registro de ponto naquele dia (usando a data do timestamp)
+  const r = await env.DB.prepare(`
+    SELECT m.id, m.nome, m.matricula, p.entrada, p.saida 
+    FROM membros m
+    JOIN ponto_registros p ON p.membro_id = m.id
+    WHERE DATE(p.entrada, 'unixepoch', 'localtime') = ?
+    GROUP BY m.id
+  `).bind(data).all();
+  
+  // Puxa os registros de frequência já lançados nesse dia
+  const freq = await env.DB.prepare(`
+    SELECT membro_id, tipo, status, observacao 
+    FROM frequencia 
+    WHERE data = ?
+  `).bind(data).all();
+
+  return json({ ok: true, membros: r.results, frequencias: freq.results });
+}
   return null;
 }
