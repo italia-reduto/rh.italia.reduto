@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Minha Frequência · Itália RH</title>
+<link rel="stylesheet" href="/estilo.css">
+<style>
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  body { align-items: flex-start; padding-top: 90px; padding-bottom: 40px; background-color: var(--fundo); }
+  
+  .card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+  
+  .search-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--linha); background: #000; color: #fff; font-size: 15px; margin-bottom: 20px; outline: none; }
+  .search-box:focus { border-color: var(--verde); }
+
+  .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--linha); }
+  .hist-item:last-child { border-bottom: none; }
+  
+  .hist-info { display: flex; flex-direction: column; gap: 4px; }
+  .hist-data { font-size: 15px; font-weight: 600; color: var(--marfim); }
+  .hist-motivo { font-size: 12px; color: var(--suave); }
+  
+  .badge { padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .badge.F { background: rgba(224,82,92,.15); color: var(--vermelho); border: 1px solid rgba(224,82,92,.3); }
+  .badge.P { background: rgba(0,161,82,.15); color: var(--verde); border: 1px solid rgba(0,161,82,.3); }
+  .badge.J { background: rgba(184,155,94,.15); color: var(--ouro); border: 1px solid rgba(184,155,94,.3); }
+</style>
+</head>
+<body>
+  <script src="/topbar.js"></script>
+
+  <div class="caixa">
+    <div class="cartao">
+      <h2 style="margin-bottom: 20px;">Minha Frequência</h2>
+      
+      <!-- Barra de pesquisa -->
+      <input type="text" id="busca" class="search-box" placeholder="Pesquisar por data (ex: 24/11) ou motivo..." oninput="filtrar()">
+      
+      <div id="listaHistorico">
+        <p class="sub">Carregando histórico...</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  fetch("/api/me").then(r => { if (!r.ok) location.href = "/"; }).catch(() => location.href = "/");
+
+  let todosRegistros = [];
+
+  async function carregarFrequencia() {
+    const lista = document.getElementById("listaHistorico");
+    try {
+      const r = await fetch("/api/frequencia/minha");
+      const d = await r.json();
+
+      if (!r.ok) {
+        lista.innerHTML = `<p style="color:var(--vermelho)">${d.erro || 'Erro ao carregar'}</p>`;
+        return;
+      }
+
+      if (d.frequencias.length === 0) {
+        lista.innerHTML = '<p class="sub">Nenhum registro de frequência encontrado.</p>';
+        return;
+      }
+
+      // Formata os dados para exibição e salva na variável global
+      todosRegistros = d.frequencias.map(f => {
+        const dataFormatada = f.data.split("-").reverse().join("/");
+        let sigla = "P";
+        let cor = "P";
+        if (f.status === "Falta") { sigla = "F"; cor = "F"; }
+        if (f.status === "Justificada") { sigla = "J"; cor = "J"; }
+        
+        return {
+          data: dataFormatada,
+          tipo: f.tipo,
+          obs: f.observacao || "",
+          sigla: sigla,
+          cor: cor,
+          textoBusca: (dataFormatada + " " + f.tipo + " " + (f.observacao || "")).toLowerCase()
+        };
+      });
+
+      renderizar(todosRegistros);
+
+    } catch (e) {
+      lista.innerHTML = '<p style="color:var(--vermelho)">Falha de conexão.</p>';
+    }
+  }
+
+  function renderizar(registros) {
+    const lista = document.getElementById("listaHistorico");
+    lista.innerHTML = "";
+
+    if (registros.length === 0) {
+      lista.innerHTML = '<p class="sub">Nenhum resultado para esta pesquisa.</p>';
+      return;
+    }
+
+    registros.forEach(f => {
+      const item = document.createElement("div");
+      item.className = "hist-item";
+      
+      const info = document.createElement("div");
+      info.className = "hist-info";
+      
+      const dataEl = document.createElement("span");
+      dataEl.className = "hist-data";
+      dataEl.textContent = f.data;
+      
+      const motivoEl = document.createElement("span");
+      motivoEl.className = "hist-motivo";
+      motivoEl.textContent = f.tipo + (f.obs ? " · " + f.obs : "");
+      
+      info.appendChild(dataEl);
+      info.appendChild(motivoEl);
+
+      const badge = document.createElement("span");
+      badge.className = "badge " + f.cor;
+      badge.textContent = f.sigla;
+
+      item.appendChild(info);
+      item.appendChild(badge);
+      lista.appendChild(item);
+    });
+  }
+
+  function filtrar() {
+    const termo = document.getElementById("busca").value.toLowerCase();
+    const filtrados = todosRegistros.filter(f => f.textoBusca.includes(termo));
+    renderizar(filtrados);
+  }
+
+  carregarFrequencia();
+</script>
+</body>
+</html>
