@@ -5,142 +5,170 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090B0A"><meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
-<title>Minha Frequência · Itália RH</title>
+<title>Frequência da Equipe · Itália RH</title>
 <link rel="stylesheet" href="/estilo.css">
 <style>
   * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
   body { align-items: flex-start; padding-top: 90px; padding-bottom: 40px; background-color: var(--fundo); }
   
-  .card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+  .card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
   
-  .search-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--linha); background: #000; color: #fff; font-size: 15px; margin-bottom: 20px; outline: none; }
-  .search-box:focus { border-color: var(--verde); }
+  .date-picker { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--linha); background: #000; color: #fff; font-size: 16px; outline: none; margin-bottom: 10px; }
+  .date-picker:focus { border-color: var(--verde); }
 
-  .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--linha); }
-  .hist-item:last-child { border-bottom: none; }
+  .membro-item { display: flex; justify-content: space-between; align-items: flex-start; background: rgba(255,255,255,.02); border: 1px solid var(--linha); padding: 16px; border-radius: 12px; margin-bottom: 10px; }
+  .membro-info { display: flex; flex-direction: column; gap: 4px; }
+  .membro-nome { font-size: 15px; font-weight: 600; color: var(--marfim); }
+  .membro-mat { font-size: 12px; color: var(--suave); }
+  .membro-horario { font-size: 11px; color: var(--ouro); margin-top: 4px; background: rgba(184,155,94,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
+
+  .botoes { display: flex; gap: 6px; flex-shrink: 0; }
+  .btn-status { width: 40px; height: 40px; border-radius: 8px; border: 1px solid; background: transparent; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
   
-  .hist-info { display: flex; flex-direction: column; gap: 4px; }
-  .hist-data { font-size: 15px; font-weight: 600; color: var(--marfim); }
-  .hist-motivo { font-size: 12px; color: var(--suave); }
+  .btn-p { color: var(--verde); border-color: rgba(0,161,82,0.5); }
+  .btn-p.ativo { background: var(--verde); color: #000; }
   
-  .badge { padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .badge.F { background: rgba(224,82,92,.15); color: var(--vermelho); border: 1px solid rgba(224,82,92,.3); }
-  .badge.P { background: rgba(0,161,82,.15); color: var(--verde); border: 1px solid rgba(0,161,82,.3); }
-  .badge.J { background: rgba(184,155,94,.15); color: var(--ouro); border: 1px solid rgba(184,155,94,.3); }
+  .btn-f { color: var(--vermelho); border-color: rgba(224,82,92,0.5); }
+  .btn-f.ativo { background: var(--vermelho); color: #fff; }
+  
+  .btn-j { color: var(--ouro); border-color: rgba(184,155,94,0.5); }
+  .btn-j.ativo { background: var(--ouro); color: #000; }
+
+  .subtitulo { font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
 </style>
 </head>
 <body>
   <script src="/topbar.js"></script>
 
   <div class="caixa">
-    <div class="cartao">
-      <h2 style="margin-bottom: 20px;">Minha Frequência</h2>
-      
-      <!-- Barra de pesquisa por DATA -->
-<input type="date" id="busca" class="search-box" onchange="filtrar()">
-      
-      <div id="listaHistorico">
-        <p class="sub">Carregando histórico...</p>
-      </div>
+    <h2 style="margin-bottom: 20px;">Frequência da Equipe</h2>
+    
+    <!-- Seletor de Data -->
+    <div class="card">
+      <label class="subtitulo">Selecione o dia</label>
+      <input type="date" id="dataFiltro" class="date-picker" onchange="carregarDia()">
+      <div id="resumoDia" class="sub" style="margin-top: 10px;">Selecione uma data para ver os membros.</div>
     </div>
+
+    <!-- Lista de Membros -->
+    <div id="listaMembros"></div>
   </div>
 
 <script>
-  fetch("/api/me").then(r => { if (!r.ok) location.href = "/"; }).catch(() => location.href = "/");
+  fetch("/api/me").then(async (r) => {
+    if (!r.ok) { location.href = "/"; return; }
+    const d = await r.json();
+    if (d.nivel < 50) { location.href = "/painel.html"; return; }
+    
+    // Define a data de hoje por padrão
+    const hoje = new Date().toISOString().split("T")[0];
+    document.getElementById("dataFiltro").value = hoje;
+    carregarDia();
+  }).catch(() => { location.href = "/"; });
 
-  let todosRegistros = [];
+  let membrosAtuais = [];
+  let frequenciasAtuais = [];
 
-  async function carregarFrequencia() {
-    const lista = document.getElementById("listaHistorico");
+  async function carregarDia() {
+    const data = document.getElementById("dataFiltro").value;
+    if (!data) return;
+
+    const lista = document.getElementById("listaMembros");
+    const resumo = document.getElementById("resumoDia");
+    lista.innerHTML = '<p class="sub">Buscando registros...</p>';
+
     try {
-      const r = await fetch("/api/frequencia/minha");
+      const r = await fetch(`/api/admin/frequencia/dia?data=${data}`);
       const d = await r.json();
 
       if (!r.ok) {
-        lista.innerHTML = `<p style="color:var(--vermelho)">${d.erro || 'Erro ao carregar'}</p>`;
+        lista.innerHTML = `<p class="sub" style="color:var(--vermelho)">${d.erro || 'Erro ao buscar'}</p>`;
         return;
       }
 
-      if (d.frequencias.length === 0) {
-        lista.innerHTML = '<p class="sub">Nenhum registro de frequência encontrado.</p>';
+      membrosAtuais = d.membros;
+      frequenciasAtuais = d.frequencias;
+
+      if (membrosAtuais.length === 0) {
+        resumo.textContent = "Nenhum membro bateu ponto neste dia.";
+        lista.innerHTML = "";
         return;
       }
 
-      // Formata os dados para exibição e salva na variável global
-      todosRegistros = d.frequencias.map(f => {
-        const dataFormatada = f.data.split("-").reverse().join("/");
-        let sigla = "P";
-        let cor = "P";
-        if (f.status === "Falta") { sigla = "F"; cor = "F"; }
-        if (f.status === "Justificada") { sigla = "J"; cor = "J"; }
-        
-        return {
-          data: dataFormatada,
-          tipo: f.tipo,
-          obs: f.observacao || "",
-          sigla: sigla,
-          cor: cor,
-          textoBusca: (dataFormatada + " " + f.tipo + " " + (f.observacao || "")).toLowerCase()
-        };
-      });
-
-      renderizar(todosRegistros);
+      resumo.textContent = `${membrosAtuais.length} membro(s) em serviço neste dia.`;
+      renderizarLista();
 
     } catch (e) {
-      lista.innerHTML = '<p style="color:var(--vermelho)">Falha de conexão.</p>';
+      lista.innerHTML = '<p class="sub" style="color:var(--vermelho)">Falha de conexão.</p>';
     }
   }
 
-  function renderizar(registros) {
-    const lista = document.getElementById("listaHistorico");
+  function renderizarLista() {
+    const lista = document.getElementById("listaMembros");
     lista.innerHTML = "";
 
-    if (registros.length === 0) {
-      lista.innerHTML = '<p class="sub">Nenhum resultado para esta pesquisa.</p>';
-      return;
-    }
+    membrosAtuais.forEach(m => {
+      // Verifica se já tem frequência lançada para esse membro
+      const freq = frequenciasAtuais.find(f => f.membro_id === m.id);
+      const statusAtual = freq ? freq.status : ""; // Falta, Presença, Justificada
 
-    registros.forEach(f => {
-      const item = document.createElement("div");
-      item.className = "hist-item";
-      
-      const info = document.createElement("div");
-      info.className = "hist-info";
-      
-      const dataEl = document.createElement("span");
-      dataEl.className = "hist-data";
-      dataEl.textContent = f.data;
-      
-      const motivoEl = document.createElement("span");
-      motivoEl.className = "hist-motivo";
-      motivoEl.textContent = f.tipo + (f.obs ? " · " + f.obs : "");
-      
-      info.appendChild(dataEl);
-      info.appendChild(motivoEl);
+      const entrada = new Date(m.entrada * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const saida = m.saida ? new Date(m.saida * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Em serviço';
 
-      const badge = document.createElement("span");
-      badge.className = "badge " + f.cor;
-      badge.textContent = f.sigla;
+      const div = document.createElement("div");
+      div.className = "membro-item";
 
-      item.appendChild(info);
-      item.appendChild(badge);
-      lista.appendChild(item);
+      // Classes dos botões
+      const classP = statusAtual === "Presença" ? "btn-status btn-p ativo" : "btn-status btn-p";
+      const classF = statusAtual === "Falta" ? "btn-status btn-f ativo" : "btn-status btn-f";
+      const classJ = statusAtual === "Justificada" ? "btn-status btn-j ativo" : "btn-status btn-j";
+
+      div.innerHTML = `
+        <div class="membro-info">
+          <span class="membro-nome">${m.nome}</span>
+          <span class="membro-mat">Passaporte: ${m.matricula}</span>
+          <span class="membro-horario">${entrada} às ${saida}</span>
+        </div>
+        <div class="botoes">
+          <button class="${classP}" onclick="lancar(${m.matricula}, 'Presença')">P</button>
+          <button class="${classF}" onclick="lancar(${m.matricula}, 'Falta')">F</button>
+          <button class="${classJ}" onclick="lancar(${m.matricula}, 'Justificada')">J</button>
+        </div>
+      `;
+      lista.appendChild(div);
     });
   }
 
-  function filtrar() {
-  const dataBusca = document.getElementById("busca").value; // Formato YYYY-MM-DD
-  if (!dataBusca) { renderizar(todosRegistros); return; } // Se apagar, mostra tudo
-  
-  // Converte YYYY-MM-DD para DD/MM/YYYY para bater com o nosso texto
-  const [ano, mes, dia] = dataBusca.split("-");
-  const dataFormatada = `${dia}/${mes}/${ano}`;
+  async function lancar(matricula, status) {
+    const data = document.getElementById("dataFiltro").value;
+    
+    // Confirmação
+    const ok = await customConfirm(`Deseja marcar ${status} para a matrícula ${matricula}?`, "Confirmar");
+    if (!ok) return;
 
-  const filtrados = todosRegistros.filter(f => f.data === dataFormatada);
-  renderizar(filtrados);
+    try {
+      const r = await fetch("/api/admin/frequencia/lancar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matricula: matricula,
+          tipo: "Ponto", // Como ele bateu ponto, o tipo padrão é ponto
+          status: status,
+          data: data
+        })
+      });
+      const d = await r.json();
+      
+      if (r.ok) {
+        customAlert("Frequência registrada!", "Sucesso");
+        carregarDia(); // Recarrega a lista para atualizar os botões
+      } else {
+        customAlert(d.erro || "Erro ao registrar", "Erro");
+      }
+    } catch (e) {
+      customAlert("Falha de conexão.", "Erro");
+    }
   }
-
-  carregarFrequencia();
 </script>
 </body>
 </html>
