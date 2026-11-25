@@ -36,8 +36,8 @@
     <div class="cartao">
       <h2 style="margin-bottom: 20px;">Minha Frequência</h2>
       
-      <!-- Barra de pesquisa -->
-      <input type="text" id="busca" class="search-box" placeholder="Pesquisar por data (ex: 24/11) ou motivo..." oninput="filtrar()">
+      <!-- Barra de pesquisa por DATA -->
+<input type="date" id="busca" class="search-box" onchange="filtrar()">
       
       <div id="listaHistorico">
         <p class="sub">Carregando histórico...</p>
@@ -129,9 +129,15 @@
   }
 
   function filtrar() {
-    const termo = document.getElementById("busca").value.toLowerCase();
-    const filtrados = todosRegistros.filter(f => f.textoBusca.includes(termo));
-    renderizar(filtrados);
+  const dataBusca = document.getElementById("busca").value; // Formato YYYY-MM-DD
+  if (!dataBusca) { renderizar(todosRegistros); return; } // Se apagar, mostra tudo
+  
+  // Converte YYYY-MM-DD para DD/MM/YYYY para bater com o nosso texto
+  const [ano, mes, dia] = dataBusca.split("-");
+  const dataFormatada = `${dia}/${mes}/${ano}`;
+
+  const filtrados = todosRegistros.filter(f => f.data === dataFormatada);
+  renderizar(filtrados);
   }
 
   carregarFrequencia();
