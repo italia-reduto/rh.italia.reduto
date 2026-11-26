@@ -470,23 +470,79 @@ export default {
         if (p === "/api/ausencias/minhas") return await minhasAusencias(request, env);
         if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
         
-        if (p === "/api/membros/status") {
-  // CORREÇÃO DE SEGURANÇA: Exige login para ver quem está online
-  const eu = await quemSou(request, env);
-  if (!eu) return json({ erro: "Não autenticado" }, 401);
+        if (p === "/api/membros/foto") {
+          const adm = await exigirAdmin(request, env);
+          if (!adm) return new Response("Sem permissão", {
+            status: 403,
+            headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
+          });
 
-  const r = await env.DB.prepare(`
-    SELECT m.id, m.nome, m.matricula, m.cargo, m.avatar_base64, p.entrada
-    FROM membros m 
-    LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
-    WHERE m.ativo = 1
-    ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
-  `).all();
-  
-  const online = r.results.filter(m => m.entrada !== null);
-  const offline = r.results.filter(m => m.entrada === null);
-  
-  return json({ ok: true, online, offline, total_online: online.length });
+          const id = Number(url.searchParams.get("id"));
+          if (!Number.isSafeInteger(id) || id <= 0) {
+            return new Response("Pedido inválido", { status: 400 });
+          }
+
+          const membro = await env.DB.prepare(
+            "SELECT avatar_base64 FROM membros WHERE id = ? AND ativo = 1"
+          ).bind(id).first();
+
+          const match = typeof membro?.avatar_base64 === "string"
+            ? membro.avatar_base64.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/)
+            : null;
+          if (!match) return new Response(null, { status: 404 });
+
+          const binario = Uint8Array.from(atob(match[2]), c => c.charCodeAt(0));
+          const tipo = match[1] === "jpeg" ? "image/jpeg" : `image/${match[1]}`;
+          return new Response(binario, {
+            headers: {
+              "Content-Type": tipo,
+              "Content-Length": String(binario.byteLength),
+              "Cache-Control": "private, no-store",
+              "X-Content-Type-Options": "nosniff",
+            }
+          });
+        }
+
+        if (p === "/api/membros/status") {
+          // Diretório completo somente para administradores.
+          const adm = await exigirAdmin(request, env);
+          if (!adm) return json({ erro: "Sem permissão" }, 403);
+
+          // EXISTS evita duplicar membros se houver mais de um ponto aberto.
+          const r = await env.DB.prepare(`
+            SELECT
+              m.id,
+              m.nome,
+              m.matricula,
+              CASE WHEN EXISTS (
+                SELECT 1
+                FROM ponto_registros p
+                WHERE p.membro_id = m.id AND p.saida IS NULL
+              ) THEN 1 ELSE 0 END AS online
+            FROM membros m
+            WHERE m.ativo = 1
+            ORDER BY online DESC, m.nome COLLATE NOCASE ASC
+          `).all();
+
+          const online = [];
+          const offline = [];
+          for (const membro of r.results) {
+            const item = {
+              id: membro.id,
+              nome: membro.nome,
+              matricula: membro.matricula
+            };
+            if (membro.online === 1) online.push(item);
+            else offline.push(item);
+          }
+
+          return json({
+            ok: true,
+            online,
+            offline,
+            total_online: online.length,
+            total_membros: online.length + offline.length
+          });
         }
       }
       
