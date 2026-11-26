@@ -86,7 +86,7 @@
     <div class="rot">Ausência pendente</div>
   </a>
 
-  <button class="cx" onclick="abrirMembros()">
+  <button class="cx" id="card-membros" type="button" onclick="abrirMembros()" hidden>
     <div class="ic"><svg class="i"><use href="#i-eq"/></svg></div>
     <div class="num" id="num-ativos">–</div>
     <div class="rot">Membros Ativos</div>
@@ -145,15 +145,16 @@
     </div>
   </div>
 </div>
-  <!-- Modal de Membros Ativos -->
-<div id="modal-membros" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter: blur(4px); align-items:flex-end;">
+  <!-- Modal de Membros Ativos: exibido somente para administradores -->
+<div id="modal-membros" role="dialog" aria-modal="true" aria-labelledby="titulo-membros"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:9999; backdrop-filter:blur(4px); align-items:flex-end;">
   <div style="background:var(--card); width:100%; max-height:85vh; border-radius:26px 26px 0 0; padding:20px; overflow-y:auto; box-sizing:border-box;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <h3 style="margin:0; color:#fff; font-size:20px;">Membros</h3>
-      <button onclick="fecharMembros()" style="background:none; border:none; color:var(--suave); font-size:24px;">×</button>
+      <h3 id="titulo-membros" style="margin:0; color:#fff; font-size:20px;">Membros</h3>
+      <button type="button" id="fechar-membros" aria-label="Fechar lista de membros"
+              style="background:none; border:none; color:var(--suave); font-size:24px;">×</button>
     </div>
-    
-    <div id="lista-online" style="margin-bottom: 24px;"></div>
+    <div id="lista-online" style="margin-bottom:24px;"></div>
     <div id="lista-offline"></div>
   </div>
 </div>
@@ -176,77 +177,148 @@
     try { await fetch("/api/logout", { method: "POST" }); } catch (err) {}
     location.href = "/";
   };
-// Funções do Modal de Membros
-async function abrirMembros() {
-  const modal = document.getElementById('modal-membros');
-  modal.style.display = 'flex';
-  
-  const listaOnline = document.getElementById('lista-online');
-  const listaOffline = document.getElementById('lista-offline');
-  
-  listaOnline.innerHTML = '<p style="color:var(--suave); text-align:center; padding: 20px;">Carregando...</p>';
-  listaOffline.innerHTML = '';
-  
-  try {
-    const r = await fetch('/api/membros/status');
-    const d = await r.json();
+// Modal de Membros: dados do banco são inseridos com textContent, nunca como HTML.
+const modalMembros = $("modal-membros");
+const listaOnline = $("lista-online");
+const listaOffline = $("lista-offline");
+const botaoFecharMembros = $("fechar-membros");
 
-    // Função auxiliar para desenhar cada linha de membro
-    const desenharMembro = (m, isOnline) => {
-      const avatar = m.avatar_base64 
-        ? `<img src="${m.avatar_base64}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">` 
-        : `<span>${m.nome.charAt(0).toUpperCase()}</span>`;
-        
-      const corStatus = isOnline ? 'var(--verde)' : 'var(--vermelho)';
-      const txtStatus = isOnline ? 'ON' : 'OFF';
+function criarSecaoTitulo(texto, cor) {
+  const titulo = document.createElement("div");
+  titulo.textContent = texto;
+  titulo.style.cssText = `font-size:12px;color:${cor};font-weight:700;letter-spacing:1px;margin:8px 0;border-bottom:1px solid var(--linha);padding-bottom:6px;`;
+  return titulo;
+}
 
-      return `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--linha);">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:44px; height:44px; border-radius:50%; background:var(--ic); color:var(--verde); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:18px; border:1px solid ${corStatus}; overflow:hidden;">
-              ${avatar}
-            </div>
-            <div style="display:flex; flex-direction:column;">
-              <span style="color:var(--marfim); font-weight:600; font-size:15px;">${m.nome}</span>
-              <span style="color:var(--suave); font-size:12px;">Mat. ${m.matricula}</span>
-            </div>
-          </div>
-          <span style="color:${corStatus}; font-weight:700; font-size:11px; letter-spacing:1px; border:1px solid ${corStatus}; padding:4px 8px; border-radius:6px;">
-            ${txtStatus}
-          </span>
-        </div>
-      `;
+function criarLinhaMembro(m, online) {
+  const linha = document.createElement("div");
+  linha.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid var(--linha);";
+
+  const esquerda = document.createElement("div");
+  esquerda.style.cssText = "display:flex;align-items:center;gap:12px;min-width:0;";
+
+  const avatarBox = document.createElement("div");
+  const cor = online ? "var(--verde)" : "var(--vermelho)";
+  avatarBox.style.cssText = `width:44px;height:44px;flex:none;border-radius:50%;background:var(--ic);color:var(--verde);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;border:1px solid ${cor};overflow:hidden;`;
+
+  // Aceita apenas data URLs de imagem nos formatos suportados.
+  const idMembro = Number(m.id);
+  if (Number.isSafeInteger(idMembro) && idMembro > 0) {
+    const img = document.createElement("img");
+    img.alt = "";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    img.src = `/api/membros/foto?id=${encodeURIComponent(idMembro)}`;
+    img.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%;";
+    img.onerror = () => {
+      img.remove();
+      const inicial = document.createElement("span");
+      inicial.textContent = String(m.nome || "?").trim().charAt(0).toLocaleUpperCase("pt-BR") || "?";
+      avatarBox.appendChild(inicial);
     };
+    avatarBox.appendChild(img);
+  } else {
+    const inicial = document.createElement("span");
+    inicial.textContent = String(m.nome || "?").trim().charAt(0).toLocaleUpperCase("pt-BR") || "?";
+    avatarBox.appendChild(inicial);
+  }
 
-    // Renderiza ONLINE
-    let htmlOnline = `<div style="font-size:12px; color:var(--verde); font-weight:bold; letter-spacing:1px; margin-bottom:8px; border-bottom:1px solid var(--linha); padding-bottom:4px;">ONLINE (${d.total_online})</div>`;
-    if (d.online.length === 0) {
-      htmlOnline += `<p style="color:var(--suave); font-size:13px; padding:10px 0;">Ninguém em serviço no momento.</p>`;
-    } else {
-      d.online.forEach(m => { htmlOnline += desenharMembro(m, true); });
+  const dados = document.createElement("div");
+  dados.style.cssText = "display:flex;flex-direction:column;min-width:0;";
+
+  const nome = document.createElement("span");
+  nome.textContent = String(m.nome ?? "Sem nome");
+  nome.style.cssText = "color:var(--marfim);font-weight:600;font-size:15px;overflow-wrap:anywhere;";
+
+  const matricula = document.createElement("span");
+  matricula.textContent = `Mat. ${String(m.matricula ?? "—")}`;
+  matricula.style.cssText = "color:var(--suave);font-size:12px;";
+
+  dados.append(nome, matricula);
+  esquerda.append(avatarBox, dados);
+
+  const status = document.createElement("span");
+  status.textContent = online ? "ON" : "OFF";
+  status.style.cssText = `color:${cor};font-weight:700;font-size:11px;letter-spacing:1px;border:1px solid ${cor};padding:4px 8px;border-radius:6px;flex:none;`;
+
+  linha.append(esquerda, status);
+  return linha;
+}
+
+function preencherLista(container, titulo, membros, online) {
+  container.replaceChildren();
+  container.appendChild(criarSecaoTitulo(titulo, online ? "var(--verde)" : "var(--suave)"));
+
+  if (!membros.length) {
+    const vazio = document.createElement("p");
+    vazio.textContent = online ? "Ninguém em serviço no momento." : "Nenhum membro offline.";
+    vazio.style.cssText = "color:var(--suave);font-size:13px;padding:10px 0;";
+    container.appendChild(vazio);
+    return;
+  }
+
+  const fragmento = document.createDocumentFragment();
+  for (const membro of membros) fragmento.appendChild(criarLinhaMembro(membro, online));
+  container.appendChild(fragmento);
+}
+
+async function abrirMembros() {
+  modalMembros.style.display = "flex";
+  listaOnline.replaceChildren();
+  listaOffline.replaceChildren();
+
+  const carregando = document.createElement("p");
+  carregando.textContent = "Carregando membros...";
+  carregando.style.cssText = "color:var(--suave);text-align:center;padding:20px;";
+  listaOnline.appendChild(carregando);
+
+  try {
+    const resposta = await fetch("/api/membros/status", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { "Accept": "application/json" },
+      cache: "no-store"
+    });
+
+    if (!resposta.ok) {
+      if (resposta.status === 401 || resposta.status === 403) {
+        fecharMembros();
+        breve("Você não tem permissão para ver os membros.");
+        return;
+      }
+      throw new Error("Falha ao consultar membros");
     }
-    listaOnline.innerHTML = htmlOnline;
 
-    // Renderiza OFFLINE
-    let htmlOffline = `<div style="font-size:12px; color:var(--suave); font-weight:bold; letter-spacing:1px; margin-top:20px; margin-bottom:8px; border-bottom:1px solid var(--linha); padding-bottom:4px;">OFFLINE</div>`;
-    if (d.offline.length === 0) {
-      htmlOffline += `<p style="color:var(--suave); font-size:13px; padding:10px 0;">Todos estão online.</p>`;
-    } else {
-      d.offline.forEach(m => { htmlOffline += desenharMembro(m, false); });
+    const dados = await resposta.json();
+    if (!dados || dados.ok !== true || !Array.isArray(dados.online) || !Array.isArray(dados.offline)) {
+      throw new Error("Resposta inválida");
     }
-    listaOffline.innerHTML = htmlOffline;
 
-    // Atualiza o número no card principal do painel
-    document.getElementById('num-ativos').textContent = d.total_online;
-
-  } catch (e) {
-    listaOnline.innerHTML = '<p style="color:var(--vermelho); text-align:center;">Erro ao carregar membros.</p>';
+    preencherLista(listaOnline, `ONLINE (${dados.total_online ?? dados.online.length})`, dados.online, true);
+    preencherLista(listaOffline, "OFFLINE", dados.offline, false);
+    $("num-ativos").textContent = String(Number.isFinite(dados.total_online) ? dados.total_online : dados.online.length);
+  } catch (erro) {
+    listaOnline.replaceChildren();
+    const aviso = document.createElement("p");
+    aviso.textContent = "Erro ao carregar membros. Tente novamente.";
+    aviso.style.cssText = "color:var(--vermelho);text-align:center;";
+    listaOnline.appendChild(aviso);
   }
 }
 
 function fecharMembros() {
-  document.getElementById('modal-membros').style.display = 'none';
-  }
+  modalMembros.style.display = "none";
+}
+
+botaoFecharMembros.addEventListener("click", fecharMembros);
+modalMembros.addEventListener("click", (evento) => {
+  if (evento.target === modalMembros) fecharMembros();
+});
+document.addEventListener("keydown", (evento) => {
+  if (evento.key === "Escape" && modalMembros.style.display !== "none") fecharMembros();
+});
+
   (async () => {
     try {
       const r = await fetch("/api/me");
@@ -255,6 +327,7 @@ function fecharMembros() {
       if (d.trocar_senha) { location.href = "/trocar-senha.html"; return; }
       
       if (d.nivel >= 50) {
+        $("card-membros").hidden = false;
         $("adm").hidden = false;
         $("admCadastro").hidden = false;
         $("admTickets").hidden = false;
@@ -281,11 +354,7 @@ function fecharMembros() {
         $("num-ausencias").textContent = "0";
       }
 
-      // 👇 COLE ESSE BLOCO AQUI 👇
-      fetch('/api/membros/status').then(r => r.json()).then(d => {
-        if(d.total_online !== undefined) $("num-ativos").textContent = d.total_online;
-      }).catch(()=>{});
-      // 👆 FIM DO BLOCO 👆
+
 
       $("app").hidden = false;
     } catch (e) { location.href = "/"; }
@@ -293,4 +362,5 @@ function fecharMembros() {
 </script>
 <script src="/painel-extra.js"></script>
 </body>
-</html>
+  </html>
+  
