@@ -184,57 +184,63 @@ async function abrirMembros() {
   const listaOnline = document.getElementById('lista-online');
   const listaOffline = document.getElementById('lista-offline');
   
-  listaOnline.innerHTML = '<p style="color:var(--suave)">Carregando...</p>';
+  listaOnline.innerHTML = '<p style="color:var(--suave); text-align:center; padding: 20px;">Carregando...</p>';
   listaOffline.innerHTML = '';
   
   try {
     const r = await fetch('/api/membros/status');
     const d = await r.json();
-    
-    let htmlOnline = `<h4 style="color:var(--verde); font-size:12px; letter-spacing:1px; margin-bottom:10px;">ONLINE (${d.total_online})</h4>`;
-    if (d.online.length === 0) htmlOnline += `<p style="color:var(--suave); font-size:13px;">Nenhum membro em serviço.</p>`;
-    else {
-      d.online.forEach(m => {
-        htmlOnline += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--linha);">
-            <div style="display:flex; gap:10px; align-items:center;">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--verde); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">${m.nome.charAt(0).toUpperCase()}</div>
-              <div>
-                <div style="color:#fff; font-weight:600; font-size:14px;">${m.nome}</div>
-                <div style="color:var(--suave); font-size:11px;">Passaporte: ${m.matricula}</div>
-              </div>
+
+    // Função auxiliar para desenhar cada linha de membro
+    const desenharMembro = (m, isOnline) => {
+      const avatar = m.avatar_base64 
+        ? `<img src="${m.avatar_base64}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">` 
+        : `<span>${m.nome.charAt(0).toUpperCase()}</span>`;
+        
+      const corStatus = isOnline ? 'var(--verde)' : 'var(--vermelho)';
+      const txtStatus = isOnline ? 'ON' : 'OFF';
+
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--linha);">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:44px; height:44px; border-radius:50%; background:var(--ic); color:var(--verde); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:18px; border:1px solid ${corStatus}; overflow:hidden;">
+              ${avatar}
             </div>
-            <span style="color:var(--verde); font-weight:bold; font-size:12px;">ON</span>
+            <div style="display:flex; flex-direction:column;">
+              <span style="color:var(--marfim); font-weight:600; font-size:15px;">${m.nome}</span>
+              <span style="color:var(--suave); font-size:12px;">Mat. ${m.matricula}</span>
+            </div>
           </div>
-        `;
-      });
+          <span style="color:${corStatus}; font-weight:700; font-size:11px; letter-spacing:1px; border:1px solid ${corStatus}; padding:4px 8px; border-radius:6px;">
+            ${txtStatus}
+          </span>
+        </div>
+      `;
+    };
+
+    // Renderiza ONLINE
+    let htmlOnline = `<div style="font-size:12px; color:var(--verde); font-weight:bold; letter-spacing:1px; margin-bottom:8px; border-bottom:1px solid var(--linha); padding-bottom:4px;">ONLINE (${d.total_online})</div>`;
+    if (d.online.length === 0) {
+      htmlOnline += `<p style="color:var(--suave); font-size:13px; padding:10px 0;">Ninguém em serviço no momento.</p>`;
+    } else {
+      d.online.forEach(m => { htmlOnline += desenharMembro(m, true); });
     }
     listaOnline.innerHTML = htmlOnline;
 
-    let htmlOffline = `<h4 style="color:var(--suave); font-size:12px; letter-spacing:1px; margin-bottom:10px;">OFFLINE</h4>`;
-    if (d.offline.length === 0) htmlOffline += `<p style="color:var(--suave); font-size:13px;">Todos estão online.</p>`;
-    else {
-      d.offline.forEach(m => {
-        htmlOffline += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--linha); opacity:0.6;">
-            <div style="display:flex; gap:10px; align-items:center;">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--suave); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">${m.nome.charAt(0).toUpperCase()}</div>
-              <div>
-                <div style="color:#fff; font-weight:600; font-size:14px;">${m.nome}</div>
-                <div style="color:var(--suave); font-size:11px;">Passaporte: ${m.matricula}</div>
-              </div>
-            </div>
-            <span style="color:var(--suave); font-weight:bold; font-size:12px;">OFF</span>
-          </div>
-        `;
-      });
+    // Renderiza OFFLINE
+    let htmlOffline = `<div style="font-size:12px; color:var(--suave); font-weight:bold; letter-spacing:1px; margin-top:20px; margin-bottom:8px; border-bottom:1px solid var(--linha); padding-bottom:4px;">OFFLINE</div>`;
+    if (d.offline.length === 0) {
+      htmlOffline += `<p style="color:var(--suave); font-size:13px; padding:10px 0;">Todos estão online.</p>`;
+    } else {
+      d.offline.forEach(m => { htmlOffline += desenharMembro(m, false); });
     }
     listaOffline.innerHTML = htmlOffline;
 
+    // Atualiza o número no card principal do painel
     document.getElementById('num-ativos').textContent = d.total_online;
 
   } catch (e) {
-    listaOnline.innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar membros.</p>';
+    listaOnline.innerHTML = '<p style="color:var(--vermelho); text-align:center;">Erro ao carregar membros.</p>';
   }
 }
 
