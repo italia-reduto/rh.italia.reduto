@@ -471,20 +471,22 @@ export default {
         if (p === "/api/admin/ausencias") return await adminListarAusencias(request, env);
         
         if (p === "/api/membros/status") {
-          // CORREÇÃO DE SEGURANÇA: Exige login para ver quem está online
-          const eu = await quemSou(request, env);
-          if (!eu) return json({ erro: "Não autenticado" }, 401);
+  // CORREÇÃO DE SEGURANÇA: Exige login para ver quem está online
+  const eu = await quemSou(request, env);
+  if (!eu) return json({ erro: "Não autenticado" }, 401);
 
-          const r = await env.DB.prepare(`
-            SELECT m.id, m.nome, m.matricula, m.cargo, p.entrada 
-            FROM membros m 
-            LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
-            WHERE m.ativo = 1
-            ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
-          `).all();
-          const online = r.results.filter(m => m.entrada !== null);
-          const offline = r.results.filter(m => m.entrada === null);
-          return json({ ok: true, online, offline, total_online: online.length });
+  const r = await env.DB.prepare(`
+    SELECT m.id, m.nome, m.matricula, m.cargo, m.avatar_base64, p.entrada
+    FROM membros m 
+    LEFT JOIN ponto_registros p ON p.membro_id = m.id AND p.saida IS NULL 
+    WHERE m.ativo = 1
+    ORDER BY CASE WHEN p.entrada IS NOT NULL THEN 0 ELSE 1 END, m.nome ASC
+  `).all();
+  
+  const online = r.results.filter(m => m.entrada !== null);
+  const offline = r.results.filter(m => m.entrada === null);
+  
+  return json({ ok: true, online, offline, total_online: online.length });
         }
       }
       
